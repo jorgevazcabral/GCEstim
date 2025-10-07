@@ -57,7 +57,26 @@
 #' are used to define the signal support spaces. If
 #' \code{support.method = "ridge} the signal support spaces are define by the
 #' ridge trace.
-#' @param support.method.penalize.intercept Boolean value. if \code{TRUE},
+#' @param support.method.ridge.lambda Ridge parameter. The default is
+#' \code{lambda = NULL} and a lambda base 10 logarithmic sequence will be
+#' computed based on \code{lambda.n}, \code{lambda.min} and \code{lambda.max}.
+#' Supplying a lambda sequence overrides this. To be used when
+#' \code{support.method = "ridge"}.
+#' @param support.method.ridge.lambda.min Minimum value for the \code{lambda}
+#' sequence. The default is \code{support.method.ridge.lambda.min = 10^-3}.
+#' To be used when \code{support.method = "ridge"}.
+#' @param support.method.ridge.lambda.max Maximum value for the \code{lambda}
+#' sequence. The default is \code{support.method.ridge.lambda.max = 10^3}.
+#' To be used when \code{support.method = "ridge"}.
+#' @param support.method.ridge.lambda.n The number of lambda values. The default
+#'  is \code{support.method.ridge.lambda.n = 100}. To be used when
+#'  \code{support.method = "ridge"}.
+#' @param support.method.ridge.standardize Boolean value. If \code{TRUE}, the
+#' default, then: i) centering is done by subtracting the column means of x and
+#' y from their corresponding columns; ii) scaling is done by dividing the
+#' (centered) columns of x and y by their standard deviations. To be used when
+#' \code{support.method = "ridge"}.
+#' @param support.method.ridge.penalize.intercept Boolean value. if \code{TRUE},
 #' the default, the intercept will be penalized. To be used when
 #' \code{support.method = "ridge"}.
 #' @param support.signal \code{NULL} or fixed positive upper limit (L) for the
@@ -237,7 +256,12 @@ cv.lmgce <- function(formula,
                            c("min", "elbow")
                        },
                      support.method = c("standardized", "ridge"),
-                     support.method.penalize.intercept = TRUE,
+                     support.method.ridge.lambda = NULL,
+                     support.method.ridge.lambda.min = 10^-3,
+                     support.method.ridge.lambda.max = 10^3,
+                     support.method.ridge.lambda.n = 100,
+                     support.method.ridge.standardize = TRUE,
+                     support.method.ridge.penalize.intercept = TRUE,
                      support.signal = NULL,
                      support.signal.vector = NULL,
                      support.signal.vector.min = 0.3,
@@ -343,11 +367,12 @@ cv.lmgce <- function(formula,
       ridgetrace.Xy(
         X,
         y,
-        lambda = NULL,
-        lambda.min = 0.001,
-        lambda.max = 1,
-        lambda.n = 1000,
-        penalize.intercept = support.method.penalize.intercept,
+        lambda = support.method.ridge.lambda,
+        lambda.min = support.method.ridge.lambda.min,
+        lambda.max = support.method.ridge.lambda.max,
+        lambda.n = support.method.ridge.lambda.n,
+        standardize = support.method.ridge.standardize,
+        penalize.intercept = support.method.ridge.penalize.intercept,
         cv = FALSE)$max.abs.coef
   }
 
