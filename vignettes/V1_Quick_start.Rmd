@@ -1,0 +1,544 @@
+---
+title: "Quick start"
+author: "Jorge Cabral"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+link-citations: yes
+bibliography: references.bib
+csl: american-medical-association-brackets.csl
+description: |
+  Jumping to estimation.
+vignette: >
+  %\VignetteIndexEntry{Quick start}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<center>![](GCEstim_logo.png)</center>
+
+## Introduction
+
+In this vignette, the theoretical considerations are skipped and simple examples 
+of several `GCEstim` functions are given.
+
+## lmgce()
+
+Consider `dataGCE` (see ["Generalized Maximum Entropy
+framework"](V2_GME_framework.html#Examples)).
+
+```{r,echo=FALSE,eval=TRUE}
+library(GCEstim)
+load("GCEstim_Quick_start.RData")
+```
+
+```{r,echo=TRUE,eval=TRUE}
+coef.dataGCE <- c(1, 0, 0, 3, 6, 9)
+```
+
+```{r,echo=FALSE,eval=TRUE}
+summary(dataGCE)
+```
+
+```{r,echo=FALSE,eval=TRUE, fig.width=6,fig.height=6,fig.align='center'}
+plot(dataGCE)
+```
+
+Suppose we want to obtain the estimated model
+
+\begin{equation}
+    \widehat{\mathbf{y}}=\widehat{\beta_0} + \widehat{\beta_1}\mathbf{X001} + \widehat{\beta_2}\mathbf{X002} + \widehat{\beta_3}\mathbf{X003} + \widehat{\beta_4}\mathbf{X004} + \widehat{\beta_5}\mathbf{X005}.
+\end{equation}
+
+Using the function `lmgce()` and setting:
+
+-   `formula = y ~ X001 + X002 + X003 + X004 + X005`
+
+-   `data = dataGCE`
+
+the desired model is computed.
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.v01 <-
+  lmgce(
+    formula = y ~ X001 + X002 + X003 + X004 + X005,
+    data = dataGCE)
+```
+
+If we would like to see a concise summary of the result we can simply type,
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.v01
+```
+
+To obtain a more detailed evaluation of the fitted model, we can use `summary()`
+
+```{r,echo=TRUE,eval=TRUE}
+summary(res.lmgce.v01)
+```
+
+The estimated GCE coefficients are $\widehat{\boldsymbol{\beta}}^{GCE}=$
+`r paste0("(", paste(round(coef(res.lmgce.v01), 3), collapse = ", "), ")")`.
+
+```{r,echo=TRUE,eval=TRUE}
+(coef.res.lmgce.v01 <- coef(res.lmgce.v01))
+```
+
+The prediction root mean squared error (RMSE) is $RMSE_{\mathbf{\hat y}}^{GCE} \approx$
+`r round(res.lmgce.v01$error.measure, 3)`.
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.v01$error.measure
+```
+
+The prediction 5-fold cross-validation (CV) error is
+$CV\text{-}RMSE_{\mathbf{\hat y}}^{GCE} \approx$
+`r round(res.lmgce.v01$error.measure.cv.mean, 3)`.
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.v01$error.measure.cv.mean
+```
+
+Z-score confidence intervals (CIs) are obtained with the `confint` S3 method for
+class `lmgce`
+
+```{r,echo=TRUE,eval=TRUE}
+confint(res.lmgce.v01, level = 0.95)
+```
+
+and can be visualized with `plot`
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+plot(res.lmgce.v01, which = 1)[[1]]
+```
+
+Color-filled dots represent the GCE estimates while non-filled dots represent the 
+OLS estimates (`lmgce` uses by default `OLS = TRUE`).  
+
+Bootstrap CIs are available by setting `method = "percentile"` or
+`method = "basic"`, defining a number of replicates `boot.B = 1000` and bootstrap
+method (three methods available, see `help("confint.lmgce")`)
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.v01.confint <-
+  confint(
+    res.lmgce.v01,
+    level = 0.95,
+    method = "percentile",
+    boot.B = 1000,
+    boot.method = "residuals"
+  )
+```
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.v01.confint
+```
+
+or 
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.v02 <- 
+  update(res.lmgce.v01,
+         boot.B = 1000,
+         boot.method = "residuals")
+```
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.v02.confint <-
+  confint(
+    res.lmgce.v02,
+    level = 0.95,
+    method = "percentile"
+  )
+```
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.v02.confint
+```
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
+plot(res.lmgce.v02, which = 1, ci.method = "percentile")[[1]]
+```
+
+From the previous summary we can see that the standardized upper limit for all 
+support spaces was `r res.lmgce.v01$support.stdUL`
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+res.lmgce.v01$support.stdUL #standardized
+```
+
+and corresponds to the support spaces which cross-validation RMSE (CV-RMSE) is 
+not greater than the minimum CV-RMSE plus one standard error (1se)
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+res.lmgce.v01$support.signal.1se
+```
+
+During estimation, standardized limits are reverted to the original scale
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+res.lmgce.v01$support.matrix #original scale
+```
+
+`lmgce` uses by default `support.signal = NULL` and 
+`support.signal.vector = NULL` meaning that it will evaluate the 
+`errormeasure = "RMSE"` with cross-validation 
+(`cv = TRUE`, `cv.nfolds = 5`) in a set of 
+`support.signal.vector.n = 20` supports spaces logarithmically between 
+`support.signal.vector.min = 0.3` and `support.signal.vector.min = 20`. It will 
+then choose the minimum, one standard error or elbow error (see `help("lmgce")`).    
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
+plot(res.lmgce.v01, which = 2)[[1]]
+```
+
+Red dots represent the CV-error and green dots the CV-Normalized entropy.
+Whiskers have the length of two standard errors for each of the 20 support spaces.
+The dotted horizontal line is the OLS CV-error. The black vertical dotted line 
+corresponds to the support spaces that produced the lowest CV-error. The black
+vertical dashed line corresponds to the support spaces that produced the 1se 
+CV-error. The red vertical dotted line corresponds to the support spaces that 
+produced the elbow CV-error.
+
+With `plot` it is possible to obtain the trace of the estimates
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
+plot(res.lmgce.v01, which = 3)[[1]]
+```
+
+In the last two plots are depicted the final solutions. That is to say
+that after choosing the support spaces limits based on the defined error, 
+the number of points of the support spaces and their probability 
+`support.signal.points = c(1/5, 1/5, 1/5, 1/5, 1/5)`, `twosteps.n = 1` extra 
+estimation(s) is(are) performed. This estimation uses the GCE framework even if 
+the previous steps were by default on the GME framework.
+The distribution of probabilities used is the one estimated for the chosen 
+support spaces.
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+res.lmgce.v01$p0
+```
+
+The trace of the CV-error can be obtained with `plot`
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
+plot(res.lmgce.v01, which = 6)[[1]]
+```
+
+The pre reestimation CV-error is depicted by the red dot and final/reestimated 
+CV-error corresponds to the dark red dot. The horizontal dotted line represents 
+again the OLS CV-error. The final estimated vector of probabilities is
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+res.lmgce.v01$p
+```
+
+After looking at the results and traces we may feel the need to select a different
+support, lets say the minimum. That can obviously be done using, for instance
+
+```{r,echo=TRUE,eval=FALSE}
+lmgce(y ~ X001 + X002 + X003 + X004 + X005,
+      data = dataGCE,
+      errormeasure.which = "min")
+#or
+update(res.lmgce.v01, errormeasure.which = "min)
+```
+
+but that implies a complete reestimation and can be very time-costly.
+Since the results of all the evaluated support spaces are stored, choosing a 
+different support should be done with `changesupport`
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+res.lmgce.v01.min <- changesupport(res.lmgce.v01, "min")
+```
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+summary(res.lmgce.v01.min)
+```
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+plot(res.lmgce.v01.min)
+```
+
+Note that the GCE estimates are now "closer" to the OLS estimates.\
+In this example the true coefficients are known and we can also observe that the
+`min` approach gives estimates "closer" to those coefficients, which in 
+ill-condition problems is not recommended.
+
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+data.frame("Supp_1se" = coef(res.lmgce.v01),
+           "Supp_min" = coef(res.lmgce.v01.min),
+           "OLS" = coef(res.lmgce.v01$results$OLS$res),
+           "TRUE" = coef.dataGCE)
+```
+
+Several generic functions can used with `lmgce` class objects, for instance
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+fitted(res.lmgce.v01)[1:5]
+```
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+predict(res.lmgce.v01, dataGCE[1,])
+```
+
+<br>
+
+## lmgceAddin()
+
+An add-in to easily generate the R code for a `lmgce` analysis when
+`support.method="standardized"` and to perform that analysis can be accessed with
+
+```{r,echo=TRUE,eval=FALSE}
+lmgceAddin()
+``` 
+
+Data can be imported from a file or be called from the `Environment`.
+
+<br>
+
+<center>![](Addin_01.png)</center>
+
+<br>
+
+The parameters of `lmgce()` can be changed.
+
+<br>
+
+<center>![](Addin_02.png)</center>
+
+<br>
+
+Several outputs can be visualized.
+
+<br>
+
+<center>![](Addin_03.png)</center>
+
+<br>
+
+The expression for `lmgce()` can be exported.
+
+<br>
+
+<center>![](Addin_04.png)</center>
+
+<br>
+
+## cv.lmgce()
+
+`lmgce()` allows for the evaluation of several support spaces and, given a certain 
+criterion, selects one of them. But GCE estimation is also sensitive to the number of
+points of the support and noise spaces and to the weight that each of the spaces 
+has in the loss function. `cv.lmgce()` tests the combination of these parameters. 
+
+```{r,echo=TRUE,eval=FALSE}
+res.cv.lmgce <-
+  cv.lmgce(
+    y ~ X001 + X002 + X003 + X004 + X005,
+    data = dataGCE,
+    support.signal.points = c(3, 5, 7, 9, 11),
+    support.noise.points = c(3, 5, 7, 9, 11),
+    weight = c(0.1, 0.3, 0.5, 0.7, 0.9))
+```
+
+```{r,echo=TRUE,eval=TRUE}
+res.cv.lmgce
+```
+
+It returns CV-errors, convergence of the optimization algorithm and time.
+
+```{r,echo=TRUE,eval=TRUE}
+res.cv.lmgce$results[order(res.cv.lmgce$results$error.measure.cv.mean),][1:10,-6] 
+```
+
+The model with the combination that produces the lowest CV-error is kept.
+
+```{r,echo=TRUE,eval=TRUE}
+summary(res.cv.lmgce$best)
+```
+
+Using `plot` we obtain
+
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=12,fig.align='center'}
+plot(res.cv.lmgce) 
+```
+
+## tsbootgce()
+
+Consider the time series in the `ts` object `moz_ts`.
+
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=6,fig.align='center'}
+plot(moz_ts)
+```
+
+Let:
+
+-   $CO2_t$ be the emissions of $CO_2$ at time $t$;
+
+-   $GDP_{t-1}$ be the gross domestic product at time $t-1$;
+
+-   $EPC_{t-1}$ be the energy per capita at time $t-1$;
+
+-   $EU_{t-1}$ be the energy use at time $t-1$.
+
+Let us obtain the estimated model
+
+\begin{equation}
+    \widehat{CO2_t}=\widehat{\beta_0} + \widehat{\beta_1}GDP_{t-1} + \widehat{\beta_2}EPC_{t-1} + \widehat{\beta_3}EU_{t-1}
+\end{equation}
+
+
+Using the function `tsbootgce()` and setting:
+
+-   `formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1)`
+
+-   `data = moz_ts`
+
+the desired model is computed. `formula` allows additional functions 
+available in R package [dynlm](https://CRAN.R-project.org/package=dynlm)). 
+
+```{r,echo=TRUE,eval=TRUE}
+res.tsbootgce <- 
+  tsbootgce(
+    formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+    data = moz_ts
+    )
+```
+
+Note that by default `tsbootgce` uses `reps = 1000` replicates as elements of an 
+ensemble, which retain the shape of the original time series, as well as the
+time dependence structure of the autocorrelation and the partial autocorrelation
+functions. The `plot` function can give us percentile confidence intervals 
+(red, green and blue areas) and the median distribution (dashed yellow line) of 
+the generated time series as well as the original data (black line).
+
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
+plot(res.tsbootgce)[[1]]
+```
+
+A concise summary of the result can be obtained simply by typing,
+
+```{r,echo=TRUE,eval=TRUE,fig.width=8,fig.height=5,fig.align='center'}
+res.tsbootgce
+```
+
+The `tsbootgce` coefficients displayed by default are `coef.method = "mode"`.
+
+```{r,echo=TRUE,eval=TRUE,fig.width=8,fig.height=5,fig.align='center'}
+coef(res.tsbootgce)
+```
+
+and the $95\%$ highest density regions are
+
+```{r,echo=TRUE,eval=TRUE,fig.width=8,fig.height=5,fig.align='center'}
+confint(res.tsbootgce)
+```
+
+The empirical distribution, confidence intervals and measure of central tendency
+of each estimate can be visualized by typing
+
+```{r,echo=TRUE,eval=TRUE,fig.width=8,fig.height=5,fig.align='center'}
+plot(res.tsbootgce,
+     ci.levels = c(0.90, 0.95, 0.99),
+     ci.method = c("hdr" #,"basic" #,"percentile"
+       ))[[2]]
+```
+
+## neagging()
+
+The estimates obtained in each bootstrap repetition have a normalized entropy 
+associated that can be used as a weight for an aggregation procedure named neagging.
+
+### lmgce object
+
+`lmgce` objects keep the bootstrap result in `object$results$bootstrap` when the 
+argument `boot.B` is greater or equal to `10`.  In the case of existence of these
+results we can call the function `neagging` setting only the `object` parameter.
+
+```{r,echo=TRUE,eval=TRUE}
+res.neagging.lmgce <- neagging(res.lmgce.v02)
+```
+
+The trace of the in sample error can be obtained with `plot`.  
+
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
+plot(res.neagging.lmgce)
+```
+
+The dotted horizontal line represents the in sample error of the `lmgce` model. 
+The neagging minimum in sample error, represented by the vertical dashed line, 
+was obtained aggregating `r which.min(res.neagging.lmgce$error)[[1]]` models
+
+```{r,echo=TRUE,eval=TRUE}
+which.min(res.neagging.lmgce$error)[[1]]
+```
+
+The trace of the estimates can also be visualized with `plot`, where the dotted
+horizontal lines represent the estimates from the `lmgce` model.
+
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
+plot(res.neagging.lmgce, which = 2) 
+```
+
+The estimated coefficients that produce the lowest in sample error are $\widehat{\boldsymbol{\beta}}^{neagging}=$
+`r paste0("(", paste(round(coef(res.neagging.lmgce), 3), collapse = ", "), ")")`.
+
+```{r,echo=TRUE,eval=TRUE}
+coef(res.neagging.lmgce)
+```
+
+The estimated coefficients, when $1000$ models are aggregated, are $\widehat{\boldsymbol{\beta}}^{neagging}=$
+`r paste0("(", paste(round(coef(res.neagging.lmgce, which = ncol(res.neagging.lmgce$matrix)), 3), collapse = ", "), ")")`.
+
+```{r,echo=TRUE,eval=TRUE}
+coef(res.neagging.lmgce, which = ncol(res.neagging.lmgce$matrix))
+```
+
+Although the in sample error is higher in the neagging approach, in some scenarios
+an out of sample improvement can be observed. Consider a data set with 
+the same structure as `dataGCE` which was generated setting `seed = 240863`.The 
+out of sample RMSE is smaller using the neagging model
+
+```{r,echo=TRUE,eval=TRUE}
+accmeasure(
+  as.matrix(cbind(1,dataGCE.test[, - ncol(dataGCE.test)])) %*% as.matrix(coef(res.neagging.lmgce)),
+  dataGCE.test$y)
+
+accmeasure(
+  predict(res.lmgce.v02, dataGCE.test),
+  dataGCE.test$y)
+```
+
+### tsbootgce object
+
+`tsbootgce` objects always keep the bootstrap result in `object$results$bootstrap` 
+so we can call the function `neagging` setting only the `object` parameter.
+
+```{r,echo=TRUE,eval=TRUE}
+res.neagging.tsbootgce <- neagging(res.tsbootgce)
+```
+
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
+plot(res.neagging.tsbootgce)
+```
+
+In this case the in sample error is lower in the neagging approach.
+
+## Acknowledgements
+
+This work was supported by Fundação para a Ciência e Tecnologia (FCT)
+through CIDMA and projects <https://doi.org/10.54499/UIDB/04106/2020>
+and <https://doi.org/10.54499/UIDP/04106/2020>.

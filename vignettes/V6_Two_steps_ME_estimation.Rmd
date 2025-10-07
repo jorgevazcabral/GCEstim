@@ -1,0 +1,197 @@
+---
+title: "Two steps ME estimation"
+author: "Jorge Cabral"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+link-citations: yes
+bibliography: references.bib
+csl: american-medical-association-brackets.csl
+description: |
+  GME estimation followed by GCE estimation.
+vignette: >
+  %\VignetteIndexEntry{Two steps ME estimation}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<center>
+
+![](GCEstim_logo.png)
+</center>
+
+## Introduction
+
+As stated in ["Generalized Cross Entropy framework"](V3_GCE_framework.html#Introduction), 
+the common situation is the absence of prior information on 
+$\mathbf{p} = (\mathbf{p_0},\mathbf{p_1},\dots,\mathbf{p_K})$. Yet, it is possible
+to include some pre-sample information in the form of 
+$\mathbf{q} = (\mathbf{q_0},\mathbf{q_1},\dots,\mathbf{q_K})$.
+
+## Two steps
+
+If we assume that generally there is no information on $\mathbf{p}$ we are 
+defining a uniform distribution for $\mathbf{p}$ and ME estimation is done in
+the GME framework (see 
+["Generalized Maximum Entropy framework"](V2_GME_framework.html#Introduction)). 
+From that estimation we can also obtain $\mathbf{\hat p}$. If we use 
+$\mathbf{\hat p}$ as the prior distribution $\mathbf{q}$ we can perform a ME
+estimation in the GCE framework (see 
+["Generalized Cross Entropy framework"](V3_GCE_framework.html#Introduction)).
+This procedures can be repeated as many times as required.
+
+
+```{r,echo=FALSE,eval=TRUE}
+library(GCEstim)
+load("GCEstim_Two_Steps.RData")
+```
+
+Consider `dataGCE` (see ["Generalized Maximum Entropy
+framework"](V2_GME_framework.html#Examples) and ["Choosing the supports spaces"](V5_Choosing_Supports.html#Examples)). 
+
+```{r,echo=TRUE,eval=TRUE}
+coef.dataGCE <- c(1, 0, 0, 3, 6, 9)
+```
+
+The two steps GCE estimation can be done by assigning to the argument 
+`twosteps.n` a value different from $0$. Let us consider $10$ GCE estimations 
+after a first GME estimation (by default 
+`support.signal.points = c(1/5, 1/5, 1/5, 1/5, 1/5)`).
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.1se.twosteps <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    twosteps.n = 10
+  )
+```
+
+The trace of the prediction CV-error can be obtained with `plot` and `which = 6`
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
+plot(res.lmgce.1se.twosteps, which = 6)[[1]]
+```
+
+The pre reestimation CV-error is depicted by the red dot, intermediate CV-errors
+are represented by orange dots and final/reestimated CV-error corresponds to the
+dark red dot. The horizontal dotted line represents the OLS CV-error. Note that 
+with the increase of reestimation the CV-error decreases.\
+Since we are working with simulated data, the true coefficients are known and 
+the precision error can be determined. The arguments `which = 7` and 
+`coef = coef.dataGCE` of `plot` allows to obtain the trace 
+ 
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
+plot(res.lmgce.1se.twosteps, which = 7, coef = coef.dataGCE)[[1]]
+```
+
+We can see that, with the first two reestimations, we get a lower precision error 
+but from that point forward the model tends to overfit data.
+Generally it is recommended to perform only $1$ GCE reestimation. That can be 
+done by setting `twosteps.n = 1`, the default of `lmgce`
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.1se.twosteps.1 <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE
+  )
+```
+
+or use `update`
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.1se.twosteps.1 <- update(res.lmgce.1se.twosteps, twosteps.n = 1)
+```
+
+or, since data is already stored in the `object` we can use the `changestep` 
+function. This last options is the recommended in this case.
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.1se.twosteps.1 <- changestep(res.lmgce.1se.twosteps, 1)
+```
+
+`plot` with `which = 2` gives us the "Prediction Error vs supports" plot
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
+plot(res.lmgce.1se.twosteps.1, which = 2)[[1]]
+```
+
+and with `which = 3` we get the "Estimates vs supports" plot.
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
+plot(res.lmgce.1se.twosteps.1, which = 3)[[1]]
+```
+
+In the last two plots are depicted the final solutions. That is to say
+that after choosing the support spaces limits based on the defined error, 
+the number of points of the support spaces and their probability 
+`support.signal.points = c(1/5, 1/5, 1/5, 1/5, 1/5)`, `twosteps.n = 1` extra 
+estimation(s) is(are) performed. This estimation uses the GCE framework even if 
+the previous steps were by default on the GME framework.
+The distribution of probabilities used is the one estimated for the chosen 
+support spaces and it is stored in `object$p0`.
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.1se.twosteps.1$p0
+```
+
+The final estimated vector of probabilities, `object$p`, is
+
+```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4}
+res.lmgce.1se.twosteps.1$p
+```
+
+## Conclusion
+
+Doing a comparison between different methods we can conclude that generally we
+should use the two steps approach with only $1$ reestimation and choose the 
+support spaces defined by standardized bounds with the 1se error structure.
+
+```{r, echo=FALSE,eval=TRUE,results = 'asis'}
+kableExtra::kable(
+  cbind(all.data.2,
+        c(
+    round(GCEstim::accmeasure(
+      fitted(res.lmgce.1se.twosteps.1), dataGCE$y, which = "RMSE"
+    ), 3),
+    round(res.lmgce.1se.twosteps.1$error.measure.cv.mean, 3),
+    round(GCEstim::accmeasure(
+      coef(res.lmgce.1se.twosteps.1), coef.dataGCE, which = "RMSE"
+    ), 3)
+  )),
+  digits = 3,
+  align = c(rep('c', times = 5)),
+  col.names = c("$OLS$",
+                "$GME_{(RidGME)}$",
+                "$GME_{(incRidGME_{1se})}$",
+                "$GME_{(incRidGME_{min})}$",
+                "$GME_{(std_{1se})}$",
+                "$GME_{(std_{min})}$",
+                "$GCE_{(std_{1se})}$"),
+  row.names = TRUE,
+  booktabs = FALSE)
+
+```
+
+## References  
+
+<div id="refs"></div>
+
+
+## Acknowledgements
+
+This work was supported by Fundação para a Ciência e Tecnologia (FCT)
+through CIDMA and projects <https://doi.org/10.54499/UIDB/04106/2020>
+and <https://doi.org/10.54499/UIDP/04106/2020>.

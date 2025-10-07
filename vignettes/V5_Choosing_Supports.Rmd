@@ -1,0 +1,570 @@
+---
+title: "Choosing the supports spaces"
+author: "Jorge Cabral"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+link-citations: yes
+bibliography: references.bib
+csl: american-medical-association-brackets.csl
+description: |
+  How to choose the support spaces.
+vignette: >
+  %\VignetteIndexEntry{Choosing the supports spaces}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<center>
+
+![](GCEstim_logo.png)
+</center>
+
+## Introduction
+
+It becomes evident from the analysis performed in ["Generalized Maximum Entropy framework"](V2_GME_framework.html#Examples) that the estimates obtained via the
+Generalized Cross Entropy framework depend on the choice of the support spaces.
+In fact, the restrictions imposed on the parameters space through $Z$ should 
+reflect prior knowledge about the unknown parameters. However, such knowledge is 
+not always available and there is no clear answer for how to define those support
+spaces.
+
+## Prior-informed support space construction
+
+> If sufficient prior information is available, the support space can be 
+> constructed around a pre-estimate or prior mean, making the representation 
+> more efficient. --- Golan @Golan1996
+
+Preliminary estimates (e.g., from OLS or Ridge) can guide the center and/or range 
+of the support points for the unknown parameters. This can help to:
+
+-   Avoid arbitrarily wide or narrow supports;
+
+-   Improve estimation efficiency and stability;
+
+-   Try to include the true value within the support.
+
+
+### Ridge
+
+The Ridge regression introduced by Hoerl and Kennard [@Hoerl1970] is an estimation procedure to handle collinearity without removing variables from the regression model. By adding a small non-negative constant (ridge or shrinkage parameter) to the diagonal of the correlation matrix of the explanatory variables, it is possible to reduce the variance of the OLS estimator through the introduction of some bias. Although the resulting estimators are biased, the biases are small enough for these estimators to be substantially more precise than the unbiased estimators.
+The challenge in Ridge regression remains on the selection of the ridge parameter. One straightforward approach is based on simply plotting the coefficients against several possible values for the ridge parameter and inspecting the resulting traces.
+The Ridge Regression estimator of $\boldsymbol{\beta}$ takes the form
+\begin{align}
+\widehat{\boldsymbol{\beta}}^{ridge}&= \underset{\boldsymbol{\beta}}{\operatorname{argmin}} \|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\|^2+\lambda \|\boldsymbol{\beta}\|^2 \\ 
+&=(\mathbf{X}'\mathbf{X}+\lambda \mathbf{I})^{-1}\mathbf{X'y},
+\end{align}
+where $\lambda \geq 0$ denotes the ridge parameter and $\mathbf{I}$ is a $((K+1) \times (K+1))$ identity matrix.
+Note that when $\lambda \rightarrow 0$, the Ridge regression estimator approaches the OLS estimator whereas the Ridge regression estimator approaches the zero vector when $\lambda \rightarrow \infty$. Thus, a trade-off between variance and bias is needed.
+
+Ridge preliminary estimates can be obtained (choosing the ridge parameter 
+according to a given rule) and be used to define, for instance, zero centered 
+support spaces @Cabral2024. 
+Macedo et al [@Macedo2022;@Macedo2025] suggest to define $Z$ uniformly and symmetrically around
+zero with limits established by the absolute maximum values of the ridge estimates.
+The absolute maximum values are defined by the ridge trace when setting a vector 
+of penalization parameters, usually between $0$ and $1$. This procedure is called
+the RidGME.
+
+```{r,echo=FALSE,eval=TRUE}
+library(GCEstim)
+load("GCEstim_Choosing_Supports.RData")
+```
+
+Consider `dataGCE` (see ["Generalized Maximum Entropy
+framework"](V2_GME_framework.html#Examples)). 
+
+```{r,echo=TRUE,eval=TRUE}
+coef.dataGCE <- c(1, 0, 0, 3, 6, 9)
+```
+
+Suppose we want to obtain the estimated model
+
+\begin{equation}
+    \widehat{\mathbf{y}}=\widehat{\beta_0} + \widehat{\beta_1}\mathbf{X001} + \widehat{\beta_2}\mathbf{X002} + \widehat{\beta_3}\mathbf{X003} + \widehat{\beta_4}\mathbf{X004} + \widehat{\beta_5}\mathbf{X005}.
+\end{equation}
+
+In order to define the support spaces let us obtain the ridge trace. Using the 
+function `ridgetrace()` and setting:
+
+-   `formula = y ~ X001 + X002 + X003 + X004 + X005`
+
+-   `data = dataGCE`
+
+the ridge trace is computed.
+
+```{r,echo=TRUE,eval=TRUE}
+res.rt.01 <- 
+  ridgetrace(
+    formula = y ~ X001 + X002 + X003 + X004 + X005,
+    data = dataGCE)
+```
+
+Since that in our example the true parameters are known, we can add them to the 
+ridge trace using the argument `coef = coef.dataGCE` from the `plot` function
+
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
+plot(res.rt.01, coef = coef.dataGCE)
+```
+
+The Ridge estimated coefficients that produce the lowest 5-fold cross-validation
+RMSE (by default `errormeasure = "RMSE"`,` cv = TRUE` and `cv.nfolds = 5`) are
+
+```{r,echo=TRUE,eval=TRUE}
+res.rt.01
+```
+
+Yet, we are interested in the maximum absolute values, and those values can be
+obtain setting the argument `which = "max.abs"` in the `coef` function. 
+
+```{r,echo=TRUE,eval=TRUE}
+coef(res.rt.01, which = "max.abs")
+```
+
+Note that the maximum absolute value of each estimate is greater than the true 
+absolute value of the parameter (represented by the horizontal dashed horizontal 
+lines).
+
+```{r,echo=TRUE,eval=TRUE}
+coef(res.rt.01, which = "max.abs") > abs(c(1, 0, 0, 3, 6, 9))
+```
+
+Given this information and if one wants to have symmetrically
+centered supports it is possible to define, for instance, the following:\
+
+$\mathbf{z}_0'= \left[ -1.029594, -1.029594/2, 0, 1.029594/2, 1.029594\right]$,
+$\mathbf{z}_1'= \left[ -1.083863, -1.083863/2, 0, 1.083863/2, 1.083863\right]$
+$\mathbf{z}_2'= \left[ -4.203592, -4.203592/2, 0, 4.203592/2, 4.203592\right]$,
+$\mathbf{z}_3'= \left[ -3.574235, -3.574235/2, 0, 3.574235/2, 3.574235\right]$,
+$\mathbf{z}_4'= \left[ -8.981052, -8.981052/2, 0, 8.981052/2, 8.981052\right]$ and
+$\mathbf{z}_5'= \left[ -12.021861, -12.021861/2, 0, 12.021861/2, 12.021861\right]$.
+
+```{r,echo=TRUE,eval=TRUE}
+
+(RidGME.support <- 
+  matrix(c(-coef(res.rt.01, which = "max.abs"),
+           coef(res.rt.01, which = "max.abs")),
+         ncol = 2,
+         byrow = FALSE))
+```
+
+Using `lmgce` and setting `support.signal = RidGME.support` it is possible to 
+obtain the desired model
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.RidGME <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.signal = RidGME.support,
+    twosteps.n = 0
+  )
+```
+
+Alternatively, it is possible to use directly the `lmgce` function setting 
+`support.method = "ridge"` and `support.signal = 1`. Doing this, the support 
+spaces will be internally calculated. 
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.RidGME <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.method = "ridge",
+    support.signal = 1,
+    twosteps.n = 0
+  )
+```
+
+The estimated GME coefficients with *a prior* Ridge information are $\widehat{\boldsymbol{\beta}}^{GME_{(RidGME)}}=$ `r paste0("(", paste(round(coef(res.lmgce.RidGME), 3), collapse = ", "), ")")`. 
+
+The prediction error is
+$RMSE_{\mathbf{\hat y}}^{GME_{(RidGME)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.RidGME), dataGCE$y, which = "RMSE"), 3)`, 
+the cross-validation prediction error is 
+$CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(RidGME)}} \approx$
+`r round(res.lmgce.RidGME$error.measure.cv.mean, 3)`, and the precision error is
+$RMSE_{\boldsymbol{\hat\beta}}^{GME_{(RidGME)}} \approx$
+`r round(GCEstim::accmeasure(coef(res.lmgce.RidGME), coef.dataGCE, which = "RMSE"), 3)`. 
+
+We can compare these results with the ones from the
+["Generalized Maximum Entropy
+framework"](V2_GME_framework.html#Examples) vignette.
+
+```{r, echo=FALSE,eval=TRUE,results = 'asis'}
+
+kableExtra::kable(
+  cbind(res.all[, -c(5,6)],
+        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME), dataGCE$y, which = "RMSE"), 3),
+          round(res.lmgce.RidGME$error.measure.cv.mean, 3),
+          round(GCEstim::accmeasure(coef(res.lmgce.RidGME), coef.dataGCE, which = "RMSE"), 3))),
+  digits = 3,
+  align = c(rep('c', times = 5)),
+  col.names = c("$OLS$",
+                "$GME_{(100000)}$",
+                "$GME_{(100)}$",
+                "$GME_{(50)}$",
+                "$GME_{(RidGME)}$"),
+  row.names = TRUE,
+  booktabs = FALSE)
+
+```
+
+Although we did not have to blindly define the support spaces, the results are 
+not very reassuring and a different strategy should be pursued. Furthermore, if 
+we consider the data set `dataincRidGME` and want to obtain the estimated model
+
+\begin{equation}
+    \widehat{\mathbf{y}}=\widehat{\beta_0} + \widehat{\beta_1}\mathbf{X001} + \widehat{\beta_2}\mathbf{X002} + \widehat{\beta_3}\mathbf{X003} + \widehat{\beta_4}\mathbf{X004} + \widehat{\beta_5}\mathbf{X005} + \widehat{\beta_6}\mathbf{X006}.
+\end{equation}
+
+we can note that now not all the maximum absolute values of the estimates are greater 
+than the true absolute value of the parameters.
+
+```{r,echo=TRUE,eval=TRUE}
+res.rt.02 <- 
+  ridgetrace(
+    formula = y ~ .,
+    data = dataincRidGME)
+```
+
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
+coef.dataincRidGME <- c(2.5, rep(0, 3), c(-8, 19, -13))
+plot(res.rt.02, coef = coef.dataincRidGME)
+```
+
+```{r,echo=TRUE,eval=TRUE}
+coef(res.rt.02, which = "max.abs") > abs(coef.dataincRidGME)
+```
+
+If we use the maximum absolute values to define the support spaces we are 
+excluding the true value of the parameter in two of them. 
+To avoid that, we can broaden the support spaces by a given greater than $1$ factor,
+for instance $2$. That can be done by setting `support.signal = 2` in `lmgce`.
+
+```{r,echo=TRUE,eval=TRUE}
+
+res.lmgce.RidGME.02.alpha1 <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataincRidGME,
+    support.method = "ridge",
+    support.signal = 1,
+    twosteps.n = 0
+  )
+
+res.lmgce.RidGME.02.alpha2 <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataincRidGME,
+    support.method = "ridge",
+    support.signal = 2,
+    twosteps.n = 0
+  )
+```
+
+From `summary` we can confirm that both prediction error and prediction 
+cross-validation error are smaller when multiplying the maximum absolute values 
+by $2$.
+
+```{r,echo=TRUE,eval=TRUE}
+summary(res.lmgce.RidGME.02.alpha1)$error.measure
+summary(res.lmgce.RidGME.02.alpha2)$error.measure
+```
+
+```{r,echo=TRUE,eval=TRUE}
+summary(res.lmgce.RidGME.02.alpha1)$error.measure.cv.mean
+summary(res.lmgce.RidGME.02.alpha2)$error.measure.cv.mean
+```
+The precision error is also smaller 
+
+```{r}
+round(GCEstim::accmeasure(coef(res.lmgce.RidGME.02.alpha1), coef.dataincRidGME, which = "RMSE"), 3) 
+round(GCEstim::accmeasure(coef(res.lmgce.RidGME.02.alpha2), coef.dataincRidGME, which = "RMSE"), 3) 
+```
+
+But, since generally we do not know the true value of the parameters, we also 
+can not know by which factor we must multiply the maximum absolute values. And 
+to make it even more complicated, in some situations, a "better" estimation is 
+obtained when the factor is between $0$ and $1$. So, we might as well test 
+different values of the factor and choose, for instance, the one with the 
+lowest k-fold cross-validation error.
+By default `support.signal.vector.n = 20` values logarithmically spaced between
+`support.signal.vector.min = 0.3` and `support.signal.vector.max = 20` will be
+tested in a `cv.nfolds = 5` fold cross-validation (CV) scenario and the factor 
+chosen corresponds to the one that produces the CV `errormeasure = "RMSE"` that 
+is not greater than the minimum CV-RMSE plus one standard error (`errormeasure.which = "1se"`).
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.RidGME.02 <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataincRidGME,
+    support.method = "ridge",
+    twosteps.n = 0
+  )
+```
+
+With `plot` it is possible to visualize the change in the CV-error with the 
+different factors used to multiply the maximum absolute value given by the 
+Ridge trace.
+
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
+plot(res.lmgce.RidGME.02, which = 2, NormEnt = FALSE)[[1]]
+```
+
+Red dots represent the CV-error and whiskers have the length of two standard 
+errors for each of the 20 support spaces. The dotted horizontal line is the OLS 
+CV-error. The black vertical dotted line corresponds to the support spaces that 
+produced the lowest CV-error. The black vertical dashed line corresponds to the 
+support spaces that produced the 1se CV-error. The red vertical dotted line 
+corresponds to the support spaces that produced the elbow CV-error.
+
+```{r,echo=TRUE,eval=TRUE}
+summary(res.lmgce.RidGME.02)
+```
+Note that the prediction errors are worst than the ones obtained when the factor
+was $2$ because we chose `1se` error. In this case, the precision error is also
+not the best one.
+
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
+plot(res.lmgce.RidGME.02, which = 5, NormEnt = FALSE, coef = coef.dataincRidGME)[[1]]
+```
+
+From the above plot it seems that we should have chosen 
+`errormeasure.which = "min"`. That can obviously be done using
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.RidGME.02.min <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataincRidGME,
+    support.method = "ridge",
+    errormeasure.which = "min",
+    twosteps.n = 0
+  )
+```
+
+but that implies a complete reestimation and can be very time-costly.
+Since the results of all the evaluated support spaces are stored, choosing a 
+different support should be done with `changesupport`
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.RidGME.02.min <- 
+  changesupport(res.lmgce.RidGME.02, "min")
+```
+
+From the summary we can conclude that the lowest prediction errors were obtained.
+
+```{r,echo=TRUE,eval=TRUE}
+summary(res.lmgce.RidGME.02.min)
+```
+The precision error is also the best one.
+
+```{r}
+round(GCEstim::accmeasure(coef(res.lmgce.RidGME.02), coef.dataincRidGME, which = "RMSE"), 3) 
+
+round(GCEstim::accmeasure(coef(res.lmgce.RidGME.02.min), coef.dataincRidGME, which = "RMSE"), 3) 
+```
+
+
+If we go back to our first example and use this last approach, called incRidGME,
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.RidGME.01.1se <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.method = "ridge",
+    twosteps.n = 0
+  )
+```
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.RidGME.01.min <- changesupport(res.lmgce.RidGME.01.1se, "min")
+```
+
+we can see an improvement from the RidGME. In particular, when the `1se` error is 
+selected, the Bias-Variance tradeoff seems more appropriate than when the 
+`min` error is defined.
+
+```{r, echo=FALSE,eval=TRUE,results = 'asis'}
+
+kableExtra::kable(
+  cbind(res.all[, -c(5,6)],
+        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME), dataGCE$y, which = "RMSE"), 3),
+          round(res.lmgce.RidGME$error.measure.cv.mean, 3),
+          round(GCEstim::accmeasure(coef(res.lmgce.RidGME), coef.dataGCE, which = "RMSE"), 3)),
+        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME.01.1se), dataGCE$y, which = "RMSE"), 3),
+          round(res.lmgce.RidGME.01.1se$error.measure.cv.mean, 3),
+          round(GCEstim::accmeasure(coef(res.lmgce.RidGME.01.1se), coef.dataGCE, which = "RMSE"), 3)),
+        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME.01.min), dataGCE$y, which = "RMSE"), 3),
+          round(res.lmgce.RidGME.01.min$error.measure.cv.mean, 3),
+          round(GCEstim::accmeasure(coef(res.lmgce.RidGME.01.min), coef.dataGCE, which = "RMSE"), 3))),
+  digits = 3,
+  align = c(rep('c', times = 5)),
+  col.names = c("$OLS$",
+                "$GME_{(100000)}$",
+                "$GME_{(100)}$",
+                "$GME_{(50)}$",
+                "$GME_{(RidGME)}$",
+                "$GME_{(incRidGME_{1se})}$",
+                "$GME_{(incRidGME_{min})}$"),
+  row.names = TRUE,
+  booktabs = FALSE)
+
+```
+
+### Standardization
+
+Since all parameters estimations methods have some drawback we can try to avoid
+doing a pre estimation to define the support space.
+Consider model in (1) (see ["Generalized Maximum Entropy
+framework"](V2_GME_framework.html)). It can be written as\
+\begin{align} 
+    \qquad \qquad \mathbf{y} &= \beta_0 + \beta_1 \mathbf{x_{1}} + \beta_2 \mathbf{x_{2}} + \dots + \beta_K \mathbf{x_{K}} + \boldsymbol{\epsilon}, \qquad \qquad (2)
+\end{align}
+
+\indent Standardizing $y$ and $x_j$, the model in (2) is rewritten as  
+\begin{align}
+	y^* &= X^*b + \epsilon^*,\\
+	y^* &= b_1x_1^* + b_2x_2^* + \dots + b_Kx_K^* + \epsilon^*,  
+\end{align}
+\noindent where
+\begin{align}
+y_i^*&=\frac{y_i-\frac{\sum_{i=1}^{N}y_i}{N}}{\sqrt{\frac{1}{N}\sum_{i=1}^{N}\left( y_i-\frac{\sum_{i=1}^{N}y_i}{N}\right)^2}},\\
+x_{ji}^*&=\frac{x_{ji}-\frac{\sum_{i=1}^{N}x_{ji}}{N}}{\sqrt{\frac{1}{N}\sum_{i=1}^{N}\left( x_{ji}-\frac{\sum_{i=1}^{N}x_{ji}}{N}\right)^2}},\\
+b_j&=\frac{\sqrt{\frac{1}{N}\sum_{i=1}^{N}\left( x_{ji}-\frac{\sum_{i=1}^{N}x_{ji}}{N}\right)^2}}{\sqrt{\frac{1}{N}\sum_{i=1}^{N}\left( y_i-\frac{\sum_{i=1}^{N}y_i}{N}\right)^2}}\beta_j,
+\end{align}
+\noindent with $j\in \left\lbrace 1,\dots,K\right\rbrace$, and 
+$i \in \left\lbrace 1,\dots,N\right\rbrace$. In this formulation, $b_j$ are 
+called standardized coefficients.  
+
+Although not bounded, standardized coefficients greater than $1$ in magnitude 
+tend to occur with low frequency, and specially in extremely ill-conditioned 
+problems. Given this, one can define zero centered support spaces for the 
+standardized variables symmetrically bounded by a "small" number (or vector of 
+numbers) and then revert the support spaces to the original scale. By doing so, 
+no pre estimation is performed. `lmgce` uses this approach by default 
+(`support.method = "standardized"`) to do the estimation.
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.1se <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    twosteps.n = 0
+  )
+```
+
+We can also choose the support space that produced the lowest CV-error.
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.min <- changesupport(res.lmgce.1se, "min")
+```
+
+```{r,echo=TRUE,eval=TRUE}
+summary(res.lmgce.1se)
+```
+
+```{r,echo=TRUE,eval=TRUE}
+summary(res.lmgce.min)
+```
+And we can do a final comparison between methods.
+
+```{r, echo=FALSE,eval=TRUE}
+all.data.2 <- cbind(
+  res.all[, -c(3, 4, 5, 6)],
+  c(
+    round(GCEstim::accmeasure(
+      fitted(res.lmgce.RidGME), dataGCE$y, which = "RMSE"
+    ), 3),
+    round(res.lmgce.RidGME$error.measure.cv.mean, 3),
+    round(GCEstim::accmeasure(
+      coef(res.lmgce.RidGME), coef.dataGCE, which = "RMSE"
+    ), 3)
+  ),
+  c(
+    round(GCEstim::accmeasure(
+      fitted(res.lmgce.RidGME.01.1se), dataGCE$y, which = "RMSE"
+    ), 3),
+    round(res.lmgce.RidGME.01.1se$error.measure.cv.mean, 3),
+    round(GCEstim::accmeasure(
+      coef(res.lmgce.RidGME.01.1se), coef.dataGCE, which = "RMSE"
+    ), 3)
+  ),
+  c(
+    round(GCEstim::accmeasure(
+      fitted(res.lmgce.RidGME.01.min), dataGCE$y, which = "RMSE"
+    ), 3),
+    round(res.lmgce.RidGME.01.min$error.measure.cv.mean, 3),
+    round(GCEstim::accmeasure(
+      coef(res.lmgce.RidGME.01.min), coef.dataGCE, which = "RMSE"
+    ), 3)
+  ),
+  c(
+    round(GCEstim::accmeasure(fitted(res.lmgce.1se), dataGCE$y, which = "RMSE"), 3),
+    round(res.lmgce.1se$error.measure.cv.mean, 3),
+    round(GCEstim::accmeasure(
+      coef(res.lmgce.1se), coef.dataGCE, which = "RMSE"
+    ), 3)
+  ),
+  c(
+    round(GCEstim::accmeasure(fitted(res.lmgce.min), dataGCE$y, which = "RMSE"), 3),
+    round(res.lmgce.min$error.measure.cv.mean, 3),
+    round(GCEstim::accmeasure(
+      coef(res.lmgce.min), coef.dataGCE, which = "RMSE"
+    ), 3)
+  )
+)[, -1]
+```
+
+```{r, echo=FALSE,eval=TRUE,results = 'asis'}
+kableExtra::kable(
+  all.data.2,
+  digits = 3,
+  align = c(rep('c', times = 5)),
+  col.names = c("$OLS$",
+                "$GME_{(RidGME)}$",
+                "$GME_{(incRidGME_{1se})}$",
+                "$GME_{(incRidGME_{min})}$",
+                "$GME_{(std_{1se})}$",
+                "$GME_{(std_{min})}$"),
+  row.names = TRUE,
+  booktabs = FALSE)
+
+```
+
+The precision error obtained by the 1se with support spaces defined by 
+standardized bounds was the best at a small expense of the prediction 
+error.
+
+## Conclusion
+
+The choice of the support spaces is crucial for an accurate estimation of the
+regression parameters. Prior information can be used to define those support 
+spaces. That information can be theoretical, or can be obtained from previous
+regression models, or can rely on the distribution of standardized regression 
+coefficients. From our analysis the last approach produces good results.
+
+## References  
+
+<div id="refs"></div>
+
+
+## Acknowledgements
+
+This work was supported by Fundação para a Ciência e Tecnologia (FCT)
+through CIDMA and projects <https://doi.org/10.54499/UIDB/04106/2020>
+and <https://doi.org/10.54499/UIDP/04106/2020>.

@@ -1,0 +1,133 @@
+---
+title: "Further considerations"
+author: "Jorge Cabral"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+link-citations: yes
+bibliography: references.bib
+csl: american-medical-association-brackets.csl
+description: |
+  Further considerations.
+vignette: >
+  %\VignetteIndexEntry{Further considerations}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<center>
+
+![](GCEstim_logo.png)
+</center>
+
+## Normalized Entropy
+
+Golan et al. @Golan1996 defined normalized entropy for the signal,  $\mathbf{X}\boldsymbol{\beta}$, in the GME framework, as
+
+\begin{align}
+    \qquad \qquad \qquad \qquad \qquad S(\mathbf{\widehat{p}})=\frac{-\mathbf{\widehat{p}}' \text{ln}\mathbf{\widehat{p}}}{(K+1)\text{ln} M} \qquad \qquad \qquad \qquad \qquad (3)
+\end{align} 
+where $S(\mathbf{\widehat{p}})\in[0,1]$ and $S(\mathbf{\widehat{p}})=1$ 
+indicates perfect uncertainty, and $S(\mathbf{\widehat{p}})=0$ indicates no 
+uncertainty. 
+
+In the GCE framework it can be defined as
+
+\begin{align}
+    \qquad \qquad \qquad \qquad \qquad S(\mathbf{\widehat{p}})=\frac{-\mathbf{\widehat{p}}' \text{ln}\mathbf{\widehat{p}}}{-\mathbf{\widehat{q}}' \text{ln}\mathbf{\widehat{q}}} \qquad \qquad \qquad \qquad \qquad (4)
+\end{align} 
+
+but in this case the we can no longer state that $S(\mathbf{\widehat{p}})\in[0,1]$.
+
+`GCEstim` package reports normalized entropies but it uses always the definition
+in (3) independently of the framework used.
+
+```{r,echo=FALSE,eval=TRUE}
+library(GCEstim)
+```
+
+Consider `dataGCE` (see ["Generalized Maximum Entropy framework"](V2_GME_framework.html#Examples) and [Generalized Cross Entropy framework"](V3_GCE_framework.html#Examples)). 
+
+The GME estimation can be obtained, for instance, with
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.100.GME <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    cv = TRUE,
+    cv.nfolds = 5,
+    support.signal = c(-100, 100),
+    support.signal.points = 5,
+    twosteps.n = 0,
+    seed = 230676
+  )
+```
+
+and the GCE estimation with
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.100.GCE <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    cv = TRUE,
+    cv.nfolds = 5,
+    support.signal = c(-100, 100),
+    support.signal.points =
+      matrix(
+        c(
+          rep(1 / 5, 5),
+          c(0.1, 0.1, 0.6, 0.1, 0.1),
+          c(0.1, 0.1, 0.6, 0.1, 0.1),
+          rep(1 / 5, 5),
+          rep(1 / 5, 5),
+          rep(1 / 5, 5)
+        ),
+        ncol = 5,
+        byrow = TRUE
+      ),
+    twosteps.n = 0,
+    seed = 230676
+  )
+```
+
+The `NormEnt` extracts the normalized entropy from the models by default 
+(`model=TRUE`).
+
+```{r,echo=TRUE,eval=TRUE}
+NormEnt(res.lmgce.100.GME)
+NormEnt(res.lmgce.100.GCE)
+```
+
+Each estimate has its own normalized entropy associated (`model=FALSE`)
+
+```{r,echo=TRUE,eval=TRUE}
+NormEnt(res.lmgce.100.GME, model = FALSE)
+```
+
+```{r,echo=TRUE,eval=TRUE}
+NormEnt(res.lmgce.100.GCE, model = FALSE)
+```
+
+## References  
+
+<div id="refs"></div>
+
+
+## Acknowledgements
+
+This work was supported by Fundação para a Ciência e Tecnologia (FCT)
+through CIDMA and projects <https://doi.org/10.54499/UIDB/04106/2020>
+and <https://doi.org/10.54499/UIDP/04106/2020>.

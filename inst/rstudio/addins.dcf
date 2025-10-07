@@ -1,0 +1,4 @@
+Name: lmgce expression and analysis
+Description: Inserts lmgce expression and can perform estimation and show results
+Binding: lmgceAddin
+Interactive: true

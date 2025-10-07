@@ -1,0 +1,309 @@
+---
+title: "Optimization methods"
+author: "Jorge Cabral"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+link-citations: yes
+bibliography: references.bib
+csl: american-medical-association-brackets.csl
+description: |
+  Different optimization options.
+vignette: >
+  %\VignetteIndexEntry{Optimization methods}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<center>
+
+![](GCEstim_logo.png)
+</center>
+
+
+## Optimization
+
+In the ["Generalized Maximum Entropy framework"](V2_GME_framework.html)
+vignette a solution for the constrained optimization problem was
+proposed to compute $\widehat{\boldsymbol{\beta}}^{GME}$. However, a
+more efficient way is to solve the unconstrained dual formulation of the
+problem, which is a function of $\hat {\boldsymbol\lambda}$. The
+resulting function, $\mathcal{M}(\boldsymbol{\lambda})$, is referred to
+as the minimal value function @Golan1996.\
+Let\
+\begin{equation}
+  \Omega_k \left( \widehat{\boldsymbol\lambda}\right) = \sum_{m=1}^M exp(-z_{km}\sum_{n=1}^N \hat\lambda_n x_{nk})
+\end{equation} and \begin{equation}
+  \Psi_n \left( \widehat{\boldsymbol\lambda}\right) = \sum_{j=1}^J exp(-\hat\lambda_n v_{n}).
+\end{equation}
+
+The primal–dual relationship is
+
+\begin{equation}
+  \underset{\mathbf{p},\mathbf{w}}{\operatorname{argmax}}
+   \left\{-\mathbf{p}' \ln \mathbf{p} - \mathbf{w}' \ln \mathbf{w} \right\} = \underset{\boldsymbol{\lambda}}{\operatorname{argmin}}
+   \left\{ \mathbf{y}'\boldsymbol{\lambda} - \sum_{k=1}^{K+1}log\left( \Omega_k(\boldsymbol{\lambda})\right) - \sum_{n=1}^{N}log\left( \Psi_n(\boldsymbol{\lambda})\right)\right\} \equiv \mathcal{M}(\boldsymbol{\lambda}).
+\end{equation}
+
+$\mathcal{M}(\boldsymbol{\lambda})$, may be interpreted as a constrained
+expected log-likelihood function. Estimation is considerably simplified
+using this dual version. The analytical gradient of the dual problem is
+
+\begin{equation}
+   \nabla_{\boldsymbol{\lambda}}\mathcal{M} = \mathbf{y}-\mathbf{XZp} - \mathbf{Vw}
+\end{equation}
+
+$\boldsymbol{\hat\lambda}$ is then used to solve
+
+\begin{equation}
+    \hat p_{km} = \frac{exp(-z_{km}\sum_{n=1}^N \hat\lambda_n x_{nk})}{\Omega_k(\boldsymbol{\lambda})} 
+\end{equation} 
+and 
+\begin{equation}
+    \hat w_{nj} = \frac{exp(-\hat\lambda_n v_{n})}{\Psi_n(\boldsymbol{\lambda})}. 
+\end{equation}
+
+$\widehat{\boldsymbol{\beta}}^{GME}$ and $\boldsymbol{\hat \epsilon}$ are given by
+
+\begin{equation}
+  \widehat{\boldsymbol{\beta}}^{GME}=\mathbf{Z\hat p}
+\end{equation}
+and
+\begin{equation}
+  \boldsymbol{\hat \epsilon}=\mathbf{V\hat w}.
+\end{equation}  
+
+## Examples
+
+Different numerical optimization options will be explained using
+`dataGCE` (see ["Generalized Maximum Entropy
+framework"](V2_GME_framework.html#Examples)).
+
+```{r,echo=FALSE,eval=TRUE}
+load("GCEstim_Optim.RData")
+```
+
+```{r,echo=TRUE,eval=TRUE}
+library(GCEstim)
+```
+
+```{r,echo=FALSE,eval=TRUE}
+coef.dataGCE <- c(1, 0, 0, 3, 6, 9)
+```
+
+Assume that $z_k^{upper}=50$, $k\in\left\lbrace 0,\dots,6\right\rbrace$
+is a "wide upper bound" for the signal support space and set $M=5$ and
+$J=3$.\
+The primal version of the optimization problem previously defined can be
+solved by the optimization methods:
+
+-   [Rsolnp package](https://cran.r-project.org/package=Rsolnp) [@Ye1987, @Ghalanos2015]
+
+    -   `primal.solnp`, using Sequential Quadratic Programming (SQP);
+
+-   [NlcOptim package](https://CRAN.R-project.org/package=NlcOptim) @Chen2019
+
+    -   `primal.solnl`, using the augmented Lagrange multiplier
+        method with an SQP interior algorithm.
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.50.primal.solnp <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.signal = c(-50, 50),
+    twosteps.n = 0,
+    method = "primal.solnp"
+  )
+
+res.lmgce.50.primal.solnl <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.signal = c(-50, 50),
+    twosteps.n = 0,
+    method = "primal.solnl"
+  )
+```
+
+Both methods converged which can be confirmed by the $0$ returned by
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.50.primal.solnp$convergence
+res.lmgce.50.primal.solnl$convergence
+```
+
+The dual version of the optimization problem can be solved by the
+optimization methods:
+
+-   [optim
+    package](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html)
+    -   `dual.BFGS`, **default**, using Broyden-Fletcher-Goldfarb-Shanno
+        quasi-Newton method [@Broyden1970; @Fletcher1970; @Goldfarb1970; @Shanno1970];\
+    -   `dual.CG`, a conjugate gradients method @Fletcher1964;\
+    -   `dual.L-BFGS-B`, using a box-constrained optimization with
+        limited-memory modification of the BFGS quasi-Newton method @Byrd1995;\
+-   [optimx package](https://CRAN.R-project.org/package=optimx) @Nash2011
+    -   `dual.Rcgmin`, using conjugate gradient minimization of nonlinear functions 
+    with box constraints using Dai/Yuan update @Dai2001 (see [Rcgmin](https://rdrr.io/rforge/Rcgmin/));\
+    -   `dual.bobyqa`, using a derivative-free optimization by quadratic
+        approximation @Powell2009 (see
+        [minqa](https://CRAN.R-project.org/package=minqa) @Bates2024);\
+    -   `dual.newuoa`, using a derivative-free optimization by quadratic
+        approximation @Powell2009 (see
+        [minqa](https://CRAN.R-project.org/package=minqa)  @Bates2024);\
+    -   `dual.nlminb`, unconstrained and box-constrained optimization using 
+        PORT routines @Gay1990 (see
+        [nlminb](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/nlminb.html));\
+    -   `dual.nlm`, using a Newton-type algorithm [@Dennis1983; @Schnabel1985] (see
+        [nlm](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/nlm.html));\
+-   [lbfgs package](https://CRAN.R-project.org/package=lbfgs) @Coppola2022
+    -   `dual.lbfgs`, using the Limited-memory Broyden-Fletcher-Goldfarb-Shanno;\
+-   [lbfgsb3c package](https://CRAN.R-project.org/package=lbfgsb3c) @Fidler2024
+    -   `dual.lbfgsb3c`, using L-BFSC-B implemented in Fortran code and
+        with an Rcpp interface;  
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.50.dual.BFGS <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.signal = c(-50, 50),
+    twosteps.n = 0,
+    method = "dual.BFGS"
+  )
+
+res.lmgce.50.dual.CG <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.signal = c(-50, 50),
+    twosteps.n = 0,
+    method = "dual.CG"
+  )
+```
+
+Any error or warning produced by the optimization procedure results in
+outputting $1$. Note that `dual.BFGS` converged while `dual.CG` did not. Conjugate gradient methods will generally be more fragile but may be successful in much larger optimization problems.  
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.50.dual.BFGS$convergence
+res.lmgce.50.dual.CG$convergence
+```
+
+The values of $\boldsymbol{\hat\lambda}$, $\hat {\mathbf{p}}$ and
+$\hat {\mathbf{w}}$ for `dual.BFGS` are, respectively,
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.50.dual.BFGS$lambda
+```
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.50.dual.BFGS$p
+```
+
+```{r,echo=TRUE,eval=TRUE}
+res.lmgce.50.dual.BFGS$w
+```
+
+The following table shows a comparison of efficiency between all the
+optimization methods available. Note that in the current version, the
+default optimization parameters of each dependency package are used.
+
+```{r,echo=TRUE,eval=FALSE}
+method.opt <-
+  c(
+    "primal.solnl",
+    "primal.solnp",
+    "dual.BFGS",
+    "dual.CG",
+    "dual.L-BFGS-B",
+    "dual.Rcgmin",
+    "dual.bobyqa",
+    "dual.newuoa",
+    "dual.nlminb",
+    "dual.nlm",
+    "dual.lbfgs",
+    "dual.lbfgsb3c"
+  )
+
+compare_methods <- data.frame(
+  method = method.opt,
+  time = NA,
+  r.squared = NA,
+  error.measure = NA,
+  error.measure.cv.mean = NA,
+  beta.error = NA,
+  nep = NA,
+  nep.cv.mean = NA,
+  convergence = NA)
+```
+
+```{r,echo=TRUE,eval=FALSE}
+
+for (i in 1:length(method.opt)) {
+start.time <- Sys.time()
+res.method <- 
+  lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.signal = c(-50,50),
+    twosteps.n = 0,
+    method = method.opt[i]
+    )
+
+compare_methods$time[i] <- difftime(Sys.time(),
+                                    start.time,
+                                    units = "secs")
+compare_methods$r.squared[i] <- summary(res.method)$r.squared
+compare_methods$error.measure[i] <- res.method$error.measure
+compare_methods$error.measure.cv.mean[i] <- res.method$error.measure.cv.mean
+compare_methods$beta.error[i] <- accmeasure(coef(res.method), coef.dataGCE)
+compare_methods$nep[i] <- res.method$nep
+compare_methods$nep.cv.mean [i] <- res.method$nep.cv.mean
+compare_methods$convergence[i] <- res.method$convergence
+}
+
+compare_methods_ordered <- compare_methods[order(compare_methods$time),]
+
+compare_methods_ordered$convergence <- factor(compare_methods_ordered$convergence,
+                                              levels = c(0,1),
+                                              labels = c(TRUE, FALSE))
+```
+
+```{r, echo=FALSE,eval=TRUE,results = 'asis'}
+kableExtra::kable(
+  compare_methods_ordered[, c(1,2,4,5,6,9)],
+  digits = 3,
+  align = "rcccc",
+  col.names = c("optimization method",
+                "time (s)",
+                "$RMSE_{\\widehat{y}}$",
+                "$CV \\text{-} RMSE_{\\widehat{y}}$",
+                "$RMSE_{\\widehat{\\beta}}$",
+                "Convergence"),
+  row.names = FALSE,
+  booktabs = F)
+```
+
+## References
+
+::: {#refs}
+:::
+
+## Acknowledgements
+
+This work was supported by Fundação para a Ciência e Tecnologia (FCT)
+through CIDMA and projects <https://doi.org/10.54499/UIDB/04106/2020>
+and <https://doi.org/10.54499/UIDP/04106/2020>.

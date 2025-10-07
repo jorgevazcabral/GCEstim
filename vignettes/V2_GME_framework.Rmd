@@ -1,0 +1,745 @@
+---
+title: "Generalized Maximum Entropy framework"
+author: "Jorge Cabral"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+link-citations: yes
+bibliography: references.bib
+csl: american-medical-association-brackets.csl
+description: |
+  An overview of the GME framework.
+vignette: >
+  %\VignetteIndexEntry{Generalized Maximum Entropy framework}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<center>
+
+![](GCEstim_logo.png)
+</center>
+
+## Introduction
+
+One of the most widely used data analysis techniques under fairly
+regularity conditions is the general linear regression analysis. In
+general, it proposes to model the relation between a dependent variable
+and a set of independent variables by means of a suitable mathematical
+model in order to understand whether the independent variables predict
+the dependent variable and how they explain the empirical data which are
+modeled. In the modelling process some assumptions should be imposed
+@Greene2008. In practice, however, data are frequently limited and some
+of these conditions are usually not satisfied.
+
+> [...] the available information is most often insufficient to provide
+> a unique answer or solution for most interesting decisions or
+> inferences we wish to make. In fact, insufficient information -
+> including limited, incomplete, complex, noisy and uncertain
+> information - is the norm for most problems across all disciplines.
+> --- Golan @Golan2017
+
+Given this, regression models may become ill-posed which implies that
+the application of traditional estimation methods, such as the Ordinary
+Least Squares (OLS) estimators, may lead to non-unique or highly
+unstable solutions, unless simplifying assumptions/procedures are
+imposed to generate seemingly well-posed statistical models @Golan1996.
+One of the major concerns in univariate multiple linear regression is
+the collinearity problem, which is one of the responsible for inflating
+the variance associated with the regression coefficients estimates and,
+in general, to affect the signs of the estimates, as well as statistical
+inference [@Belsley1980; @Stewart1987].\
+Supported by the maximum entropy principle @Jaynes1957, which advocates
+to evaluate events’ probabilities using a distribution that maximizes
+entropy among those that satisfy certain expectations’ constraints,
+Golan, Judge and Miller (from now on referred as GJM) @Golan1996
+proposed a generalization to the regression framework and called it the
+generalized maximum entropy (GME) method. The GME is a suitable and
+flexible method, widely used, where no parametric assumptions are
+necessary, and a global measure of fit is available.
+
+## General Linear Model
+
+Consider the general linear model given by
+
+\begin{align}
+    \qquad \qquad \qquad \qquad \qquad \mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}, \qquad \qquad \qquad \qquad \qquad (1)
+\end{align} 
+
+where $\mathbf{y}$ denotes a $(N \times 1)$ vector
+of noisy observations, $N \in \mathbb{N}$, $\boldsymbol{\beta}$ is a
+$((K+1) \times 1)$ vector of unknown parameters or coefficients,
+$K \in \mathbb{N}$, $\mathbf{X}$ is a known $(N \times (K+1))$ design
+matrix and $\boldsymbol{\epsilon}$ is a $(N \times 1)$ vector of random
+disturbances (errors), usually assumed to have a conditional expected
+value of zero and representing spherical disturbances, i.e,
+$E\left[ \boldsymbol{\epsilon} | \mathbf{X}\right]=\mathbf{0}$ and
+$E[\boldsymbol{\epsilon \epsilon}'|\mathbf{X}]=\sigma^2\mathbf{I}$,
+where $\mathbf{I}$ is a ($N \times N$) identity matrix and $\sigma^2$ is
+the error variance.\
+
+## Generalized Maximum Entropy estimator {#GMEestimator}
+
+GJM @Golan1996 generalized the Maximum Entropy formalism @Jaynes1957 to
+linear inverse problems with noise, expressed in model (1). The idea is
+to treat each $\beta_k,\space k\in\left\lbrace 0,\dots,K\right\rbrace$,
+as a discrete random variable with a compact support and
+$2 \leq M < \infty$ possible outcomes, and each
+$\epsilon_n, \space n\in\left\lbrace 1,\dots,N\right\rbrace$, as a
+finite and discrete random variable with $2 \leq J < \infty$ possible
+outcomes. Assuming that both the unknown parameters and the unknown
+error terms may be bounded *a priori*, the linear model (1) can be
+presented as 
+\begin{equation}
+    \mathbf{y}=\mathbf{XZp} + \mathbf{Vw},
+\end{equation}  
+where  
+\begin{equation}
+    \boldsymbol{\beta}=\mathbf{Zp}= \left[ 
+    \begin{array}{cccc}
+        \mathbf{z}'_0   & \mathbf{0}      & \cdots & \mathbf{0}   \\
+        \mathbf{0}      & \mathbf{z}'_1   & \cdots & \mathbf{0}   \\
+        \vdots & \vdots & \ddots & \vdots\\
+        \mathbf{0}      & \mathbf{0}      & \cdots & \mathbf{z}'_K
+    \end{array}\right]
+    \left[ 
+    \begin{array}{c}
+        \mathbf{p}_0 \\
+        \mathbf{p}_1 \\
+        \vdots\\
+        \mathbf{p}_K
+    \end{array}\right],
+\end{equation}  
+with $\mathbf{Z}$ a $((K+1) \times (K+1)M)$ matrix of support values and 
+$\mathbf{p}$ a $((K+1)M \times 1)$ vector of unknown probabilities, and  
+\begin{equation}
+    \boldsymbol{\epsilon}=\mathbf{Vw}= \left[ 
+    \begin{array}{cccc}
+        \mathbf{v}'_1   & \mathbf{0}      & \cdots & \mathbf{0}   \\
+        \mathbf{0}      & \mathbf{v}'_2   & \cdots & \mathbf{0}   \\
+        \vdots & \vdots & \ddots & \vdots\\
+        \mathbf{0}      & \mathbf{0}      & \cdots & \mathbf{v}'_N
+    \end{array}\right]
+    \left[ \begin{array}{c}
+        \mathbf{w}_1 \\
+        \mathbf{w}_2 \\
+        \vdots\\
+        \mathbf{w}_N
+    \end{array}\right],
+\end{equation}  
+with $\mathbf{V}$ a $(N \times NJ)$ matrix of support values and $\mathbf{w}$ a 
+$(NJ \times 1)$ vector of unknown probabilities. For the linear regression model
+specified in (1), the Generalized Maximum Entropy (GME) estimator is given by  
+\begin{equation}
+   \hat{\boldsymbol{\beta}}^{GME}(\mathbf{Z},\mathbf{V}) = \underset{\mathbf{p},\mathbf{w}}{\operatorname{argmax}}
+   \left\{-\mathbf{p}' \ln \mathbf{p} - \mathbf{w}' \ln \mathbf{w} \right\},
+\end{equation}  
+subject to the model constraint  
+\begin{equation}
+   \mathbf{y}=\mathbf{XZp} + \mathbf{Vw},
+\end{equation}  
+and the additivity constraints for $\mathbf{p}$ and $\mathbf{w}$, respectively,  
+\begin{equation}
+        \begin{array}{c}
+            \mathbf{1}_{K+1}=(\mathbf{I}_{K+1} \otimes \mathbf{1}'_M)\mathbf{p},\\
+            \mathbf{1}_N=(\mathbf{I}_N \otimes \mathbf{1}'_J)\mathbf{w},
+        \end{array}
+ \end{equation}  
+where $\otimes$ represents the Kronecker product, $\mathbf{1}$ is a column vector
+of ones with a specific dimension, $\mathbf{I}$ is an identity matrix with a 
+specific dimension and $\mathbf{Z}$ and $\mathbf{V}$ are the matrices of supports,
+and $\mathbf{p}>\mathbf{0}$ and $\mathbf{w}>\mathbf{0}$ are probability vectors 
+to be estimated.\
+These equations can be rewritten using set notation as follows:
+\begin{align}
+  &\text{maximize} & H(p,w) &=-\sum_{m=1}^M\sum_{k=0}^{K} p_{km}ln(p_{km}) -\sum_{j=1}^J\sum_{n=1}^N w_{nj}ln(w_{nj}) \\
+  &\text{subject to} & y_n &= \sum_{m=1}^M\sum_{k=0}^{K} X_{kn}Z_{kj}p_{kj} + \sum_{m=1}^M V_{nm}w_{nm} \\
+  & & \sum_{m=1}^M p_{km} = 1, \forall k\\
+  & & \sum_{j=1}^J w_{kj} = 1, \forall k.
+\end{align}
+ 
+The Lagrangian equation 
+\begin{equation}
+    \mathcal{L}=-\mathbf{p}' \ln \mathbf{p} - \mathbf{w}' \ln \mathbf{w} + \boldsymbol{\lambda}' \left( \mathbf{y} - \mathbf{XZp} - \mathbf{Vw}  \right) + \boldsymbol{\theta}'\left( \mathbf{1}_{K+1}-(\mathbf{I}_{K+1} \otimes \mathbf{1}'_M)\mathbf{p} \right) + \boldsymbol{\tau}'\left( \mathbf{1}_N-(\mathbf{I}_N \otimes \mathbf{1}'_J)\mathbf{w}\right)
+\end{equation}  
+can be used to find the interior solution, where $\lambda$, $\theta$, and $\tau$
+are $(N\times 1)$, $((K+1)\times 1)$, $(N\times 1)$ associated vectors of 
+Lagrangian multipliers, respectively.  
+Taking the gradient of the Lagrangian and solving the first-order conditions 
+yields the solutions for $\mathbf{\hat p}$ and $\mathbf{\hat w}$  
+
+\begin{equation}
+    \hat p_{km} = \frac{exp(-z_{km}\sum_{n=1}^N \hat\lambda_n x_{nk})}{\sum_{m=1}^M exp(-z_{km}\sum_{n=1}^N \hat\lambda_n x_{nk})} 
+\end{equation}
+and
+\begin{equation}
+    \hat w_{nj} = \frac{exp(-\hat\lambda_n v_{n})}{\sum_{j=1}^J exp(-\hat\lambda_n v_{n})}. 
+\end{equation}  
+
+The GME estimator generates the probability vectors $\hat{\mathbf{p}}$ and 
+$\hat{\mathbf{w}}$ that can be used to form point estimates of the unknown
+parameters and the unknown random errors through the reparameterizations. Since 
+the objective function is strictly concave in the interior of the additivity 
+constraint set, a unique solution for the GME estimator is guaranteed if the 
+intersection of the model and the additivity constraint sets is non-empty @Golan1996. 
+However, there is no closed-from solution for $\hat\lambda_n$, and hence no closed
+form solution for $\hat p$ and $\hat w$, so numerical optimization techniques 
+must be used.  
+
+## Selecting support spaces
+
+### Common approach
+
+The supports in matrices $\mathbf{Z}$ and $\mathbf{V}$ are defined as
+being closed and bounded intervals within which each parameter or error
+is restricted to lie, implying that researchers need to provide
+exogenous information. Unfortunately, researchers generally do not know
+the true values of the coefficients they are attempting to estimate.
+This is considered the main weakness of the GME estimator @Caputo2008.
+GJM @Golan1996 discuss these issues in the case of minimal prior
+information: for the unknown parameters, the authors recommend the use
+of "wide bounds" $\left(z_k^{lower},z_k^{upper}\right)$ for the supports
+in $\mathbf{Z}$, without extreme risk consequences. Furthermore, in
+order to reflect that the analyst has essentially no *a priori*
+information about the true values of the coefficients and errors, they
+assume that the support interval of each coefficient is symmetrically
+centered about the origin
+
+\begin{eqnarray}
+  \mathbf{z}_k = \left[ \begin{array}{c}
+        -z_k^{upper} \\
+        z_k^{upper}\frac{2\times 1 - \left( M-1 \right)} {M-1} \\
+        \vdots\\
+        0\\
+        \vdots\\
+        z_k^{upper}\frac{2\times \left( M-2 \right) - \left( M-1 \right)} {M-1} \\
+        z_k^{upper}
+    \end{array}\right].
+\end{eqnarray}
+
+The number of points $M$ in the supports is less controversial and are
+usually used in the literature between $3$ and $7$ points, since authors
+claim that there is likely no significant improvement in the estimation
+with more points in the supports @Golan1996.
+
+For the unknown errors, the authors suggest the use of the three-sigma
+rule with a sample scale parameter @Pukelsheim1994 and $J=3$ points in
+the symmetrically centered about the origin supports
+
+\begin{eqnarray}
+  \mathbf{v}_n = \left[ \begin{array}{c}
+        -3 \hat\sigma_\mathbf{y} \\
+        3 \hat\sigma_\mathbf{y} \times \frac{2\times 1 - \left( J-1 \right)} {J-1}  \\
+        \vdots\\
+        0\\
+        \vdots\\
+        3\hat\sigma_\mathbf{y}\frac{2\times \left( J-2 \right) - \left( J-1 \right)} {J-1} \\
+        3\hat\sigma_\mathbf{y}
+    \end{array}\right],
+\end{eqnarray}
+where $\hat\sigma_\mathbf{y}$ is the sample standard deviation of $\mathbf{y}$.  
+
+The parameters will also be referred to as the signal and the errors
+will also be referred to as the noise.
+
+#### Examples {#Examples}
+
+##### Without *a priori* information
+
+Using `fngendata` a data set under certain conditions will be generated.
+To define an ill-conditioned design matrix, $\mathbf{X}$, with a
+specific condition number value, namely $cn=50$, the traditional
+singular value decomposition will be obtained and the singular values in
+$\mathbf{S}$, a diagonal matrix with the same dimension of $\mathbf{X}$,
+will be modified such that
+$cond(\mathbf{X})=cond(\mathbf{USV}')=cn$, where $\mathbf{U}$ and
+$\mathbf{V}$ are square unitary matrices, and $cond(\mathbf{X'X})=cn^2$.
+Errors will be defined by a normal distribution $e_i \sim N(0,\sigma^2)$
+were $\sigma = \sqrt{var(\mathbf{X}\boldsymbol{\beta}) / snr}$ and $snr$
+is the signal to noise ratio.
+
+```{r,echo=FALSE,eval=TRUE}
+load("GCEstim_GME.RData")
+```
+
+```{r,echo=TRUE,eval=TRUE}
+library(GCEstim)
+```
+
+```{r,echo=TRUE,eval=FALSE}
+coef.dataGCE <- c(1, 0, 0, 3, 6, 9)
+```
+
+The following matrix shows the Pearson coefficients of correlation between
+the variables generated.  
+
+```{r,echo=FALSE,eval=TRUE}
+cor(dataGCE)
+```
+<br>
+Although obviously questionable, under a "no *a priori* information"
+scenario, one can assume that $z_k^{upper}=100000$,
+$k\in\left\lbrace 0,\dots,6\right\rbrace$ is a "wide upper bound" for
+the signal support space. Using `lmgce` a model can be fitted using the
+GME framework. The `formula` is defined as in `stats::lm`, for instance.
+`support.signal` is used to define $\mathbf{Z}$. If the same lower limit (LL)
+and upper limit (UL) for the signal support space is assumed for each
+$\boldsymbol{\beta}_k$, `support.signal = c(LL, UL)` should be defined.
+`support.signal.points` can be an integer and in that case it corresponds to $M$.
+The noise support space is set by `support.noise`. If one wants to apply the
+three-sigma rule then the default `support.noise = NULL` should be used.
+`support.noise.points` can be an integer and in that case it corresponds to $J$.
+The optimization method `primal.solnp` uses the augmented Lagrange
+multiplier method with an Sequential Quadratic Programming (SQP)
+interior algorithm (see
+[Rsolnp](https://cran.r-project.org/package=Rsolnp)) and tries to solve
+the primal version of the optimization problem previously defined.
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.100000 <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.signal = c(-100000, 100000),
+    support.signal.points = 5,
+    support.noise = NULL,
+    support.noise.points = 3,
+    twosteps.n = 0,
+    method = "primal.solnp"
+  )
+```
+
+The estimated GME coefficients are $\widehat{\boldsymbol{\beta}}^{GME_{(100000)}}=$ `r paste0("(", paste(round(coef(res.lmgce.100000), 3), collapse = ", "), ")")`.  
+
+```{r,echo=TRUE,eval=TRUE}
+(coef.res.lmgce.100000 <- coef(res.lmgce.100000))
+```
+
+They can be compared with the OLS estimation given by
+$\widehat{\boldsymbol{\beta}}^{OLS}=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y}$.
+The estimated OLS coefficients are $\widehat{\boldsymbol{\beta}}^{OLS}=$ `r paste0("(", paste(round(coef(lm(y ~ ., data = dataGCE)), 3), collapse = ", "), ")")`.  
+Those results can be obtained using `stats::lm`
+
+```{r,echo=TRUE,eval=TRUE}
+res.lm <- lm(y ~ ., data = dataGCE)
+(coef.res.lm <- coef(res.lm))
+```
+
+or setting `OLS = TRUE` in `lmgce`, which is the default.
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.100000 <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.signal = c(-100000, 100000),
+    support.signal.points = 5,
+    support.noise = NULL,
+    support.noise.points = 3,
+    twosteps.n = 0,
+    method = "primal.solnp",
+    OLS = TRUE
+  )
+```
+
+```{r,echo=TRUE,eval=TRUE}
+coef(res.lmgce.100000$results$OLS$res)
+```
+
+Consider the root mean squared error as a measure of fit of prediction
+($RMSE_{\mathbf{\hat y}}$) defined as
+
+\begin{equation}
+  RMSE_{\mathbf{\hat y}} = \sqrt{\frac{\sum_{n=1}^N {\left( y_n - \hat y_n \right)^2}}{N}},
+\end{equation} where $\mathbf{\hat y}=\mathbf{X}\boldsymbol{\hat\beta}$.
+
+The prediction errors are approximately equal:
+$RMSE_{\mathbf{\hat y}}^{GME_{(100000)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.100000), dataGCE$y, which = "RMSE"), 3)`
+and $RMSE_{\mathbf{\hat y}}^{OLS} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lm), dataGCE$y, which = "RMSE"), 3)`.
+
+```{r,echo=TRUE,eval=TRUE}
+(RMSE_y.lmgce.100000 <- 
+  GCEstim::accmeasure(fitted(res.lmgce.100000), dataGCE$y, which = "RMSE"))
+
+# or
+# res.lmgce.100000$error.measure
+
+(RMSE_y.lm <-
+    GCEstim::accmeasure(fitted(res.lm), dataGCE$y, which = "RMSE"))
+```
+
+In order to provide an estimate of how well the model generalizes to an
+independent data set one can compute the root mean squared error using
+cross-validation, which involves randomly partition the data set into
+$\kappa$ folds of approximately the same size, training the model on $\kappa-1$
+folds, and validating it on the remaining one.\
+Let
+
+\begin{eqnarray}
+  \mathbf{X} = \left[ \begin{array}{c}
+        \mathbf{X_{(1)}} \\
+        \mathbf{X_{(2)}} \\
+        \vdots\\
+        \mathbf{X_{(\kappa)}}
+    \end{array}\right],
+\end{eqnarray} 
+where $\mathbf{X_{(cv)}}$ is a $(N_{cv} \times (K+1))$ design
+matrix such that $\sum_{cv=1}^\kappa N_{cv}=N$ and $N_{cv}\approx \frac N \kappa$, $cv\in\left\lbrace 1,\dots,\kappa\right\rbrace$\
+The prediction $\kappa$-fold cross-validation root mean squared error can be 
+defined as  
+
+\begin{equation}
+  CV\text{-}RMSE_{\mathbf{\hat y}}=\frac{\sum_{cv=1}^\kappa RMSE_{\mathbf{\hat y_{cv}}}}{\kappa},
+\end{equation} 
+where $\mathbf{\hat y_{cv}}=X_{(cv)}\boldsymbol{\hat\beta_{(cv)}}$ and
+$\boldsymbol{\hat\beta_{(cv)}}$ was estimated in 
+\begin{eqnarray}
+  \mathbf{X_{(cv)}} = \left[ \begin{array}{c}
+        \mathbf{X_{(1)}} \\
+        \vdots\\
+        \mathbf{X_{(cv-1)}} \\
+        \mathbf{X_{(cv+1)}} \\
+        \vdots\\
+        \mathbf{X_{(\kappa)}}
+    \end{array}\right].
+\end{eqnarray} 
+
+
+To perform $\kappa$-fold cross-validation with `lmgce`, the default, one should 
+set `cv = TRUE` and `cv.nfolds = k`. The default value for $\kappa$ is $5$. For 
+reproducibility a `seed` should also be defined: the default is `seed = 230676`.  
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.100000 <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    cv = TRUE,
+    cv.nfolds = 5,
+    support.signal = c(-100000, 100000),
+    support.signal.points = 5,
+    support.noise = NULL,
+    support.noise.points = 3,
+    twosteps.n = 0,
+    method = "primal.solnp",
+    OLS = TRUE,
+    seed = 230676
+  )
+```
+
+The prediction cross-validation errors are again approximately equal:
+$CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(100000)}} \approx$
+`r round(res.lmgce.100000$error.measure.cv.mean, 3)`
+and $CV\text{-}RMSE_{\mathbf{\hat y}}^{OLS} \approx$
+`r round(mean(res.lmgce.100000$results$OLS$error), 3)`.  
+
+```{r,echo=TRUE,eval=TRUE}
+(CV_RMSE_y.lmgce.100000 <- res.lmgce.100000$error.measure.cv.mean)
+(CV_RMSE_y.lm <- mean(res.lmgce.100000$results$OLS$error))
+```
+
+In the example given, the "true" value of $\boldsymbol{\beta}$ is known
+so the root mean squared error can be used as a measure of fit of
+precision.  
+Let $RMSE_{\boldsymbol{\hat\beta}}$ be
+
+\begin{equation}
+  RMSE_{\boldsymbol{\hat\beta}} = \sqrt{\frac{\sum_{k=0}^K {\left( \beta_k - \hat\beta_k \right)^2}}{K+1}}.
+\end{equation}
+
+The precision errors are similar in magnitude with a slight advantage for the 
+GME approach: $RMSE_{\boldsymbol{\hat\beta}}^{GME_{(100000)}} \approx$
+`r round(GCEstim::accmeasure(coef.res.lmgce.100000, coef.dataGCE, which = "RMSE"), 3)`
+and $RMSE_{\boldsymbol{\hat\beta}}^{OLS} \approx$
+`r round(GCEstim::accmeasure(coef.res.lm, coef.dataGCE, which = "RMSE"), 3)`.
+
+```{r,echo=TRUE,eval=TRUE}
+(RMSE_beta.lmgce.100000 <-
+   GCEstim::accmeasure(coef.res.lmgce.100000, coef.dataGCE, which = "RMSE"))
+
+(RMSE_beta.lm <-
+    GCEstim::accmeasure(coef.res.lm, coef.dataGCE, which = "RMSE"))
+```
+
+From the given example it seems that OLS and GME have similar performance. But 
+there as been a great deal of concern about the sensitivity of the GME
+coefficient estimates to the choice of their support intervals
+[@Leon1999; @Paris1998; @Caputo2008]. Some state that estimates are not
+invariant to the design of the support intervals @Leon1999.\
+Suppose that one had assumed that $z_k^{upper}=100$,
+$k\in\left\lbrace 0,\dots,6\right\rbrace$ was a "wide upper bound" for
+the signal support space. 
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.100 <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    cv = TRUE,
+    cv.nfolds = 5,
+    support.signal = c(-100, 100),
+    support.signal.points = 5,
+    support.noise = NULL,
+    support.noise.points = 3,
+    twosteps.n = 0,
+    method = "primal.solnp",
+    OLS = TRUE,
+    seed = 230676
+  )
+```
+
+The estimated GME coefficients under these conditions are $\widehat{\boldsymbol{\beta}}^{GME_{(100)}}=$ `r paste0("(", paste(round(coef(res.lmgce.100), 3), collapse = ", "), ")")`.  
+
+```{r,echo=FALSE,eval=TRUE}
+coef.res.lmgce.100 <- coef(res.lmgce.100)
+```
+
+The prediction errors are still approximately the same,
+$RMSE_{\mathbf{\hat y}}^{GME_{(100)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.100), dataGCE$y, which = "RMSE"), 3)` 
+and $CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(100)}} \approx$
+`r round(res.lmgce.100$error.measure.cv.mean, 3)`,
+but a significant decrease was found for the precision error,
+$RMSE_{\boldsymbol{\hat\beta}}^{GME_{(100)}} \approx$
+`r round(GCEstim::accmeasure(coef.res.lmgce.100, coef.dataGCE, which = "RMSE"), 3)`.
+
+```{r,echo=FALSE,eval=TRUE}
+RMSE_y.lmgce.100 <-
+   GCEstim::accmeasure(fitted(res.lmgce.100), dataGCE$y, which = "RMSE")
+
+RMSE_beta.lmgce.100 <-
+    GCEstim::accmeasure(coef.res.lmgce.100, coef.dataGCE, which = "RMSE")
+
+CV_RMSE_y.lmgce.100 <- 
+    res.lmgce.100$error.measure.cv.mean
+```
+
+```{r,echo=FALSE,eval=FALSE}
+res.lmgce.50 <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    cv = TRUE,
+    cv.nfolds = 5,
+    support.signal = c(-50, 50),
+    support.signal.points = 5,
+    support.noise = NULL,
+    support.noise.points = 3,
+    twosteps.n = 0,
+    method = "primal.solnp",
+    OLS = TRUE,
+    seed = 230676
+  )
+```
+
+```{r,echo=FALSE,eval=TRUE}
+coef.res.lmgce.50 <- coef(res.lmgce.50)
+
+RMSE_y.lmgce.50 <-
+   GCEstim::accmeasure(fitted(res.lmgce.50), dataGCE$y, which = "RMSE")
+
+RMSE_beta.lmgce.50 <-
+    GCEstim::accmeasure(coef.res.lmgce.50, coef.dataGCE, which = "RMSE")
+
+CV_RMSE_y.lmgce.50 <- 
+    res.lmgce.50$error.measure.cv.mean
+```
+
+If $z_k^{upper}=50$ then $\widehat{\boldsymbol{\beta}}^{GME_{(50)}}=$ `r paste0("(", paste(round(coef(res.lmgce.50), 3), collapse = ", "), ")")`, $RMSE_{\mathbf{\hat y}}^{GME_{(50)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.50), dataGCE$y, which = "RMSE"), 3)`, $CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(50)}} \approx$
+`r round(res.lmgce.50$error.measure.cv.mean, 3)` and $RMSE_{\boldsymbol{\hat\beta}}^{GME_{(50)}} \approx$
+`r round(GCEstim::accmeasure(coef.res.lmgce.50, coef.dataGCE, which = "RMSE"), 3)`.  
+
+##### With *a priori* information
+
+As stated before, the "true" value of $\boldsymbol{\beta}$ was
+predefined so there is *a prior* information. That information can be
+incorporated in the GME estimations. If one wants to have symmetrically
+centered supports it is possible to define, for instance, the following:
+$\mathbf{z}_0'= \left[ -5, -2.5, 0, 2.5, 5\right]$,
+$\mathbf{z}_1' = \mathbf{z}_2'= \left[ -2, -1, 0, 1, 2\right]$,
+$\mathbf{z}_3'= \left[ -6, -3, 0, 3, 6\right]$,
+$\mathbf{z}_4'= \left[ -10, -5, 0, 5, 10\right]$ and
+$\mathbf{z}_5'= \left[ -15, -7.5, 0, 7.5, 15\right]$.
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.apriori.centered.zero <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.signal = matrix(c(-5, 5,
+                       -2, 2,
+                       -2, 2,
+                       -6, 6,
+                       -10, 10,
+                       -10, 15),
+                     ncol = 2,
+                     byrow = TRUE), 
+    support.signal.points = 5,
+    support.noise = NULL,
+    support.noise.points = 3,
+    twosteps.n = 0,
+    method = "primal.solnp",
+    OLS = TRUE,
+    seed = 230676
+  )
+```
+
+The estimated GME coefficients with *a prior* information and zero centered signal
+supports are $\widehat{\boldsymbol{\beta}}^{GME_{(apriori.centered.zero)}}=$ `r paste0("(", paste(round(coef(res.lmgce.apriori.centered.zero), 3), collapse = ", "), ")")`. 
+
+```{r,echo=FALSE,eval=TRUE}
+coef.lmgce.apriori.centered.zero <- coef(res.lmgce.apriori.centered.zero)
+```
+
+The prediction error is slightly higher,
+$RMSE_{\mathbf{\hat y}}^{GME_{(apriori.centered.zero)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.zero), dataGCE$y, which = "RMSE"), 3)`, as well as the cross-validation prediction error, $CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(apriori.centered.zero)}} \approx$
+`r round(res.lmgce.apriori.centered.zero$error.measure.cv.mean, 3)`,
+but again a significant decrease was found for the precision error,
+$RMSE_{\boldsymbol{\hat\beta}}^{GME_{(apriori.centered.zero)}} \approx$
+`r round(GCEstim::accmeasure(coef.lmgce.apriori.centered.zero, coef.dataGCE, which = "RMSE"), 3)`.  
+
+```{r,echo=FALSE,eval=TRUE}
+RMSE_y.lmgce.apriori.centered.zero <-
+   GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.zero), dataGCE$y, which = "RMSE")
+
+RMSE_beta.lmgce.apriori.centered.zero <-
+    GCEstim::accmeasure(coef.lmgce.apriori.centered.zero, coef.dataGCE, which = "RMSE")
+
+CV_RMSE_y.lmgce.apriori.centered.zero <- 
+    res.lmgce.apriori.centered.zero$error.measure.cv.mean
+```
+
+Some authors state that a narrow support around this *a priori* knowledge will 
+provide a far better fit than its OLS counterpart, particularly in small sample 
+sizes @Mittelhammer2013. So, a different approach could be centering the signal 
+support spaces at the "true" values of $\boldsymbol{\beta}$ and setting, for 
+instance, a range equal to $4$ for each support space:
+$\mathbf{z}_0'= \left[ -1, 0, 1, 2, 3\right]$,
+$\mathbf{z}_1' = \mathbf{z}_2'= \left[ -2, -1, 0, 1, 2\right]$,
+$\mathbf{z}_3'= \left[ 1, 2, 3, 4, 5\right]$,
+$\mathbf{z}_4'= \left[ 4, 5, 6, 7, 8\right]$ and
+$\mathbf{z}_5'= \left[ 7, 8, 9, 10, 11\right]$.
+
+```{r,echo=TRUE,eval=FALSE}
+res.lmgce.apriori.centered.beta <-
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataGCE,
+    support.signal = matrix(c(-1, 3,
+                       -2, 2,
+                       -2, 2,
+                        1, 5,
+                        4, 8,
+                        7, 11),
+                     ncol = 2,
+                     byrow = TRUE), 
+    support.signal.points = 5,
+    support.noise = NULL,
+    support.noise.points = 3,
+    twosteps.n = 0,
+    method = "primal.solnp",
+    OLS = TRUE,
+    seed = 230676
+  )
+```
+
+The estimated GME coefficients when the support is centered in $\boldsymbol\beta$
+are $\widehat{\boldsymbol{\beta}}^{GME_{(apriori.centered.beta)}}=$ `r paste0("(", paste(round(coef(res.lmgce.apriori.centered.beta), 3), collapse = ", "), ")")`. 
+
+```{r,echo=FALSE,eval=TRUE}
+coef.lmgce.apriori.centered.beta <- coef(res.lmgce.apriori.centered.beta)
+```
+
+The prediction error ($RMSE_{\mathbf{\hat y}}^{GME_{(apriori.centered.beta)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.beta), dataGCE$y, which = "RMSE"), 3)`), the cross-validation prediction error ($CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(apriori.centered.beta)}} \approx$
+`r round(res.lmgce.apriori.centered.beta$error.measure.cv.mean, 3)`) and precision error ($RMSE_{\boldsymbol{\hat\beta}}^{GME_{(apriori.centered.beta)}} \approx$
+`r round(GCEstim::accmeasure(coef.lmgce.apriori.centered.beta, coef.dataGCE, which = "RMSE"), 3)`) improved when compared with the centered at zero approach.
+
+```{r,echo=FALSE,eval=TRUE}
+RMSE_y.lmgce.apriori.centered.beta <-
+   GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.beta), dataGCE$y, which = "RMSE")
+
+RMSE_beta.lmgce.apriori.centered.beta <-
+    GCEstim::accmeasure(coef.lmgce.apriori.centered.beta, coef.dataGCE, which = "RMSE")
+
+CV_RMSE_y.lmgce.apriori.centered.beta <- 
+    res.lmgce.apriori.centered.beta$error.measure.cv.mean
+```
+
+The following table summarizes the previous results.  
+
+```{r, echo=FALSE,eval=TRUE}
+res.all <- 
+  data.frame(OLS = c(RMSE_y.lm,
+                     CV_RMSE_y.lm,
+                     RMSE_beta.lm),
+           GCE_100000 = c(RMSE_y.lmgce.100000,
+                          CV_RMSE_y.lmgce.100000,
+                          RMSE_beta.lmgce.100000),
+           GCE_100 = c(RMSE_y.lmgce.100,
+                       CV_RMSE_y.lmgce.100,
+                       RMSE_beta.lmgce.100),
+           GCE_50 = c(RMSE_y.lmgce.50,
+                       CV_RMSE_y.lmgce.50,
+                       RMSE_beta.lmgce.50),
+           GCE_apriori.centered.zero = c(RMSE_y.lmgce.apriori.centered.zero,
+                                         CV_RMSE_y.lmgce.apriori.centered.zero,
+                                         RMSE_beta.lmgce.apriori.centered.zero),
+           GCE_apriori.centered.beta = c(RMSE_y.lmgce.apriori.centered.beta,
+                                         CV_RMSE_y.lmgce.apriori.centered.beta,
+                                         RMSE_beta.lmgce.apriori.centered.beta),
+           row.names = c("Prediction RMSE",
+                         "Prediction CV-RMSE",
+                         "Precision RMSE")
+  )
+```
+
+```{r, echo=FALSE,eval=TRUE,results = 'asis'}
+
+kableExtra::kable(
+  res.all,
+  digits = 3,
+  align = c(rep('c', times = 5)),
+  col.names = c("$OLS$",
+                "$GME_{(100000)}$",
+                "$GME_{(100)}$",
+                "$GME_{(50)}$",
+                "$GME_{(apriori.centered.zero)}$",
+                "$GME_{(apriori.centered.beta)}$"),
+  row.names = TRUE,
+  booktabs = FALSE)
+
+```
+
+## Conclusion
+
+Given that the absence of knowledge about the true value of
+coefficients is generally the observed situation in applied work, it is
+manifestly important to come to some general procedure to define those
+supports.
+
+## References
+
+::: {#refs}
+:::
+
+## Acknowledgements
+
+This work was supported by Fundação para a Ciência e Tecnologia (FCT)
+through CIDMA and projects <https://doi.org/10.54499/UIDB/04106/2020>
+and <https://doi.org/10.54499/UIDP/04106/2020>.
