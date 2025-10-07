@@ -4,7 +4,7 @@
 #' predictors.
 #'
 #' @param object fitted \code{\link{lmgce}} or \code{\link{tsbootgce}} object.
-#' @param model Boolean value. if \code{model = TRUE}, the model's normalized
+#' @param model Boolean value. If \code{model = TRUE}, the model's normalized
 #' entropy is returned. If \code{model = FALSE} the normalized entropy of each
 #' estimate is returned. The default is \code{model = TRUE}.
 #' @param parm a specification of which parameters are to be given confidence
