@@ -26,7 +26,7 @@ lmgce.validate <- function(formula,
                            errormeasure = "RMSE",
                            errormeasure.which = "min",
                            support.method = c("standardized", "ridge"),
-                           support.method.penalize.intercept = TRUE,
+                           support.method.ridge.penalize.intercept = TRUE,
                            support.signal = NULL,
                            support.signal.vector = NULL,
                            support.signal.vector.min = 0.5,
@@ -111,14 +111,14 @@ lmgce.validate <- function(formula,
     y = y,
     cv = cv,
     OLS = OLS,
-    support.method.penalize.intercept = support.method.penalize.intercept
+    support.method.ridge.penalize.intercept = support.method.ridge.penalize.intercept
   )
 
   if (!is.logical(logical.param) |
       length(logical.param) != 6) {
     stop(
       "The following arguments must be TRUE or FALSE:
-          `model`, `x`, `y`, `cv`, `OLS`, `support.method.penalize.intercept`",
+          `model`, `x`, `y`, `cv`, `OLS`, `support.method.ridge.penalize.intercept`",
       call. = FALSE
     )
   }

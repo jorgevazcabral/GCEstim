@@ -125,10 +125,6 @@ are used to define the signal support spaces. If
 \code{support.method = "ridge} the signal support spaces are define by the
 ridge trace.}
 
-\item{support.method.penalize.intercept}{Boolean value. if \code{TRUE},
-the default, the intercept will be penalized. To be used when
-\code{support.method = "ridge"}.}
-
 \item{support.signal}{\code{NULL} or fixed positive upper limit (L) for the
 support spaces (-L,L) on standardized data (when
 \code{support.method = "standardized"}); \code{NULL} or fixed positive factor
