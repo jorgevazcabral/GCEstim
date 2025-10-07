@@ -4,6 +4,8 @@ GCEstim: Generalized Cross Entropy linear models in R.
 ====
 
 <!-- badges: start -->
+[![CRAN Version](https://www.r-pkg.org/badges/version/GCEstim)](https://cran.r-project.org/package=GCEstim)
+[![CRAN Downloads](https://cranlogs.r-pkg.org/badges/GCEstim)](https://cran.r-project.org/package=GCEstim)
 <!-- badges: end -->
 
 ## Recent/release notes
@@ -22,6 +24,11 @@ devtools::install_github("jorgevazcabral/GCEstim",
                          build_vignettes = TRUE,
                          build_manual = TRUE,
                          dependencies=TRUE)
+```
+
+* Stable version from CRAN:
+```
+install.packages("GCEstim")
 ```
 
 ## Citation
