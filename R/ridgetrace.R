@@ -28,15 +28,22 @@
 #' See \code{\link[stats]{model.offset}}.
 #' @param contrasts An optional list. See the \code{contrasts.arg} of
 #' \code{\link[stats]{model.matrix.default}}.
-#' @param lambda The default is \code{lambda = NULL} and a lambda sequence will
-#' be computed based on \code{lambda.n}, \code{lambda.min} and \code{lambda.max}.
-#'  Supplying a lambda sequence overrides this.
-#' @param lambda.min Minimum value for the \code{lambda} sequence.
-#' @param lambda.max Maximum value for the \code{lambda} sequence.
+#' @param lambda Ridge parameter. The default is \code{lambda = NULL} and a
+#' lambda base 10 logarithmic sequence will be computed based on \code{lambda.n},
+#' \code{lambda.min} and \code{lambda.max}. Supplying a lambda sequence overrides
+#'  this.
+#' @param lambda.min Minimum value for the \code{lambda} sequence. The default
+#' id \code{lambda.min = 10^-3}.
+#' @param lambda.max Maximum value for the \code{lambda} sequence. The default
+#' id \code{lambda.min = 10^-3}.
 #' @param lambda.n The number of lambda values. The default is
 #' \code{lambda.n = 100}.
-#' @param penalize.intercept Boolean value. if \code{TRUE}, the default, the
-#' intercept will be penalized.
+#' @param standardize Boolean value. If \code{TRUE}, the default, then: i)
+#' centering is done by subtracting the column means of x and y from their
+#' corresponding columns; ii) scaling is done by dividing the (centered) columns
+#'  of x and y by their standard deviations.
+#' @param penalize.intercept Boolean value. If \code{TRUE}, the default, the
+#' intercept will be penalized when \code{standardize = FALSE}.
 #' @param cv Boolean value. If \code{TRUE} the error, \code{errormeasure},
 #' will be computed using cross-validation. If \code{FALSE} the error will be
 #' computed in sample. The default is \code{cv = TRUE}.
@@ -80,9 +87,10 @@ ridgetrace <- function(formula,
                        offset,
                        contrasts = NULL,
                        lambda = NULL,
-                       lambda.min = 0.001,
-                       lambda.max = 1,
+                       lambda.min = 10^-3,
+                       lambda.max = 10^3,
                        lambda.n = 100,
+                       standardize = TRUE,
                        penalize.intercept = TRUE,
                        errormeasure = c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE"),
                        cv = TRUE,
@@ -143,6 +151,7 @@ ridgetrace <- function(formula,
       lambda.min = lambda.min,
       lambda.max = lambda.max,
       lambda.n = lambda.n,
+      standardize = standardize,
       penalize.intercept = penalize.intercept,
       errormeasure = errormeasure,
       cv = cv,
@@ -160,15 +169,22 @@ ridgetrace <- function(formula,
 #'
 #' @param X A model matriz.
 #' @param y A vector containing the response.
-#' @param lambda The default is \code{lambda = NULL} and a lambda sequence will
-#' be computed based on \code{lambda.n}, \code{lambda.min} and \code{lambda.max}.
-#'  Supplying a lambda sequence overrides this.
-#' @param lambda.min Minimum value for the \code{lambda} sequence.
-#' @param lambda.max Maximum value for the \code{lambda} sequence.
+#' @param lambda Ridge parameter. The default is \code{lambda = NULL} and a
+#' lambda base 10 logarithmic sequence will be computed based on \code{lambda.n},
+#' \code{lambda.min} and \code{lambda.max}. Supplying a lambda sequence overrides
+#'  this.
+#' @param lambda.min Minimum value for the \code{lambda} sequence. The default
+#' id \code{lambda.min = 10^-3}.
+#' @param lambda.max Maximum value for the \code{lambda} sequence. The default
+#' id \code{lambda.min = 10^-3}.
 #' @param lambda.n The number of lambda values. The default is
 #' \code{lambda.n = 100}.
-#' @param penalize.intercept Boolean value. if \code{TRUE}, the default, the
-#' intercept will be penalized.
+#' @param standardize Boolean value. If \code{TRUE}, the default, then: i)
+#' centering is done by subtracting the column means of x and y from their
+#' corresponding columns; ii) scaling is done by dividing the (centered) columns
+#'  of x and y by their standard deviations.
+#' @param penalize.intercept Boolean value. If \code{TRUE}, the default, the
+#' intercept will be penalized when \code{standardize = FALSE}.
 #' @param cv Boolean value. If \code{TRUE} the error, \code{errormeasure},
 #' will be computed using cross-validation. If \code{FALSE} the error will be
 #' computed in sample. The default is \code{cv = TRUE}.
@@ -187,9 +203,10 @@ ridgetrace <- function(formula,
 ridgetrace.Xy <- function(X,
                           y,
                           lambda = NULL,
-                          lambda.min = 0.001,
-                          lambda.max = 1,
+                          lambda.min = 10^-3,
+                          lambda.max = 10^3,
                           lambda.n = 100,
+                          standardize = TRUE,
                           penalize.intercept = TRUE,
                           errormeasure = c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE"),
                           cv = TRUE,
@@ -197,7 +214,7 @@ ridgetrace.Xy <- function(X,
                           seed = 230676){
 
   if (is.null(lambda)) {
-    lambda <- exp(seq(log(lambda.min), log(lambda.max), length.out = lambda.n))
+    lambda <- 10^(seq(log10(lambda.min), log10(lambda.max), length.out = lambda.n))
   }
 
   k <- ncol(X)
