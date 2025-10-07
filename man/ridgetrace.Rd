@@ -13,9 +13,10 @@ ridgetrace(
   offset,
   contrasts = NULL,
   lambda = NULL,
-  lambda.min = 0.001,
-  lambda.max = 1,
+  lambda.min = 10^-3,
+  lambda.max = 10^3,
   lambda.n = 100,
+  standardize = TRUE,
   penalize.intercept = TRUE,
   errormeasure = c("RMSE", "MSE", "MAE", "MAPE", "sMAPE", "MASE"),
   cv = TRUE,
@@ -52,19 +53,27 @@ See \code{\link[stats]{model.offset}}.}
 \item{contrasts}{An optional list. See the \code{contrasts.arg} of
 \code{\link[stats]{model.matrix.default}}.}
 
-\item{lambda}{The default is \code{lambda = NULL} and a lambda sequence will
-be computed based on \code{lambda.n}, \code{lambda.min} and \code{lambda.max}.
- Supplying a lambda sequence overrides this.}
+\item{lambda}{Ridge parameter. The default is \code{lambda = NULL} and a
+lambda base 10 logarithmic sequence will be computed based on \code{lambda.n},
+\code{lambda.min} and \code{lambda.max}. Supplying a lambda sequence overrides
+ this.}
 
-\item{lambda.min}{Minimum value for the \code{lambda} sequence.}
+\item{lambda.min}{Minimum value for the \code{lambda} sequence. The default
+id \code{lambda.min = 10^-3}.}
 
-\item{lambda.max}{Maximum value for the \code{lambda} sequence.}
+\item{lambda.max}{Maximum value for the \code{lambda} sequence. The default
+id \code{lambda.max = 10^3}.}
 
 \item{lambda.n}{The number of lambda values. The default is
 \code{lambda.n = 100}.}
 
-\item{penalize.intercept}{Boolean value. if \code{TRUE}, the default, the
-intercept will be penalized.}
+\item{standardize}{Boolean value. If \code{TRUE}, the default, then: i)
+centering is done by subtracting the column means of x and y from their
+corresponding columns; ii) scaling is done by dividing the (centered) columns
+ of x and y by their standard deviations.}
+
+\item{penalize.intercept}{Boolean value. If \code{TRUE}, the default, the
+intercept will be penalized when \code{standardize = FALSE}.}
 
 \item{errormeasure}{Loss function (error) to be used for the selection
 of the support spaces. One of c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE").

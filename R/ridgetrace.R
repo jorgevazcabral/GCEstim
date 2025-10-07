@@ -1,4 +1,4 @@
-# incRidGCE estimation
+# flexiRidGCEw estimation
 
 #' Function to obtain the ridge trace and choose the support limits given a
 #' formula
@@ -35,7 +35,7 @@
 #' @param lambda.min Minimum value for the \code{lambda} sequence. The default
 #' id \code{lambda.min = 10^-3}.
 #' @param lambda.max Maximum value for the \code{lambda} sequence. The default
-#' id \code{lambda.min = 10^-3}.
+#' id \code{lambda.max = 10^3}.
 #' @param lambda.n The number of lambda values. The default is
 #' \code{lambda.n = 100}.
 #' @param standardize Boolean value. If \code{TRUE}, the default, then: i)
@@ -176,7 +176,7 @@ ridgetrace <- function(formula,
 #' @param lambda.min Minimum value for the \code{lambda} sequence. The default
 #' id \code{lambda.min = 10^-3}.
 #' @param lambda.max Maximum value for the \code{lambda} sequence. The default
-#' id \code{lambda.min = 10^-3}.
+#' id \code{lambda.max = 10^3}.
 #' @param lambda.n The number of lambda values. The default is
 #' \code{lambda.n = 100}.
 #' @param standardize Boolean value. If \code{TRUE}, the default, then: i)
@@ -220,14 +220,28 @@ ridgetrace.Xy <- function(X,
   k <- ncol(X)
   n <- nrow(X)
 
+  X.intercept <- "(Intercept)" %in% colnames(X)
+
   coef_lambda <- matrix(0, ncol = lambda.n, nrow = k)
   resid_lambda <- fitted_lambda <- matrix(0, ncol = lambda.n, nrow = n)
   error.lambda.cv <- NULL
 
-  if ("(Intercept)" %in% colnames(X)) {
-    penalty <- diag(c(as.numeric(penalize.intercept), rep(1, k - 1)))
+  if (standardize) {
+    y_tilde <- scale(y)
+    if (X.intercept) {
+      X_tilde <- scale(X[, colnames(X) != "(Intercept)"])
+      penalty <- diag(rep(1, k - 1))
+      coef_lambda_tilde <- matrix(0, ncol = lambda.n, nrow = k - 1)
+    } else {
+      X_tilde <- scale(X)
+      coef_lambda_tilde <- matrix(0, ncol = lambda.n, nrow = k)
+    }
   } else {
-    penalty <- diag(rep(1, k))
+    if (X.intercept) {
+      penalty <- diag(c(as.numeric(penalize.intercept), rep(1, k - 1)))
+    } else {
+      penalty <- diag(rep(1, k))
+      }
   }
 
   if (isTRUE(cv)){
@@ -242,34 +256,85 @@ ridgetrace.Xy <- function(X,
     }
 
   for (i in 1:lambda.n) {
-    coef_lambda[, i] <- solve(t(X) %*% X + lambda[i] * penalty) %*% (t(X) %*% y)
+    if (standardize) {
+      coef_lambda_tilde[, i] <-
+        solve(t(X_tilde) %*% X_tilde + lambda[i] * penalty) %*% (t(X_tilde) %*% y_tilde)
+      if (X.intercept) {
+        coef_lambda[, i] <-
+          scalebackcoef(X_tilde,
+                        y_tilde,
+                        c(0, coef_lambda_tilde[, i]),
+                        intercept = TRUE)
+      } else {
+        coef_lambda[, i] <-
+          scalebackcoef(X_tilde,
+                        y_tilde,
+                        coef_lambda_tilde[, i],
+                        intercept = FALSE)
+        }
+    } else {
+      coef_lambda[, i] <- solve(t(X) %*% X + lambda[i] * penalty) %*% (t(X) %*% y)
+    }
+
     fitted_lambda[, i] <- X %*% coef_lambda[, i]
-    resid_lambda[, i] <- y - X %*% coef_lambda[, i]
+    resid_lambda[, i] <- y - fitted_lambda[, i]
 
     if (isTRUE(cv)){
       for (cv.n in 1:cv.nfolds) {
         y.cv = y[change_order][auxfolds != cv.n]
         X.cv = X[change_order, ][auxfolds != cv.n,]
-        coef_lambda_cv <- solve(t(X.cv) %*% X.cv + lambda[i] * penalty) %*% (t(X.cv) %*% y.cv)
-        error.lambda.cv[cv.n, i] <- accmeasure(y[change_order][auxfolds == cv.n],
-                                            X[change_order, ][auxfolds == cv.n,] %*% coef_lambda_cv,
-                                            errormeasure)
+
+        if (standardize) {
+          y_tilde.cv = y_tilde[change_order][auxfolds != cv.n]
+          attributes(y_tilde.cv) <- attributes(y_tilde)
+          X_tilde.cv = X_tilde[change_order, ][auxfolds != cv.n,]
+          attributes(X_tilde.cv) <- attributes(X_tilde)
+          coef_lambda_cv <-
+            solve(t(X_tilde.cv) %*% X_tilde.cv + lambda[i] * penalty) %*% (t(X_tilde.cv) %*% y_tilde.cv)
+          if (X.intercept) {
+            coef_lambda_cv <-
+              scalebackcoef(X_tilde.cv,
+                            y_tilde.cv,
+                            c(0, coef_lambda_cv),
+                            intercept = TRUE)
+          } else {
+            coef_lambda_cv <-
+              scalebackcoef(X_tilde.cv,
+                            y_tilde.cv,
+                            coef_lambda_cv,
+                            intercept = FALSE)
+          }
+        } else {
+          coef_lambda_cv <-
+            solve(t(X.cv) %*% X.cv + lambda[i] * penalty) %*% (t(X.cv) %*% y.cv)
+          }
+
+        error.lambda.cv[cv.n, i] <-
+            accmeasure(y[change_order][auxfolds == cv.n],
+                       X[change_order, ][auxfolds == cv.n,] %*% coef_lambda_cv,
+                       errormeasure)
       }
       colnames(error.lambda.cv) <- paste0("lambda", round(lambda, 8))
       rownames(error.lambda.cv) <- paste0("fold", 1:cv.nfolds)
     }
   }
 
+  min.coef <- apply(coef_lambda, 1, function(x){min(x)})
+  max.coef <- apply(coef_lambda, 1, function(x){max(x)})
   max.abs.coef <- apply(coef_lambda, 1, function(x){max(abs(x))})
   max.abs.residual <- max(abs(resid_lambda))
 
   error.lambda <- apply(fitted_lambda, 2, accmeasure, y, errormeasure)
 
+  names(max.coef) <- colnames(X)
+  names(min.coef) <- colnames(X)
   names(max.abs.coef) <- colnames(X)
   rownames(coef_lambda) <- colnames(X)
   colnames(coef_lambda) <- paste0("lambda", round(lambda, 8))
 
   res <- list(lambda = lambda,
+              max.coef = max.coef,
+              min.coef = min.coef,
               max.abs.coef = max.abs.coef,
               max.abs.residual = max.abs.residual,
               coef.lambda = coef_lambda,

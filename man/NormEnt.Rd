@@ -9,7 +9,7 @@ NormEnt(object, model = TRUE, parm)
 \arguments{
 \item{object}{fitted \code{\link{lmgce}} or \code{\link{tsbootgce}} object.}
 
-\item{model}{Boolean value. if \code{model = TRUE}, the model's normalized
+\item{model}{Boolean value. If \code{model = TRUE}, the model's normalized
 entropy is returned. If \code{model = FALSE} the normalized entropy of each
 estimate is returned. The default is \code{model = TRUE}.}
 
