@@ -147,7 +147,7 @@ plot.ridgetrace <- function(x, coef = NULL, ...){
 
   p1 <-
     ggplot2::ggplot(p1.data,
-      ggplot2::aes(x = log(.data$lambda),
+      ggplot2::aes(x = log10(.data$lambda),
                    y = .data$coefficient,
                    group = .data$variable,
                    colour = .data$variable)) +

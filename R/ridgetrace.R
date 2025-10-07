@@ -285,10 +285,18 @@ ridgetrace.Xy <- function(X,
         X.cv = X[change_order, ][auxfolds != cv.n,]
 
         if (standardize) {
-          y_tilde.cv = y_tilde[change_order][auxfolds != cv.n]
-          attributes(y_tilde.cv) <- attributes(y_tilde)
-          X_tilde.cv = X_tilde[change_order, ][auxfolds != cv.n,]
-          attributes(X_tilde.cv) <- attributes(X_tilde)
+          y_tilde.cv = y_tilde[change_order][auxfolds != cv.n, drop = FALSE]
+          attr(y_tilde.cv, "scaled:center") <-
+            attr(y_tilde, "scaled:center")
+          attr(y_tilde.cv, "scaled:scale")  <-
+            attr(y_tilde, "scaled:scale")
+
+          X_tilde.cv = X_tilde[change_order, ][auxfolds != cv.n, ,drop = FALSE]
+          attr(X_tilde.cv, "scaled:center") <-
+            attr(X_tilde, "scaled:center")
+          attr(X_tilde.cv, "scaled:scale")  <-
+            attr(X_tilde, "scaled:scale")
+
           coef_lambda_cv <-
             solve(t(X_tilde.cv) %*% X_tilde.cv + lambda[i] * penalty) %*% (t(X_tilde.cv) %*% y_tilde.cv)
           if (X.intercept) {
