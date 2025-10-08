@@ -125,10 +125,10 @@ are used to define the signal support spaces. If
 ridge trace.}
 
 \item{support.method.ridge.lambda}{Ridge parameter. The default is
-\code{support.method.ridge.lambda = NULL} and a lambda base
-\code{support.method.ridge.base} logarithmic sequence will be computed based
-on \code{support.method.ridge.lambda.n}, \code{support.method.ridge.lambda.min}
- and \code{support.method.ridge.lambda.max}. Supplying a lambda sequence
+\code{support.method.ridge.lambda = NULL} and a lambda logarithmic sequence
+will be computed based on \code{support.method.ridge.lambda.n},
+\code{support.method.ridge.lambda.min} and
+\code{support.method.ridge.lambda.max}. Supplying a lambda sequence
 overrides this. To be used when \code{support.method = "ridge"}.}
 
 \item{support.method.ridge.lambda.min}{Minimum value for the
@@ -276,11 +276,6 @@ of 0 no messages or output are shown and for a value of 3 all messages
 are shown. The default is \code{verbose = 0}.}
 
 \item{coef}{A vector of the true coefficients, when available.}
-
-\item{support.method.ridge.lambda.base}{Value for the base of logarithmic
-sequence of ridge parameters. The default is
-\code{support.method.ridge.lambda.base = 10}. To be used when
-\code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.}
 }
 \value{
 \code{cv.lmgce} returns an object of \code{\link[base]{class}} \code{cv.lmgce}.
