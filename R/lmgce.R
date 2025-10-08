@@ -58,16 +58,11 @@
 #' \code{support.method = "ridge} the signal support spaces are define by the
 #' ridge trace.
 #' @param support.method.ridge.lambda Ridge parameter. The default is
-#' \code{support.method.ridge.lambda = NULL} and a lambda base
-#' \code{support.method.ridge.lambda.base} logarithmic sequence will be computed
-#' based on \code{support.method.ridge.lambda.n},
+#' \code{support.method.ridge.lambda = NULL} and a lambda logarithmic sequence
+#' will be computed based on \code{support.method.ridge.lambda.n},
 #' \code{support.method.ridge.lambda.min} and
 #' \code{support.method.ridge.lambda.max}. Supplying a lambda sequence overrides
 #'  this. To be used when \code{support.method = "ridge"}.
-#' @param support.method.ridge.lambda.base Value for the base of logarithmic
-#' sequence of ridge parameters. The default is
-#' \code{support.method.ridge.lambda.base = 10}. To be used when
-#' \code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.
 #' @param support.method.ridge.lambda.min Minimum value for the
 #' \code{support.method.ridge.lambda} sequence. The default is
 #' \code{support.method.ridge.lambda.min = 10^-3}. To be used when
@@ -348,7 +343,6 @@ lmgce <- function(formula,
                     {if (isTRUE(cv)) c("1se", "min", "elbow") else c("min", "elbow")},
                   support.method = c("standardized", "ridge"),
                   support.method.ridge.lambda = NULL,
-                  support.method.ridge.lambda.base = 10,
                   support.method.ridge.lambda.min = 10^-3,
                   support.method.ridge.lambda.max = 10^3,
                   support.method.ridge.lambda.n = 100,
@@ -492,7 +486,6 @@ lmgce <- function(formula,
         X,
         y,
         lambda = support.method.ridge.lambda,
-        lambda.base = support.method.ridge.lambda.base,
         lambda.min = support.method.ridge.lambda.min,
         lambda.max = support.method.ridge.lambda.max,
         lambda.n = support.method.ridge.lambda.n,
