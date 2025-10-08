@@ -25,11 +25,14 @@ cv.lmgce(
  },
   support.method = c("standardized", "ridge"),
   support.method.ridge.lambda = NULL,
+  support.method.ridge.base = 10,
   support.method.ridge.lambda.min = 10^-3,
   support.method.ridge.lambda.max = 10^3,
   support.method.ridge.lambda.n = 100,
   support.method.ridge.standardize = TRUE,
   support.method.ridge.penalize.intercept = TRUE,
+  support.method.ridge.symm = TRUE,
+  support.method.ridge.maxresid = TRUE,
   support.signal = NULL,
   support.signal.vector = NULL,
   support.signal.vector.min = 0.3,
@@ -122,22 +125,25 @@ are used to define the signal support spaces. If
 ridge trace.}
 
 \item{support.method.ridge.lambda}{Ridge parameter. The default is
-\code{lambda = NULL} and a lambda base 10 logarithmic sequence will be
-computed based on \code{lambda.n}, \code{lambda.min} and \code{lambda.max}.
-Supplying a lambda sequence overrides this. To be used when
-\code{support.method = "ridge"}.}
+\code{support.method.ridge.lambda = NULL} and a lambda base
+\code{support.method.ridge.base} logarithmic sequence will be computed based
+on \code{support.method.ridge.lambda.n}, \code{support.method.ridge.lambda.min}
+ and \code{support.method.ridge.lambda.max}. Supplying a lambda sequence
+overrides this. To be used when \code{support.method = "ridge"}.}
 
-\item{support.method.ridge.lambda.min}{Minimum value for the \code{lambda}
-sequence. The default is \code{support.method.ridge.lambda.min = 10^-3}.
-To be used when \code{support.method = "ridge"}.}
+\item{support.method.ridge.lambda.min}{Minimum value for the
+\code{support.method.ridge.lambda} sequence. The default is
+\code{support.method.ridge.lambda.min = 10^-3}. To be used when
+\code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.}
 
-\item{support.method.ridge.lambda.max}{Maximum value for the \code{lambda}
-sequence. The default is \code{support.method.ridge.lambda.max = 10^3}.
-To be used when \code{support.method = "ridge"}.}
+\item{support.method.ridge.lambda.max}{Maximum value for the
+\code{support.method.ridge.lambda} sequence. The default is
+\code{support.method.ridge.lambda.max = 10^3}. To be used when
+\code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.}
 
-\item{support.method.ridge.lambda.n}{The number of lambda values. The default
-is \code{support.method.ridge.lambda.n = 100}. To be used when
-\code{support.method = "ridge"}.}
+\item{support.method.ridge.lambda.n}{The number of ridge parameters values.
+The default is \code{support.method.ridge.lambda.n = 100}. To be used when
+ \code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.}
 
 \item{support.method.ridge.standardize}{Boolean value. If \code{TRUE}, the
 default, then: i) centering is done by subtracting the column means of x and
@@ -147,7 +153,21 @@ y from their corresponding columns; ii) scaling is done by dividing the
 
 \item{support.method.ridge.penalize.intercept}{Boolean value. if \code{TRUE},
 the default, the intercept will be penalized. To be used when
-\code{support.method = "ridge"}.}
+\code{support.method = "ridge"} and
+\code{support.method.ridge.standardize = FALSE}.}
+
+\item{support.method.ridge.symm}{Boolean value. If \code{TRUE}, the default,
+signal supports will be symmetrical and the upper limit will be the maximum
+ absolute values of the estimated ridge coefficients for
+ \code{support.method.ridge.lambda}. If \code{FALSE}, the lower and upper
+ limits will be, respectively, the minimum and maximum values of the
+ estimated ridge coefficients.}
+
+\item{support.method.ridge.maxresid}{Boolean value. if \code{TRUE}, the
+default, noise supports will symmetrical and the upper limit will be the
+maximum absolute value of the residuals of ridge estimation for
+ \code{support.method.ridge.lambda}. If \code{FALSE} limits are computed
+ using the empirical three-sigma rule (Pukelsheim (1994)).}
 
 \item{support.signal}{\code{NULL} or fixed positive upper limit (L) for the
 support spaces (-L,L) on standardized data (when
@@ -256,6 +276,11 @@ of 0 no messages or output are shown and for a value of 3 all messages
 are shown. The default is \code{verbose = 0}.}
 
 \item{coef}{A vector of the true coefficients, when available.}
+
+\item{support.method.ridge.lambda.base}{Value for the base of logarithmic
+sequence of ridge parameters. The default is
+\code{support.method.ridge.lambda.base = 10}. To be used when
+\code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.}
 }
 \value{
 \code{cv.lmgce} returns an object of \code{\link[base]{class}} \code{cv.lmgce}.
