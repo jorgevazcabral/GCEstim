@@ -29,15 +29,18 @@
 #' @param contrasts An optional list. See the \code{contrasts.arg} of
 #' \code{\link[stats]{model.matrix.default}}.
 #' @param lambda Ridge parameter. The default is \code{lambda = NULL} and a
-#' lambda base 10 logarithmic sequence will be computed based on \code{lambda.n},
-#' \code{lambda.min} and \code{lambda.max}. Supplying a lambda sequence overrides
-#'  this.
+#' lambda base \code{lambda.base} logarithmic sequence will be computed based on
+#'  \code{lambda.n}, \code{lambda.min} and \code{lambda.max}. Supplying a lambda
+#'  sequence overrides this.
+#' @param lambda.base Value for the base of logarithmic sequence of ridge
+#' parameters. The default is \code{lambda.base = 10}. To be used when
+#' \code{lambda = NULL}.
 #' @param lambda.min Minimum value for the \code{lambda} sequence. The default
-#' id \code{lambda.min = 10^-3}.
+#' id \code{lambda.min = 10^-3}. To be used when \code{lambda = NULL}.
 #' @param lambda.max Maximum value for the \code{lambda} sequence. The default
-#' id \code{lambda.max = 10^3}.
+#' id \code{lambda.max = 10^3}. To be used when \code{lambda = NULL}.
 #' @param lambda.n The number of lambda values. The default is
-#' \code{lambda.n = 100}.
+#' \code{lambda.n = 100}. To be used when \code{lambda = NULL}.
 #' @param standardize Boolean value. If \code{TRUE}, the default, then: i)
 #' centering is done by subtracting the column means of x and y from their
 #' corresponding columns; ii) scaling is done by dividing the (centered) columns
@@ -60,6 +63,11 @@
 #'  at least the following components:
 #'
 #' \item{lambda}{the lambda sequence used}
+#' \item{lambda.base}{the base of the logarithmic sequence used}
+#' \item{min.coef}{a named vector of coefficients (maximum
+#' coefficients)}
+#' \item{max.coef}{a named vector of coefficients (minimum
+#' coefficients)}
 #' \item{max.abs.coef}{a named vector of coefficients (maximum absolute
 #' coefficients)}
 #' \item{max.abs.residual}{the maximum absolute residual}
@@ -87,6 +95,7 @@ ridgetrace <- function(formula,
                        offset,
                        contrasts = NULL,
                        lambda = NULL,
+                       lambda.base = 10,
                        lambda.min = 10^-3,
                        lambda.max = 10^3,
                        lambda.n = 100,
@@ -148,6 +157,7 @@ ridgetrace <- function(formula,
       X = X,
       y = y,
       lambda = lambda,
+      lambda.base = lambda.base,
       lambda.min = lambda.min,
       lambda.max = lambda.max,
       lambda.n = lambda.n,
@@ -203,6 +213,7 @@ ridgetrace <- function(formula,
 ridgetrace.Xy <- function(X,
                           y,
                           lambda = NULL,
+                          lambda.base = 10,
                           lambda.min = 10^-3,
                           lambda.max = 10^3,
                           lambda.n = 100,
@@ -214,7 +225,9 @@ ridgetrace.Xy <- function(X,
                           seed = 230676){
 
   if (is.null(lambda)) {
-    lambda <- 10^(seq(log10(lambda.min), log10(lambda.max), length.out = lambda.n))
+    lambda <- lambda.base^(seq(log(lambda.min, lambda.base),
+                               log(lambda.max, lambda.base),
+                               length.out = lambda.n))
   }
 
   k <- ncol(X)
@@ -341,6 +354,7 @@ ridgetrace.Xy <- function(X,
   colnames(coef_lambda) <- paste0("lambda", round(lambda, 8))
 
   res <- list(lambda = lambda,
+              lambda.base = lambda.base,
               max.coef = max.coef,
               min.coef = min.coef,
               max.abs.coef = max.abs.coef,

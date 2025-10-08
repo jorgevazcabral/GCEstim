@@ -147,7 +147,7 @@ plot.ridgetrace <- function(x, coef = NULL, ...){
 
   p1 <-
     ggplot2::ggplot(p1.data,
-      ggplot2::aes(x = log10(.data$lambda),
+      ggplot2::aes(x = log(.data$lambda, x$lambda.base),
                    y = .data$coefficient,
                    group = .data$variable,
                    colour = .data$variable)) +
@@ -155,7 +155,7 @@ plot.ridgetrace <- function(x, coef = NULL, ...){
     ggplot2::scale_color_manual(values = col.coef.all) +
     ggplot2::theme_minimal() +
     ggplot2::ylab("Coefficients") +
-    ggplot2::xlab("log(lambda)") +
+    ggplot2::xlab(paste0("log(lambda, ", x$lambda.base,")")) +
     ggplot2::ggtitle("RIDGE TRACE")
 
   if (!is.null(coef)) {
