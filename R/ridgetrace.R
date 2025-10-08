@@ -60,9 +60,9 @@
 #'  at least the following components:
 #'
 #' \item{lambda}{the lambda sequence used}
-#' \item{min.coef}{a named vector of coefficients (maximum
+#' \item{min.coef}{a named vector of coefficients (minimum
 #' coefficients)}
-#' \item{max.coef}{a named vector of coefficients (minimum
+#' \item{max.coef}{a named vector of coefficients (maximum
 #' coefficients)}
 #' \item{max.abs.coef}{a named vector of coefficients (maximum absolute
 #' coefficients)}

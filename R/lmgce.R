@@ -479,9 +479,11 @@ lmgce <- function(formula,
   if (NROW(y) != n)
     stop("incompatible dimensions")
 
-  max.abs.coef <- NULL
+  max.coef <- NULL
+  min.coef <- NULL
+  max.abs.residual <- NULL
   if (support.method == "ridge") {
-    max.abs.coef <-
+    res.ridgetrace <-
       ridgetrace.Xy(
         X,
         y,
@@ -492,7 +494,18 @@ lmgce <- function(formula,
         standardize = support.method.ridge.standardize,
         penalize.intercept = support.method.ridge.penalize.intercept,
         errormeasure = errormeasure,
-        cv = FALSE)$max.abs.coef
+        cv = FALSE)
+
+    max.coef <- res.ridgetrace$max.coef
+    min.coef <- res.ridgetrace$min.coef
+
+    if (isTRUE(support.method.ridge.symm)) {
+      max.coef <- res.ridgetrace$max.abs.coef
+      min.coef <- NULL
+    }
+    if (isTRUE(support.method.ridge.maxresid)) {
+      max.abs.residual <- res.ridgetrace$max.abs.residual
+    }
   }
   res <-
     lmgce.assign.noci(
@@ -504,7 +517,9 @@ lmgce <- function(formula,
       cv.repeats,
       errormeasure,
       errormeasure.which,
-      max.abs.coef,
+      min.coef,
+      max.coef,
+      max.abs.residual,
       support.signal,
       support.signal.vector,
       support.signal.vector.min,
@@ -537,7 +552,9 @@ lmgce <- function(formula,
         cv.repeats,
         errormeasure,
         errormeasure.which,
-        max.abs.coef,
+        min.coef,
+        max.coef,
+        max.abs.residual,
         {if (ts == 1)
           res$support.matrix
           else

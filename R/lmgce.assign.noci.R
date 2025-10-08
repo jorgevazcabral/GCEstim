@@ -3,33 +3,40 @@
 #' Internal function to fit a linear regression model via generalized cross
 #' entropy where initial support spaces can be provided or computed.
 #'
+#' @param min.coef a named vector of coefficients (minimum coefficients)
+#' @param max.coef a named vector of coefficients (maximum coefficients)
+#' @param max.abs.residual the maximum absolute residual
 #' @inheritParams lmgce.assign.ci
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
 #' @noRd
-lmgce.assign.noci <- function(y,
-                              X,
-                              offset,
-                              cv = TRUE,
-                              cv.nfolds = 5,
-                              cv.repeats = 1,
-                              errormeasure = "RMSE",
-                              errormeasure.which = "min",
-                              max.abs.coef = NULL,
-                              support.signal = NULL,
-                              support.signal.vector = NULL,
-                              support.signal.vector.min = 0.5,
-                              support.signal.vector.max = 50,
-                              support.signal.vector.n = 20,
-                              support.signal.points = c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
-                              support.noise = NULL,
-                              support.noise.points = c(1 / 3, 1 / 3, 1 / 3),
-                              weight = 0.5,
-                              method = "dual.lbfgsb3c",
-                              caseGLM = "D",
-                              seed = NULL,
-                              verbose = 0) {
+lmgce.assign.noci <-
+  function(y,
+           X,
+           offset,
+           cv = TRUE,
+           cv.nfolds = 5,
+           cv.repeats = 1,
+           errormeasure = "RMSE",
+           errormeasure.which = "min",
+           min.coef = NULL,
+           max.coef = NULL,
+           max.abs.residual = NULL,
+           support.signal = NULL,
+           support.signal.vector = NULL,
+           support.signal.vector.min = 0.5,
+           support.signal.vector.max = 50,
+           support.signal.vector.n = 20,
+           support.signal.points = c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
+           support.noise = NULL,
+           support.noise.points = c(1 / 3, 1 / 3, 1 / 3),
+           weight = 0.5,
+           method = "dual.lbfgsb3c",
+           caseGLM = "D",
+           seed = NULL,
+           verbose = 0) {
+
   X.test <- NULL
   y.test <- NULL
   offset.test <- NULL
@@ -45,7 +52,8 @@ lmgce.assign.noci <- function(y,
                   length.out = support.signal.vector.n)),
           4)
     } else {
-      support.signal.vector <- sort(unique(support.signal.vector), decreasing = FALSE)
+      support.signal.vector <- sort(unique(support.signal.vector),
+                                    decreasing = FALSE)
     }
     support.signal <- support.signal.vector[1]
   }
@@ -64,7 +72,9 @@ lmgce.assign.noci <- function(y,
           cv.repeats,
           errormeasure,
           errormeasure.which,
-          max.abs.coef,
+          min.coef,
+          max.coef,
+          max.abs.residual,
           support.signal,
           support.signal.vector,
           support.signal.points,
@@ -86,8 +96,12 @@ lmgce.assign.noci <- function(y,
                   support.signal.min = NULL,
                   support.signal.1se = NULL,
                   support.signal.elbow = NULL,
-                  support = ifelse(length(support.signal) == 1, support.signal, "interval"),
-                  support.ok = ifelse(length(support.signal) == 1, support.signal, "interval"))
+                  support = ifelse(length(support.signal) == 1,
+                                   support.signal,
+                                   "interval"),
+                  support.ok = ifelse(length(support.signal) == 1,
+                                      support.signal,
+                                      "interval"))
       res <-
         c(
           res,
@@ -101,7 +115,9 @@ lmgce.assign.noci <- function(y,
             cv.nfolds,
             cv.repeats,
             errormeasure,
-            max.abs.coef,
+            min.coef,
+            max.coef,
+            max.abs.residual,
             support.signal,
             support.signal.points,
             support.noise,
@@ -115,7 +131,8 @@ lmgce.assign.noci <- function(y,
         )
       res$results$cv <- res$cvresults
       res <- res[names(res) != "cvresults"]
-      res$results$nocv$support.results[[1]] <- res[names(res$results$cv[[1]][[1]])]
+      res$results$nocv$support.results[[1]] <-
+        res[names(res$results$cv[[1]][[1]])]
       names(res$results$nocv$support.results) <- res$support
     }
   }
@@ -140,7 +157,9 @@ lmgce.assign.noci <- function(y,
             offset.test,
             errormeasure,
             errormeasure.which,
-            max.abs.coef,
+            min.coef,
+            max.coef,
+            max.abs.residual,
             support.signal,
             support.signal.vector,
             support.signal.points,
@@ -166,8 +185,12 @@ lmgce.assign.noci <- function(y,
                   nep.cv.sd = NULL,
                   error.measure.cv.mean = NULL,
                   error.measure.cv.sd = NULL,
-                  support = ifelse(length(support.signal) == 1, support.signal, "interval"),
-                  support.ok = ifelse(length(support.signal) == 1, support.signal, "interval"))
+                  support = ifelse(length(support.signal) == 1,
+                                   support.signal,
+                                   "interval"),
+                  support.ok = ifelse(length(support.signal) == 1,
+                                      support.signal,
+                                      "interval"))
 
       res$results$nocv$support.results[[1]] <-
         lmgce.fit(
@@ -178,7 +201,9 @@ lmgce.assign.noci <- function(y,
           X.test,
           offset.test,
           errormeasure,
-          max.abs.coef,
+          min.coef,
+          max.coef,
+          max.abs.residual,
           support.signal,
           support.signal.points,
           support.noise,

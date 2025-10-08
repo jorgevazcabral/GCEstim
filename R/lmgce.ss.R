@@ -3,7 +3,7 @@
 #' Internal function used to fit a linear regression model via generalized cross
 #' entropy where initial support spaces can be provided or computed.
 #'
-#' @inheritParams lmgce.assign.ci
+#' @inheritParams lmgce.assign.noci
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
@@ -16,7 +16,9 @@ lmgce.ss <- function(y,
                      offset.test = NULL,
                      errormeasure = "RMSE",
                      errormeasure.which = "min",
-                     max.abs.coef = NULL,
+                     min.coef = NULL,
+                     max.coef = NULL,
+                     max.abs.residual = NULL,
                      support.signal = NULL,
                      support.signal.vector = NULL,
                      support.signal.points = c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
@@ -50,7 +52,9 @@ lmgce.ss <- function(y,
           X.test,
           offset.test,
           errormeasure,
-          max.abs.coef,
+          min.coef,
+          max.coef,
+          max.abs.residual,
           support.signal = support.signal.vector[su],
           support.signal.points,
           support.noise,

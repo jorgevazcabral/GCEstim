@@ -134,9 +134,8 @@ are used to define the signal support spaces. If
 ridge trace.}
 
 \item{support.method.ridge.lambda}{Ridge parameter. The default is
-\code{support.method.ridge.lambda = NULL} and a lambda base
-\code{support.method.ridge.lambda.base} logarithmic sequence will be computed
-based on \code{support.method.ridge.lambda.n},
+\code{support.method.ridge.lambda = NULL} and a lambda logarithmic sequence
+will be computed based on \code{support.method.ridge.lambda.n},
 \code{support.method.ridge.lambda.min} and
 \code{support.method.ridge.lambda.max}. Supplying a lambda sequence overrides
  this. To be used when \code{support.method = "ridge"}.}

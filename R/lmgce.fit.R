@@ -3,7 +3,7 @@
 #' Internal function used to fit a linear regression model via generalized cross
 #' entropy where initial support spaces can be provided or computed.
 #'
-#' @inheritParams lmgce.assign.ci
+#' @inheritParams lmgce.assign.noci
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
@@ -15,7 +15,9 @@ lmgce.fit <- function(y,
                       X.test = NULL,
                       offset.test = NULL,
                       errormeasure = "RMSE",
-                      max.abs.coef = NULL,
+                      min.coef = NULL,
+                      max.coef = NULL,
+                      max.abs.residual = NULL,
                       support.signal = NULL,
                       support.signal.points = c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
                       support.noise = NULL,
@@ -82,7 +84,7 @@ lmgce.fit <- function(y,
   }
 
   if (length(support.signal) == 1) {
-    if (is.null(max.abs.coef)) {
+    if (is.null(max.coef)) {
     intg <- matrix(c(-support.signal, support.signal), k_scaled, 2, byrow = TRUE)
 
     intg <-
@@ -110,7 +112,14 @@ lmgce.fit <- function(y,
         c(-max(abs(intg[1, ])), max(abs(intg[1, ])))
     }
   } else {
-    intg <- support.signal * as.matrix(cbind(-max.abs.coef,max.abs.coef))
+    if (is.null(min.coef)) {
+      intg <- support.signal * as.matrix(cbind(-max.coef, max.coef))
+    } else {
+      intg <-
+        as.matrix(cbind(
+          (max.coef + min.coef) / 2 + support.signal * (max.coef - min.coef) * (-0.5),
+          (max.coef + min.coef) / 2 + support.signal * (max.coef - min.coef) * (0.5)))
+      }
   }
     } else if (length(support.signal) == 2) {
     intg <- matrix(sort(support.signal), k, 2, byrow = TRUE)
@@ -122,8 +131,12 @@ lmgce.fit <- function(y,
   row.names(intg) <- colnames(X)
 
   if (is.null(support.noise)) {
-    int2 <- c(floor(-3 * sd(y_model)), ceiling(3 * sd(y_model)))
-  } else {
+    if (is.null(max.abs.residual)) {
+      int2 <- c(floor(-3 * sd(y_model)), ceiling(3 * sd(y_model))) # should be rounded?
+    } else {
+      int2 <- c(-max.abs.residual, max.abs.residual)
+    }
+      } else {
     int2 <- support.noise
   }
 
@@ -433,10 +446,8 @@ lmgce.fit <- function(y,
       p[k_aux, ] <- p[k_aux, ] / Omega[k_aux]
     }
 
-    ### CHECK ####
     p <- round(p, 8)
     p[p == 0] <- 10^-8
-    ### ###
 
     beta_hat <- matrix(apply(s1 * p, 1, sum), ncol = 1)
 
@@ -452,10 +463,8 @@ lmgce.fit <- function(y,
       w[n_aux, ] <- w[n_aux, ] / Psi[n_aux]
     }
 
-    ### CHECK ####
     w <- round(w, 8)
     w[w == 0] <- 10^-8
-    ### ###
 
     sigma2_zeta <- rep(0, n)
     for (n_aux in 1:n) {
@@ -466,19 +475,15 @@ lmgce.fit <- function(y,
       ((sum(lambda_hat * lambda_hat) / n) / ((sum(1 / sigma2_zeta) / n)^2)) * solve(t(X_model) %*% X_model)
   }
 
-  ###############################  CHECK  ######################################
-  #nep <- sum(p * log(p)) / sum(p0 * log(p0))
   nep <- sum(p * log(p)) / (- k * log(m))
 
   nepk <- matrix(0, k, 1)
 
   for (k_aux in 1:k) {
-    # nepk[k_aux, 1] <-
-    #     sum(p[k_aux, ] * log(p[k_aux, ])) / sum(p0[k_aux, ] * log(p0[k_aux, ]))
+
     nepk[k_aux, 1] <-
         sum(p[k_aux, ] * log(p[k_aux, ])) / (- log(m))
     }
-  ###############################  CHECK  ######################################
 
   if (is.null(y.test) || is.null(X.test)) {
     y.fitted <- as.matrix(X) %*% beta_hat

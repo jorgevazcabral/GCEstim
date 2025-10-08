@@ -13,7 +13,6 @@ ridgetrace(
   offset,
   contrasts = NULL,
   lambda = NULL,
-  lambda.base = 10,
   lambda.min = 10^-3,
   lambda.max = 10^3,
   lambda.n = 100,
@@ -55,13 +54,9 @@ See \code{\link[stats]{model.offset}}.}
 \code{\link[stats]{model.matrix.default}}.}
 
 \item{lambda}{Ridge parameter. The default is \code{lambda = NULL} and a
-lambda base \code{lambda.base} logarithmic sequence will be computed based on
+lambda logarithmic sequence will be computed based on
  \code{lambda.n}, \code{lambda.min} and \code{lambda.max}. Supplying a lambda
  sequence overrides this.}
-
-\item{lambda.base}{Value for the base of logarithmic sequence of ridge
-parameters. The default is \code{lambda.base = 10}. To be used when
-\code{lambda = NULL}.}
 
 \item{lambda.min}{Minimum value for the \code{lambda} sequence. The default
 id \code{lambda.min = 10^-3}. To be used when \code{lambda = NULL}.}
@@ -99,7 +94,6 @@ An object of \code{\link[base]{class}} \code{ridgetrace} is a list containing
  at least the following components:
 
 \item{lambda}{the lambda sequence used}
-\item{lambda.base}{the base of the logarithmic sequence used}
 \item{min.coef}{a named vector of coefficients (maximum
 coefficients)}
 \item{max.coef}{a named vector of coefficients (minimum
