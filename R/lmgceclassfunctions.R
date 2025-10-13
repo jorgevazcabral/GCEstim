@@ -1127,9 +1127,10 @@ plot.lmgce <-
                         ggplot2::aes(y = .data$predictor,
                                      x = .data$estimate)) +
           ggplot2::geom_point(size = 1.5, colour = col.coef.all) +
-          ggplot2::geom_errorbarh(ggplot2::aes(xmin = .data$LL,
+          ggplot2::geom_errorbar(ggplot2::aes(xmin = .data$LL,
                                                xmax = .data$UL),
-                                  colour = col.coef.all, height = 0) +
+                                 orientation = "y",
+                                 colour = col.coef.all, height = 0) +
           ggplot2::geom_vline(
             xintercept = 0,
             color = "black",
