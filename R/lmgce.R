@@ -552,9 +552,9 @@ lmgce <- function(formula,
         cv.repeats,
         errormeasure,
         errormeasure.which,
-        min.coef,
-        max.coef,
-        max.abs.residual,
+        NULL,
+        NULL,
+        NULL,
         {if (ts == 1)
           res$support.matrix
           else
