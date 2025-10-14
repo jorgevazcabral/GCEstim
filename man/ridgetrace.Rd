@@ -102,6 +102,9 @@ coefficients)}
 coefficients)}
 \item{max.abs.residual}{the maximum absolute residual}
 \item{coef.lambda}{a data.frame with the coefficients for each lambda tested}
+\item{coef.lambda.cv}{a list of length \code{cv.nfolds} containing
+data.frames with the coefficients for each lambda tested in each
+cross-validation fold}
 \item{error.lambda}{a vector with the in sample error}
 \item{error.lambda.cv}{a data.frame with cross-validation errors}
 \item{call}{the matched call}
