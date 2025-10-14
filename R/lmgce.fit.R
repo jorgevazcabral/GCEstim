@@ -67,7 +67,7 @@ lmgce.fit <- function(y,
     w0 <- support.noise.points
   }
 
-  if (length(support.signal) == 1) {
+  if (length(support.signal) == 1 & is.null(max.coef)) {
     X_scaled <- X_model
     y_scaled <- y_model
     k_scaled <- k

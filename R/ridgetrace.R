@@ -68,6 +68,9 @@
 #' coefficients)}
 #' \item{max.abs.residual}{the maximum absolute residual}
 #' \item{coef.lambda}{a data.frame with the coefficients for each lambda tested}
+#' \item{coef.lambda.cv}{a list of length \code{cv.nfolds} containing
+#' data.frames with the coefficients for each lambda tested in each
+#' cross-validation fold}
 #' \item{error.lambda}{a vector with the in sample error}
 #' \item{error.lambda.cv}{a data.frame with cross-validation errors}
 #' \item{call}{the matched call}
@@ -220,6 +223,8 @@ ridgetrace.Xy <- function(X,
   if (is.null(lambda)) {
     lambda <-
       lambda.min * (lambda.max / lambda.min) ^ ((0:(lambda.n - 1)) / (lambda.n - 1))
+  } else {
+    lambda.n <- length(lambda)
   }
 
   k <- ncol(X)
@@ -230,6 +235,7 @@ ridgetrace.Xy <- function(X,
   coef_lambda <- matrix(0, ncol = lambda.n, nrow = k)
   resid_lambda <- fitted_lambda <- matrix(0, ncol = lambda.n, nrow = n)
   error.lambda.cv <- NULL
+  coef.cv <- NULL #vector("list", cv.nfolds)
 
   if (standardize) {
     y_tilde <- scale(y)
@@ -250,6 +256,13 @@ ridgetrace.Xy <- function(X,
   }
 
   if (isTRUE(cv)){
+    coef.cv <- vector("list", cv.nfolds)
+    names(coef.cv) <- paste0("fold", 1:cv.nfolds)
+    for (i in 1:cv.nfolds) {
+      coef.cv[[i]] <- coef_lambda
+      colnames(coef.cv[[i]]) <- paste0("lambda", round(lambda, 8))
+      rownames(coef.cv[[i]]) <- colnames(X)
+    }
     if (!is.null(seed))
       set.seed(seed)
     auxfolds = cut(seq(1, nrow(X)),
@@ -322,6 +335,7 @@ ridgetrace.Xy <- function(X,
             solve(t(X.cv) %*% X.cv + lambda[i] * penalty) %*% (t(X.cv) %*% y.cv)
           }
 
+        coef.cv[[cv.n]][, i] <- coef_lambda_cv
         error.lambda.cv[cv.n, i] <-
             accmeasure(y[change_order][auxfolds == cv.n],
                        X[change_order, ][auxfolds == cv.n,] %*% coef_lambda_cv,
@@ -351,6 +365,7 @@ ridgetrace.Xy <- function(X,
               max.abs.coef = max.abs.coef,
               max.abs.residual = max.abs.residual,
               coef.lambda = coef_lambda,
+              coef.lambda.cv = coef.cv,
               error.lambda = error.lambda,
               error.lambda.cv = error.lambda.cv
               )
