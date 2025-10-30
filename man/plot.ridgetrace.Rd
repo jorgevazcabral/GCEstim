@@ -4,12 +4,15 @@
 \alias{plot.ridgetrace}
 \title{Plot Diagnostics for a \code{\link{ridgetrace}} Object}
 \usage{
-\method{plot}{ridgetrace}(x, coef = NULL, ...)
+\method{plot}{ridgetrace}(x, coef = NULL, log = TRUE, ...)
 }
 \arguments{
 \item{x}{Fitted \code{\link{ridgetrace}} model object.}
 
 \item{coef}{A vector of true coefficients if available.}
+
+\item{log}{Boolean. If \code{log = TRUE}, the default, horizontal axis will
+display the logarithm of lambda.}
 
 \item{...}{additional arguments.}
 }

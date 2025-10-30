@@ -116,6 +116,8 @@ coefficients.ridgetrace <- coef.ridgetrace
 #'
 #' @param x Fitted \code{\link{ridgetrace}} model object.
 #' @param coef A vector of true coefficients if available.
+#' @param log Boolean. If \code{log = TRUE}, the default, horizontal axis will
+#' display the logarithm of lambda.
 #' @param ... additional arguments.
 #'
 #' @return Supports are returned.
@@ -133,18 +135,26 @@ coefficients.ridgetrace <- coef.ridgetrace
 #' @importFrom rlang .data
 #' @export
 
-plot.ridgetrace <- function(x, coef = NULL, ...){
+plot.ridgetrace <- function(x, coef = NULL, log = TRUE, ...){
 
   if (!inherits(x, "ridgetrace"))
     stop("use only with \"ridgetrace\" objects")
 
   col.coef.all <- viridis::turbo(length(x$max.abs.coef))
 
+  if (isTRUE(log)) {
   p1.data <-
     data.frame(variable = row.names(x$coef.lambda),
                lambda = rep(log(x$lambda, base = x$lambda[2] / x$lambda[1]),
                             each = nrow(x$coef.lambda)),
-               coefficient = as.vector(x$coef.lambda))
+               coefficient = as.vector(x$coef.lambda))}
+  else {
+    p1.data <-
+      data.frame(variable = row.names(x$coef.lambda),
+                 lambda = rep(x$lambda,
+                              each = nrow(x$coef.lambda)),
+                 coefficient = as.vector(x$coef.lambda))
+  }
 
   p1 <-
     ggplot2::ggplot(p1.data,
@@ -156,9 +166,13 @@ plot.ridgetrace <- function(x, coef = NULL, ...){
     ggplot2::scale_color_manual(values = col.coef.all) +
     ggplot2::theme_minimal() +
     ggplot2::ylab("Coefficients") +
-    ggplot2::xlab("log(lambda)") +
     ggplot2::ggtitle("RIDGE TRACE")
 
+  if (isTRUE(log)) {
+    p1 <- p1 + ggplot2::xlab("log(lambda)")
+  } else {
+    p1 <- p1 + ggplot2::xlab("lambda")
+  }
   if (!is.null(coef)) {
     p1 <- p1 +
       ggplot2::geom_hline(yintercept = coef,
