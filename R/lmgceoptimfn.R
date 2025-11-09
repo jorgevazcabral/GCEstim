@@ -121,7 +121,7 @@ ObjFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0, w0, n, k, weight,...)
     Omega[k_aux] <- sum(p0[k_aux, ] * exp(s1[k_aux, ] * sum(x0 * X[, k_aux]) * (1 / (1 - weight))))
   }
 
-  # (7.3.10) page 112 Golan 1996 for gamma = 0.5.
+  # (7.3.10) page 112 Golan 1996
   Psi <- rep(0, n)
   for (n_aux in 1:n) {
     Psi[n_aux] <- sum(w0[n_aux, ] * exp(x0[n_aux] * s2 * (1 / weight)))
@@ -196,6 +196,6 @@ GradFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0, w0, n, k, m.optim, j, we
 
   epsilon <- w %*% matrix(s2, ncol = 1)
 
-  # (7.3.17) page 113 Golan 1996 for gamma = 0.5.
+  # (7.3.17) page 113 Golan 1996
   return(-y + X %*% beta + epsilon)
 }

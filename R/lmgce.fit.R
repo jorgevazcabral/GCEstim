@@ -8,23 +8,24 @@
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
 #' @noRd
-lmgce.fit <- function(y,
-                      X,
-                      offset,
-                      y.test = NULL,
-                      X.test = NULL,
-                      offset.test = NULL,
-                      errormeasure = "RMSE",
-                      min.coef = NULL,
-                      max.coef = NULL,
-                      max.abs.residual = NULL,
-                      support.signal = NULL,
-                      support.signal.points = c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
-                      support.noise = NULL,
-                      support.noise.points = c(1 / 3, 1 / 3, 1 / 3),
-                      weight = 0.5,
-                      method = "dual.lbfgsb3c",
-                      caseGLM = "D")
+lmgce.fit <-
+  function(y,
+           X,
+           offset,
+           y.test = NULL,
+           X.test = NULL,
+           offset.test = NULL,
+           errormeasure = "RMSE",
+           min.coef = NULL,
+           max.coef = NULL,
+           max.abs.residual = NULL,
+           support.signal = NULL,
+           support.signal.points = c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
+           support.noise = NULL,
+           support.noise.points = c(1 / 3, 1 / 3, 1 / 3),
+           weight = 0.5,
+           method = "dual.lbfgsb3c",
+           caseGLM = "D")
 {
   X_model <- X
   y_model <- y
@@ -85,71 +86,71 @@ lmgce.fit <- function(y,
 
   if (length(support.signal) == 1) {
     if (is.null(max.coef)) {
-    intg <- matrix(c(-support.signal, support.signal), k_scaled, 2, byrow = TRUE)
+    zlim <- matrix(c(-support.signal, support.signal), k_scaled, 2, byrow = TRUE)
 
-    intg <-
+    zlim <-
       as.matrix(data.frame(
         "LL" =
           {
             if (any(c("(Intercept)", "X.Intercept.") %in% colnames(X))) {
-              scalebackcoef(X_scaled, y_scaled, c(0, intg[, 1]), intercept = TRUE)
+              scalebackcoef(X_scaled, y_scaled, c(0, zlim[, 1]), intercept = TRUE)
             } else {
-              scalebackcoef(X_scaled, y_scaled, intg[, 1], intercept = FALSE)
+              scalebackcoef(X_scaled, y_scaled, zlim[, 1], intercept = FALSE)
             }
           },
         "UL" =
           {
             if (any(c("(Intercept)", "X.Intercept.") %in% colnames(X))) {
-              scalebackcoef(X_scaled, y_scaled, c(0, intg[, 2]), intercept = TRUE)
+              scalebackcoef(X_scaled, y_scaled, c(0, zlim[, 2]), intercept = TRUE)
             } else {
-              scalebackcoef(X_scaled, y_scaled, intg[, 2], intercept = FALSE)
+              scalebackcoef(X_scaled, y_scaled, zlim[, 2], intercept = FALSE)
             }
           }
       ))
 
     if (any(c("(Intercept)", "X.Intercept.") %in% colnames(X))) {
-      intg[1 , ] <-
-        c(-max(abs(intg[1, ])), max(abs(intg[1, ])))
+      zlim[1 , ] <-
+        c(-max(abs(zlim[1, ])), max(abs(zlim[1, ])))
     }
   } else {
     if (is.null(min.coef)) {
-      intg <- support.signal * as.matrix(cbind(-max.coef, max.coef))
+      zlim <- support.signal * as.matrix(cbind(-max.coef, max.coef))
     } else {
-      intg <-
+      zlim <-
         as.matrix(cbind(
           (max.coef + min.coef) / 2 + support.signal * (max.coef - min.coef) * (-0.5),
           (max.coef + min.coef) / 2 + support.signal * (max.coef - min.coef) * (0.5)))
       }
   }
     } else if (length(support.signal) == 2) {
-    intg <- matrix(sort(support.signal), k, 2, byrow = TRUE)
+    zlim <- matrix(sort(support.signal), k, 2, byrow = TRUE)
   } else {
-    intg <- t(apply(support.signal, 1, sort))
+    zlim <- t(apply(support.signal, 1, sort))
   }
 
-  colnames(intg) <- c("SupportLL","SupportUL")
-  row.names(intg) <- colnames(X)
+  colnames(zlim) <- c("SupportLL","SupportUL")
+  row.names(zlim) <- colnames(X)
 
   if (is.null(support.noise)) {
     if (is.null(max.abs.residual)) {
-      int2 <- c(floor(-3 * sd(y_model)), ceiling(3 * sd(y_model))) # should be rounded?
+      vlim <- c(floor(-3 * sd(y_model)), ceiling(3 * sd(y_model))) # should be rounded?
     } else {
-      int2 <- c(-max.abs.residual, max.abs.residual)
+      vlim <- c(-max.abs.residual, max.abs.residual)
     }
       } else {
-    int2 <- support.noise
+    vlim <- support.noise
   }
 
   s1 <- matrix(0, k, m)
   Z <- matrix(0, k, k * m)
   for (i in 1:k) {
-    s1[i,] <- seq(intg[i, 1],
-                  intg[i, 2],
-                  by = (intg[i, 2] - intg[i, 1]) / (m - 1))
+    s1[i,] <- seq(zlim[i, 1],
+                  zlim[i, 2],
+                  by = (zlim[i, 2] - zlim[i, 1]) / (m - 1))
     Z[i, ((i - 1) * m + 1):(i * m)] <- s1[i, 1:m]
   }
 
-  s2 <- seq(int2[1], int2[2], by = (int2[2] - int2[1]) / (j - 1))
+  s2 <- seq(vlim[1], vlim[2], by = (vlim[2] - vlim[1]) / (j - 1))
   S <- matrix(rep(s2, n), ncol = length(s2), byrow = TRUE)
   V <- matrix(0, n, n * j)
   for (i in 1:n) {
@@ -531,7 +532,7 @@ lmgce.fit <- function(y,
     vcov = var_beta,
     error.measure = accmeasure(y.fitted, y.values, which = errormeasure),
     support.stdUL ={if (length(support.signal) == 1) support.signal else NULL},
-    support.matrix = intg,
+    support.matrix = zlim,
     p = p,
     w= w,
     lambda = lambda_hat,
