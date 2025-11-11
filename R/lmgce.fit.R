@@ -86,24 +86,39 @@ lmgce.fit <-
 
   if (length(support.signal) == 1) {
     if (is.null(max.coef)) {
-    zlim <- matrix(c(-support.signal, support.signal), k_scaled, 2, byrow = TRUE)
+    zlim <- matrix(c(-support.signal, support.signal),
+                   k_scaled,
+                   2,
+                   byrow = TRUE)
 
     zlim <-
       as.matrix(data.frame(
         "LL" =
           {
             if (any(c("(Intercept)", "X.Intercept.") %in% colnames(X))) {
-              scalebackcoef(X_scaled, y_scaled, c(0, zlim[, 1]), intercept = TRUE)
+              scalebackcoef(X_scaled,
+                            y_scaled,
+                            c(0, zlim[, 1]),
+                            intercept = TRUE)
             } else {
-              scalebackcoef(X_scaled, y_scaled, zlim[, 1], intercept = FALSE)
+              scalebackcoef(X_scaled,
+                            y_scaled,
+                            zlim[, 1],
+                            intercept = FALSE)
             }
           },
         "UL" =
           {
             if (any(c("(Intercept)", "X.Intercept.") %in% colnames(X))) {
-              scalebackcoef(X_scaled, y_scaled, c(0, zlim[, 2]), intercept = TRUE)
+              scalebackcoef(X_scaled,
+                            y_scaled,
+                            c(0, zlim[, 2]),
+                            intercept = TRUE)
             } else {
-              scalebackcoef(X_scaled, y_scaled, zlim[, 2], intercept = FALSE)
+              scalebackcoef(X_scaled,
+                            y_scaled,
+                            zlim[, 2],
+                            intercept = FALSE)
             }
           }
       ))
@@ -133,7 +148,7 @@ lmgce.fit <-
 
   if (is.null(support.noise)) {
     if (is.null(max.abs.residual)) {
-      vlim <- c(floor(-3 * sd(y_model)), ceiling(3 * sd(y_model))) # should be rounded?
+      vlim <- c(-3 * sd(y_model), 3 * sd(y_model))
     } else {
       vlim <- c(-max.abs.residual, max.abs.residual)
     }
@@ -162,7 +177,7 @@ lmgce.fit <-
   method.tol = 1e-06
 
   if (method == "dual.optimParallel") {
-    cl <- parallel::makeCluster(2)     # set the number of processor cores
+    cl <- parallel::makeCluster(2)
     parallel::setDefaultCluster(cl = cl)
 
     res.opt <-
@@ -314,39 +329,32 @@ lmgce.fit <-
 
     aux.convergence <- res.opt$convergence
 
-    p <- res.opt$pars[1:(k * m)]
+    p <- matrix(res.opt$pars[1:(k*m)],
+                nrow = k,
+                ncol = m)
+    w <- matrix(res.opt$pars[(k*m + 1):length(res.opt$pars)],
+                nrow = n,
+                ncol = j)
 
-    aux2.p <- rep(0, k * m)
-    for (i in 1:k) {
-      aux2.p[((i - 1) * m + 1):(i * m)] <-
-        p[seq(i, i + (m - 1) * k, by = k)]
-    }
-    p <- aux2.p
+    beta_hat <- Z %*% as.numeric(t(p))
 
-    beta_hat <- Z %*% p
-
-    p <- matrix(p, ncol = m, nrow = k, byrow = TRUE)
-
-    w <- res.opt$pars[(k * m + 1):length(res.opt$pars)]
-    aux2.w <- rep(0, j * n)
-    for (i in 1:n) {
-      aux2.w[((i - 1) * j + 1):(i * j)] <-
-        w[seq(i, i + (j - 1) * n, by = n)]
-    }
-    w <- aux2.w
-    w <- matrix(w, ncol = j, nrow = n, byrow = TRUE)
+    #e_hat <- V %*% as.numeric(t(w))
 
   } else if (method == "primal.solnl") {
+
+    Aeq <-
+      rbind(cbind(as.matrix(X_model) %*% Z, V),
+            cbind(kronecker(diag(k),
+                            matrix(1, 1, m)),
+                  matrix(0, k, n * j)),
+            cbind(matrix(0, n, k * m),
+                  kronecker(diag(n),
+                            matrix(1, 1, j))))
 
     res.opt <- pracma::fmincon(
       x0 = t(c(rep(1 / m, k * m), rep(1 / j, n * j))),
       fn = ObjFunGCE.primal.solnl,
-      Aeq = rbind(
-        cbind(as.matrix(X_model) %*% Z, V),
-        cbind(kronecker(diag(k), matrix(1, 1, m)), matrix(0, k, n *
-                                                            j)),
-        cbind(matrix(0, n, k * m), kronecker(diag(n), matrix(1, 1, j)))
-      ),
+      Aeq = Aeq,
       beq = c(y_model, rep(1, n + k)),
       lb = rep(1e-5, k * m + n * j),
       ub = rep(1, k * m + n * j),
@@ -365,13 +373,13 @@ lmgce.fit <-
 
     p <- res.opt$par[1:(k * m)]
     beta_hat <- Z %*% p
-
     p <- matrix(p, ncol = m, nrow = k, byrow = TRUE)
 
     w <- res.opt$par[(k * m + 1):length(res.opt$par)]
+    #e_hat <- V %*% w
     w <- matrix(w, ncol = j, nrow = n, byrow = TRUE)
 
-  } else if (method == "dual") {
+   } else if (method == "dual") {
     dimZ <- ncol(Z)
     t <- 1
     u <- 1
@@ -422,7 +430,7 @@ lmgce.fit <-
     p <- t(p)[,1]
 
     p <- matrix(p, ncol = m, nrow = k, byrow = TRUE)
-  }
+    }
 
   if (method %in% c("dual.optimParallel",
                     "dual.BFGS", "dual.CG", "dual.L-BFGS-B",
@@ -474,6 +482,24 @@ lmgce.fit <-
     }
     var_beta <-
       ((sum(lambda_hat * lambda_hat) / n) / ((sum(1 / sigma2_zeta) / n)^2)) * solve(t(X_model) %*% X_model)
+  }
+
+  if (method %in% c("primal.solnp")){
+
+    lambda_hat <- res.opt$lagrange[1:n]
+    p <- round(p, 8)
+    p[p == 0] <- 10^-8
+    w <- round(w, 8)
+    w[w == 0] <- 10^-8
+
+    sigma2_zeta <- rep(0, n)
+    for (n_aux in 1:n) {
+      sigma2_zeta[n_aux] <-
+        sum((s2 * s2) * w[n_aux, ]) - (sum(s2 * w[n_aux, ]))^2
+    }
+    var_beta <-
+      ((sum(lambda_hat * lambda_hat) / n) / ((sum(1 / sigma2_zeta) / n)^2)) * solve(t(X_model) %*% X_model)
+
   }
 
   nep <- sum(p * log(p)) / (- k * log(m))

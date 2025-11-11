@@ -22,21 +22,14 @@
 #'
 #' @noRd
 
-ObjFunGCE.primal.solnp <- function(x0, X, n, k, m, j, p0, w0, s1, S, weight) {
+ObjFunGCE.primal.solnp <- function(x0, X, n, k, m, j, p0, w0, s1, S, weight, ...) {
+  p <- x0[1:(k*m)]
+  w <- x0[(k*m + 1):length(x0)]
 
-  p <- as.matrix(as.numeric(abs(matrix(x0[1:(k * m)], k, m))), ncol = 1)
-  w <- as.matrix(as.numeric(abs(matrix(x0[(k * m + 1):length(x0)], n, j))), ncol = 1)
-
-  ## CHECK #####
-  # p <- round(p, 8)
-  # w <- round(w, 8)
-  # p[p == 0] <- 10^-8
-  # w[w == 0] <- 10^-8
-  #### ###
-
-  return(as.numeric(
-    (1 - weight) * (t(p) %*% log(p) - t(p) %*% log(p0)) +  weight * (t(w) %*% log(w) - t(w) %*% log(w0))
-  ))
+  return(
+   (1 - weight) * sum(p * log(p / as.numeric(p0))) +
+    weight * sum(w * log(w / as.numeric(w0)))
+  )
 }
 
 #' Constraint function for primal optimization formulation using solnp
@@ -52,12 +45,18 @@ ObjFunGCE.primal.solnp <- function(x0, X, n, k, m, j, p0, w0, s1, S, weight) {
 #' @noRd
 
 ConstFunGCE.primal.solnp <- function(x0, X, n, k, m, j, p0, w0, s1, S, weight) {
-  aux.x0.X <- matrix(x0[1:(k * m)], k, m)
-  aux.x0.error <- matrix(x0[(k * m + 1):length(x0)], n, j)
-  aux.y = as.matrix(X) %*% (rowSums(s1 * aux.x0.X)) +
-    rowSums(S * aux.x0.error)
-  aux.p = c(rowSums(aux.x0.X), rowSums(aux.x0.error))
-  return(c(aux.y, aux.p))
+  p <- matrix(x0[1:(k * m)], nrow = k, ncol = m)
+  w <- matrix(x0[(k * m + 1):length(x0)], nrow = n, ncol = j)
+
+  signal_term <- X %*% rowSums(p * s1)
+  error_term <- rowSums(w * S)
+
+  y_constraint <- signal_term + error_term
+
+  p_add <- rowSums(p)
+  w_add <- rowSums(w)
+
+  c(y_constraint, p_add, w_add)
 }
 
 #' Objective function for primal optimization formulation using solnl
@@ -79,18 +78,47 @@ ConstFunGCE.primal.solnp <- function(x0, X, n, k, m, j, p0, w0, s1, S, weight) {
 #' @noRd
 
 ObjFunGCE.primal.solnl <- function(x0, m, k, p0, n, w0, weight) {
-  p <- as.matrix(x0[1:(k * m)])
-  w <- as.matrix(x0[(k * m + 1):ncol(x0)])
+  p <- x0[1:(k * m)]
+  w <- x0[(k * m + 1):ncol(x0)]
+  term_p <- sum(p * (log(p + 1e-12) - log(p0)))
+  term_w <- sum(w * (log(w + 1e-12) - log(w0)))
 
-  ## CHECK #####
-  # p <- round(p, 8)
-  # w <- round(w, 8)
-  # p[p == 0] <- 10^-8
-  # w[w == 0] <- 10^-8
-  #### ###
-
-  return((1 - weight) * (t(p) %*% log(p) - t(p) %*% log(p0)) + weight * (t(w) %*% log(w) - t(w) %*% log(w0)))
+  return((1 - weight) * term_p + weight * term_w)
 }
+
+#' LSE
+#'
+#' Returns LSE
+#'
+#' @param x .
+#'
+#' @return LSE
+#'
+#' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
+#'
+#' @noRd
+
+logsumexp <- function(x) {
+  xmax <- max(x)
+  xmax + log(sum(exp(x - xmax)))
+}
+
+#' Row LSE
+#'
+#' Returns row LSE
+#'
+#' @param x .
+#'
+#' @return row LSE
+#'
+#' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
+#'
+#' @noRd
+
+row_logsumexp <- function(mat) {
+  apply(mat, 1, logsumexp)
+}
+
 
 #' Objective function for dual optimization formulation
 #'
@@ -115,20 +143,16 @@ ObjFunGCE.primal.solnl <- function(x0, m, k, p0, n, w0, weight) {
 
 ObjFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0, w0, n, k, weight,...)
 {
-  # (7.3.9) page 112 Golan 1996
-  Omega <- rep(0, k)
-  for (k_aux in 1:k) {
-    Omega[k_aux] <- sum(p0[k_aux, ] * exp(s1[k_aux, ] * sum(x0 * X[, k_aux]) * (1 / (1 - weight))))
-  }
+  temp_scalar <- t(X) %*% x0 / (1 - weight)
+  temp_scalar_mat <- temp_scalar %*% matrix(1, ncol = ncol(s1))
 
-  # (7.3.10) page 112 Golan 1996
-  Psi <- rep(0, n)
-  for (n_aux in 1:n) {
-    Psi[n_aux] <- sum(w0[n_aux, ] * exp(x0[n_aux] * s2 * (1 / weight)))
-  }
+  exponent_Omega <- s1 * temp_scalar_mat
+  Omega_log <- row_logsumexp(log(p0) + exponent_Omega)
 
-  # (7.3.11) page 112 Golan 1996
-  return(-sum(x0 * y) + (1 - weight) * sum(log(Omega)) + weight * sum(log(Psi)))
+  exponent_Psi <- x0 %*% t(s2) / weight
+  Psi_log <- row_logsumexp(log(w0) + exponent_Psi)
+
+  -sum(x0 * y) + (1 - weight) * sum(Omega_log) + weight * sum(Psi_log)
 }
 
 
@@ -157,45 +181,22 @@ ObjFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0, w0, n, k, weight,...)
 
 GradFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0, w0, n, k, m.optim, j, weight) {
 
-  m <- m.optim
-  p <- matrix(0, k, m)
+  temp_scalar <- t(X) %*% x0 / (1 - weight)
+  temp_scalar_mat <- temp_scalar %*% matrix(1, ncol=ncol(s1))
 
-  Omega <- rep(0, k)
+  exponent_Omega <- s1 * temp_scalar_mat
+  Omega_lse <- row_logsumexp(log(p0) + exponent_Omega)
 
-  for (k_aux in 1:k) {
-    temp <- sum(x0 * X[, k_aux])
-    for (m_aux in 1:m) {
-      p[k_aux, m_aux] <- p0[k_aux, m_aux] * exp(s1[k_aux, m_aux] * temp * (1 / (1 - weight)))
-    }
-    Omega[k_aux] <- sum(p[k_aux, ])
-    p[k_aux, ] <- p[k_aux, ] / Omega[k_aux]
-  }
+  p <- exp(log(p0) + exponent_Omega - Omega_lse)
 
-  ## CHECK #####
-  p <- round(p, 8)
-  p[p == 0] <- 10^-8
-  ### ###
+  beta <- matrix(rowSums(s1 * p), ncol = 1)
 
-  beta <- matrix(apply(s1 * p, 1, sum), ncol = 1)
+  exponent_Psi <- x0 %*% t(s2) / weight
 
-  w <- matrix(0, n, j)
-  Psi <- rep(0, n)
-
-  for (n_aux in 1:n) {
-    for (j_aux in 1:j) {
-      w[n_aux, j_aux] <- w0[n_aux, j_aux] * exp(s2[j_aux] * x0[n_aux] * (1 / weight))
-    }
-    Psi[n_aux]  <- sum(w[n_aux, ])
-    w[n_aux, ] <- w[n_aux, ] / Psi[n_aux]
-  }
-
-  ## CHECK #####
-  w <- round(w, 8)
-  w[w == 0] <- 10^-8
-  ### ###
+  w <- exp(log(w0) + exponent_Psi - row_logsumexp(log(w0) +
+                                                    exponent_Psi) %*% t(rep(1, length(s2))))
 
   epsilon <- w %*% matrix(s2, ncol = 1)
 
-  # (7.3.17) page 113 Golan 1996
-  return(-y + X %*% beta + epsilon)
+  -y + X %*% beta + epsilon
 }
