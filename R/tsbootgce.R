@@ -19,8 +19,8 @@
 #'  unit (see \code{\link[stats]{ts}}).
 #' @param end The time of the last observation, specified in the same way as
 #' \code{start} (see \code{\link[stats]{ts}}).
-#' @param coef.method Method used to estimate the coefficients. One of
-#' \code{c("mode", "median")}. for \code{"mode"} see \code{\link[hdrcde]{hdr}}
+#' @param coef.method Method used to estimate the coefficients. For now only
+#' \code{"median"} is available.
 #' @inheritParams lmgce
 #'
 #' @details
@@ -128,7 +128,7 @@ tsbootgce <- function(formula,
                       reps = 1000,
                       start = NULL,
                       end = NULL,
-                      coef.method = c("mode", "median"),
+                      coef.method = "median",
                       cv = TRUE,
                       cv.nfolds = 5,
                       errormeasure = c("RMSE", "MSE", "MAE", "MAPE", "sMAPE", "MASE"),

@@ -15,7 +15,7 @@ tsbootgce(
   reps = 1000,
   start = NULL,
   end = NULL,
-  coef.method = c("mode", "median"),
+  coef.method = "median",
   cv = TRUE,
   cv.nfolds = 5,
   errormeasure = c("RMSE", "MSE", "MAE", "MAPE", "sMAPE", "MASE"),
@@ -99,8 +99,8 @@ unit (see \code{\link[stats]{ts}}).}
 \item{end}{The time of the last observation, specified in the same way as
 \code{start} (see \code{\link[stats]{ts}}).}
 
-\item{coef.method}{Method used to estimate the coefficients. One of
-\code{c("mode", "median")}. for \code{"mode"} see \code{\link[hdrcde]{hdr}}}
+\item{coef.method}{Method used to estimate the coefficients. For now only
+\code{"median"} is available.}
 
 \item{cv}{Boolean value. If \code{TRUE} the error, \code{errormeasure},
 will be computed using cross-validation. If \code{FALSE} the error will be

@@ -385,7 +385,8 @@ plot.tsbootgce <-
                              linetype = "dashed",
                              colour = "yellow") +
           ggplot2::theme_minimal() +
-          ggplot2::ylab(names(object$meboot)[i])
+          ggplot2::ylab(names(object$meboot)[i]) +
+          ggplot2::theme(legend.title = ggplot2::element_blank())
 
         plots$p1[[i]] <- p1
       }
