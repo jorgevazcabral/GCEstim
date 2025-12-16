@@ -36,8 +36,7 @@
 #'  least the following components:
 #'
 #' \item{call}{the matched call.}
-#' \item{coefficients}{a named data frame of coefficients determined by
-#'  \code{coef.method}.}
+#' \item{coefficients}{a named data frame of coefficients.}
 #' \item{data.ts}{\code{ts} object.}
 #' \item{error}{loss function (error) used for the selection of the support
 #' spaces.}
@@ -111,7 +110,6 @@ dynlmgce <- function(formula,
                       contrasts = NULL,
                       start = NULL,
                       end = NULL,
-                      coef.method = "median",
                       cv = TRUE,
                       cv.nfolds = 5,
                       errormeasure = c("RMSE", "MSE", "MAE", "MAPE", "sMAPE", "MASE"),
@@ -165,7 +163,6 @@ dynlmgce <- function(formula,
   x = TRUE
   y = TRUE
   model = TRUE
-  coef.method <- match.arg(coef.method)
   support.method <- match.arg(support.method)
   errormeasure <- match.arg(errormeasure)
   errormeasure.which <- match.arg(errormeasure.which)
