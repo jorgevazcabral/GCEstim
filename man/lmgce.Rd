@@ -99,22 +99,22 @@ computed in sample. The default is \code{cv = TRUE}.}
 \code{cv = TRUE}. The default is \code{cv.nfolds = 5} and the smallest value
 allowable is \code{cv.nfolds = 3}.}
 
-\item{errormeasure}{Loss function (error) to be used for the selection
-of the support spaces. One of c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE").
+\item{errormeasure}{Loss function (error) to be used for the selection of
+the support spaces. One of c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE").
 The default is \code{errormeasure = "RMSE"}.}
 
 \item{errormeasure.which}{Which value of \code{errormeasure}
-to be used for selecting a support space upper limit from \code{support.signal.vector}.
-One of \code{c("min", "1se", "elbow")} where \code{"min"} corresponds to the
-support spaces that produced the lowest error, \code{"1se"} corresponds to
-the support spaces such that error is within 1 standard error of the CV error
-for \code{"min"} and \code{"elbow"} corresponds to the elbow point of the error
-curve (the point that maximizes the distance between each observation, i.e,
-the pair composed by the upper limit of the support space and the error, and
-the line between the first and last observations, i.e., the lowest and the
-highest upper limits of the support space respectively. See
-\code{\link[pathviewr]{find_curve_elbow}}). The default is
-\code{errormeasure.which = "1se"}.}
+to be used for selecting a support space upper limit from
+\code{support.signal.vector}. One of \code{c("min", "1se", "elbow")}
+where \code{"min"} corresponds to the support spaces that produced the lowest
+ error, \code{"1se"} corresponds to the support spaces such that error is
+ within 1 standard error of the CV error for \code{"min"} and \code{"elbow"}
+ corresponds to the elbow point of the error curve (the point that maximizes
+ the distance between each observation, i.e, the pair composed by the upper
+ limit of the support space and the error, and the line between the first and
+ last observations, i.e., the lowest and the highest upper limits of the
+ support space respectively. See \code{\link[pathviewr]{find_curve_elbow}}).
+ The default is \code{errormeasure.which = "1se"}.}
 
 \item{support.method}{One of c("standardized", "ridge"). If
 \code{support.method = "standardized}, the default, standardized coefficients
@@ -132,16 +132,19 @@ will be computed based on \code{support.method.ridge.lambda.n},
 \item{support.method.ridge.lambda.min}{Minimum value for the
 \code{support.method.ridge.lambda} sequence. The default is
 \code{support.method.ridge.lambda.min = 10^-3}. To be used when
-\code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.}
+\code{support.method = "ridge"} and
+\code{support.method.ridge.lambda = NULL}.}
 
 \item{support.method.ridge.lambda.max}{Maximum value for the
 \code{support.method.ridge.lambda} sequence. The default is
 \code{support.method.ridge.lambda.max = 10^3}. To be used when
-\code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.}
+\code{support.method = "ridge"} and
+\code{support.method.ridge.lambda = NULL}.}
 
 \item{support.method.ridge.lambda.n}{The number of ridge parameters values.
 The default is \code{support.method.ridge.lambda.n = 100}. To be used when
- \code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.}
+ \code{support.method = "ridge"} and
+ \code{support.method.ridge.lambda = NULL}.}
 
 \item{support.method.ridge.standardize}{Boolean value. If \code{TRUE}, the
 default, then: i) centering is done by subtracting the column means of x and
@@ -178,20 +181,20 @@ support spaces (-L,L) on standardized data (when
 \item{support.signal.vector}{NULL or a vector of positive values when
 \code{support.signal = NULL}. If \code{support.signal.vector = NULL},
 the default, a vector
-\code{c(support.signal.vector.min,...,support.signal.vector.max)} of dimension
- \code{support.signal.vector.n} and logarithmically equally spaced will be
-generated. Each value represents the upper limits for the standardized support
- spaces, when \code{support.method = "standardized"} or the factor to be
- multiplied by the maximum absolute value of the ridge trace for each
- coefficient, when \code{support.method = "ridge"}.}
+\code{c(support.signal.vector.min,...,support.signal.vector.max)} of
+dimension \code{support.signal.vector.n} and logarithmically equally spaced
+will be generated. Each value represents the upper limits for the
+standardized support spaces, when \code{support.method = "standardized"} or
+the factor to be multiplied by the maximum absolute value of the ridge trace
+for each coefficient, when \code{support.method = "ridge"}.}
 
 \item{support.signal.vector.min}{A positive value for the lowest limit of the
 \code{support.signal.vector} when \code{support.signal = NULL} and
 \code{support.signal.vector = NULL}. The default is
 \code{support.signal.vector.min = 0.3}.}
 
-\item{support.signal.vector.max}{A positive value for the highest limit of the
-\code{support.signal.vector} when \code{support.signal = NULL} and
+\item{support.signal.vector.max}{A positive value for the highest limit of
+the \code{support.signal.vector} when \code{support.signal = NULL} and
 \code{support.signal.vector = NULL}. The default is
 \code{support.signal.vector.max = 20}.}
 
@@ -263,8 +266,8 @@ is \code{boot.B = 0}.}
 
 \item{boot.method}{Method to be use for bootstrapping. One of
 \code{c("residuals", "cases", "wild")} which corresponds to resampling on
-residuals, on individual cases or on residuals multiplied by a N(0,1) variable,
-respectively. The default is \code{boot.method = "residuals"}.}
+residuals, on individual cases or on residuals multiplied by a N(0,1)
+variable, respectively. The default is \code{boot.method = "residuals"}.}
 
 \item{seed}{A single value, interpreted as an integer, for reproducibility
 or \code{NULL} for randomness. The default is \code{seed = 230676}.}
@@ -323,7 +326,8 @@ for the selected support space.}
 factor that produced the error within one standard error from the minimum
 error.}
 \item{support.signal.elbow}{upper limit of the standardized support space or
-factor that produced the error correspondent to the elbow of the error curve.}
+factor that produced the error correspondent to the elbow of the error
+curve.}
 \item{support.signal.min}{upper limit of the standardized support space or
 factor that produced the minimum error.}
 \item{p0}{vector of prior weights used for the signal.}
@@ -353,11 +357,12 @@ original data.}
 \item{support.method}{method chosen for the support's limits}
 \item{support.ok}{vector of successful positive upper limits for the
 support spaces on standardized data (\code{support.method = "standardized"})
-or factors (\code{support.method = "ridge"}), when \code{support.signal = NULL}
- or \code{support.signal = L}, or \code{"interval"} otherwise.}
+or factors (\code{support.method = "ridge"}), when
+\code{support.signal = NULL} or \code{support.signal = L}, or
+\code{"interval"} otherwise.}
 \item{support.stdUL}{when applicable, the upper limit of the standardized
-support chosen, when \code{support.method = "standardized"} or the factor used
- when \code{support.method = "ridge"}.}
+support chosen, when \code{support.method = "standardized"} or the factor
+used when \code{support.method = "ridge"}.}
 \item{vcov}{variance-covariance matrix of the coefficients.}
 }
 \description{
@@ -366,9 +371,10 @@ entropy. Initial support spaces can be provided or computed.
 }
 \details{
 The \code{lmgce} function fits a linear regression model via generalized cross
-entropy. Models for \code{lmgce} are specified symbolically. A typical model has the
-form response ~ terms where response is the (numeric) response vector and
-terms is a series of terms which specifies a linear predictor for response.
+entropy. Models for \code{lmgce} are specified symbolically. A typical model
+has the form response ~ terms where response is the (numeric) response vector
+and terms is a series of terms which specifies a linear predictor for
+response.
  \code{lmgce} calls the lower level functions \code{lmgce.validate},
  \code{lmgce.assign.ci}, \code{lmgce.assign.noci}, \code{lmgce.sscv},
  \code{lmgce.ss}, \code{lmgce.cv} and \code{lmgce.fit}.
@@ -394,7 +400,8 @@ Golan, A. (2008).
 Foundations and Trends® in Econometrics, 2(1–2), 1–145.
 \doi{10.1561/0800000004}\cr
 Golan, A. (2017)
-\emph{Foundations of Info-Metrics: Modeling, Inference, and Imperfect Information (Vol. 1).}
+\emph{Foundations of Info-Metrics: Modeling, Inference, and Imperfect
+Information (Vol. 1).}
 Oxford University Press.
 \doi{10.1093/oso/9780199349524.001.0001}\cr
 Pukelsheim, F. (1994)
@@ -404,7 +411,8 @@ The American Statistician, 48(2), 88–91.
 Macedo, P., Cabral, J., Afreixo, V., Macedo, F., Angelelli, M. (2025)
 \emph{RidGME estimation and inference in ill-conditioned models.}
 In: Gervasi O, Murgante B, Garau C, et al., eds. Computational Science and
-Its Applications – ICCSA 2025 Workshops. Springer Nature Switzerland; 2025:300-313.
+Its Applications – ICCSA 2025 Workshops. Springer Nature Switzerland;
+2025:300-313.
 \doi{10.1007/978-3-031-97589-9_21}
 }
 \seealso{

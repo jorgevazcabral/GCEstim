@@ -1,6 +1,7 @@
 #' Accuracy measures
 #'
-#' Function that allows to calculate different types of errors for point predictions:
+#' Function that allows to calculate different types of errors for point
+#' predictions:
 #' \enumerate{
 #' \item MAE - Mean Absolute Error,
 #' \item MAD - Mean Absolute Deviation,
@@ -41,7 +42,13 @@
 
 accmeasure <- function (y_pred,
                         y_true,
-                        which = c("RMSE", "MSE", "MAPE", "sMAPE", "MAE", "MAD", "MASE"))
+                        which = c("RMSE",
+                                  "MSE",
+                                  "MAPE",
+                                  "sMAPE",
+                                  "MAE",
+                                  "MAD",
+                                  "MASE"))
 {
   which <- match.arg(which)
   switch(
@@ -56,7 +63,8 @@ accmeasure <- function (y_pred,
       accm <- 100 / length(y_true) * sum(abs((y_true - y_pred) / y_true))
     },
     sMAPE = {
-      accm <- 100 / length(y_true) * sum(abs(y_true - y_pred) / (abs(y_true) + abs(y_pred)))
+      accm <- 100 / length(y_true) * sum(abs(y_true - y_pred) / (abs(y_true) +
+                                                                   abs(y_pred)))
     },
     MAE = {
       accm <- 1 / length(y_true) * sum(abs(y_true - y_pred))
@@ -65,7 +73,8 @@ accmeasure <- function (y_pred,
       accm <- 1 / length(y_true) * sum(abs(y_true - mean(y_true)))
     },
     MASE = {
-      accm <- (1 / length(y_true) * sum(abs(y_true - y_pred))) / (1 / length(y_true) * sum(abs(y_true - mean(y_true))))
+      accm <- (1 / length(y_true) * sum(abs(y_true - y_pred))) /
+        (1 / length(y_true) * sum(abs(y_true - mean(y_true))))
     },
     stop(
       'which must be one of c("RMSE", "MAPE", "sMAPE", "MAE", "MAD", "MASE")'

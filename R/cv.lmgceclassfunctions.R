@@ -64,7 +64,8 @@ print.cv.lmgce <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 #'
 #' @return Returns the coefficients from a \code{\link{cv.lmgce}} object. The
 #' coefficients are obtained from the \code{\link{lmgce}} object with best
-#' performance. These coefficients are stored in \code{object$best$coefficients}.
+#' performance. These coefficients are stored in
+#' \code{object$best$coefficients}.
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
@@ -95,7 +96,8 @@ coef.cv.lmgce <- function(object, ...)
 #'
 #' @return Returns the coefficients from a \code{\link{cv.lmgce}} object. The
 #' coefficients are obtained from the \code{\link{lmgce}} object with best
-#' performance. These coefficients are stored in \code{object$best$coefficients}.
+#' performance. These coefficients are stored in
+#' \code{object$best$coefficients}.
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
@@ -165,7 +167,8 @@ plot.cv.lmgce <-
                     ggplot2::aes(x = .data$support.signal.points,
                                  y = .data$error.measure.cv.mean,
                                  group = as.factor(.data$support.noise.points),
-                                 colour = as.factor(.data$support.noise.points))) +
+                                 colour = as.factor(.data$support.noise.points))
+                    ) +
       ggplot2::geom_line() +
       ggplot2::facet_wrap(~weight, ncol = ncol, scales = scales) +
       ggplot2::theme(legend.position = "bottom") +
@@ -173,7 +176,8 @@ plot.cv.lmgce <-
       ggplot2::ylab(paste0("CV-", x$best$error)) +
       ggplot2::guides(
         colour =
-          ggplot2::guide_legend(title = "Number of points of the noise support"))
+          ggplot2::guide_legend(title = "Number of points of the noise support")
+        )
 
     }
   }

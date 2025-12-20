@@ -1,8 +1,7 @@
-#' Dynamic Linear Models and Time Series Regression using Cross entropy
-#' estimation
+#' Time series bootstrap Cross entropy estimation
 #'
-#' This generic function fits dynamic linear models using time series via
-#' generalized cross entropy.
+#' This generic function fits a linear regression model using bootstrapped time
+#' series via generalized cross entropy.
 #'
 #' @param formula a "formula" describing the linear model to be fit. For details
 #' see \code{\link[stats]{lm}} and \code{\link[dynlm]{dynlm}}.
@@ -10,33 +9,50 @@
 #' \code{\link[base]{as.data.frame}} to a data frame) or time series object
 #' (e.g., \code{\link[stats]{ts}} or \code{\link[zoo]{zoo}}), containing the
 #' variables in the model.
+#' @param trim The trimming proportion (see \code{\link[meboot]{meboot}}).
+#' The default is \code{trim = 0.05}.
+#' @param reps The number of replicates to generate (see
+#' \code{\link[meboot]{meboot}}). The default is \code{reps = 1000}.
 #' @param start The time of the first observation. Either a single number
 #'  or a vector of two numbers (the second of which is an integer), which
 #'  specify a natural time unit and a (1-based) number of samples into the time
 #'  unit (see \code{\link[stats]{ts}}).
 #' @param end The time of the last observation, specified in the same way as
 #' \code{start} (see \code{\link[stats]{ts}}).
-#' @inheritParams lmgce
+#' @param coef.method Method used to estimate the coefficients. One of
+#' \code{c("median", "mode")}. The default is \code{coef.method = "median"}
+#' @param support.signal.points A vector of positive integers defining the
+#' number of points for the signal support to be tested .The default is
+#' \code{support.signal.points = c(3, 5, 7, 9)}.
+#' @param support.noise.points A vector of positive integers defining the number
+#'  of points for the noise support to be tested .The default is
+#' \code{support.noise.points = c(3, 5, 7, 9)}.
+#' @param weight a vector of values between zero and one representing the
+#' prediction-precision loss trade-off. The default is
+#' \code{weight = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)}.
+#' @inheritParams tsbootgce
 #'
 #' @details
 #'
-#' The \code{dynlmgce} function fits linear regression models via
-#' generalized cross entropy time series. Models for \code{\link{dynlmgce}} are
+#' The \code{cv.tsbootgce} function fits several linear regression models via
+#' generalized cross entropy in replicas of time series obtained using
+#' \code{\link[meboot]{meboot}}. Models for \code{\link{cv.tsbootgce}} are
 #' specified symbolically (see \code{\link[stats]{lm}} and
 #' \code{\link[dynlm]{dynlm}}).
 #'
 #' @return
-#' \code{dynlmgce} returns an object of \code{\link[base]{class}}
-#' \code{lmgce}. The generic accessory functions
-#' \code{\link{coef.lmgce}}, \code{\link{confint.lmgce}} and
-#' \code{\link{plot.lmgce}} extract various useful features of the value
-#' returned by \code{object} of class \code{lmgce}.
+#' \code{cv.tsbootgce} returns an object of \code{\link[base]{class}}
+#' \code{cv.tsbootgce}. The generic accessory functions
+#' \code{\link{coef.cv.tsbootgce}}, \code{\link{confint.tsbootgce}} and
+#' \code{\link{plot.tsbootgce}} extract various useful features of the value
+#' returned by \code{object} of class \code{tsbootgce}.
 #'
-#'  The \code{dynlmgce} function returns a list containing at
-#'  least the following components:
+#'  An object of \code{\link[base]{class}} \code{tsbootgce} is a list
+#'  containing at least the following components:
 #'
 #' \item{call}{the matched call.}
-#' \item{coefficients}{a named data frame of coefficients.}
+#' \item{coefficients}{a named data frame of coefficients determined by
+#'  \code{coef.method}.}
 #' \item{data.ts}{\code{ts} object.}
 #' \item{error}{loss function (error) used for the selection of the support
 #' spaces.}
@@ -45,6 +61,7 @@
 #' \item{frequency}{see \code{link[zoo]{zoo}}.}
 #' \item{index}{see \code{link[zoo]{zoo}}.}
 #' \item{lmgce}{\code{lmgce} object.}
+#' \item{meboot}{\code{meboot} replicates.}
 #' \item{model}{the model frame used.}
 #' \item{nep}{normalized entropy of the signal of the model.}
 #' \item{nepk}{normalized entropy of the signal of each coefficient.}
@@ -61,8 +78,8 @@
 #' \item{y}{if requested (the default), the response used.}
 #'
 #' @seealso
-#' The generic functions \code{\link{plot.lmgce}}, \code{\link{print.lmgce}},
-#'  and \code{\link{coef.lmgce}}.
+#' The generic functions \code{\link{plot.tsbootgce}},
+#' \code{\link{print.tsbootgce}}, and \code{\link{coef.tsbootgce}}.
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
@@ -78,23 +95,33 @@
 #'
 #' Golan, A. (2017)
 #' \emph{Foundations of Info-Metrics: Modeling, Inference, and Imperfect
-#' Information (Vol. 1).} Oxford University Press.
+#' Information (Vol. 1).}
+#' Oxford University Press.
 #' \doi{10.1093/oso/9780199349524.001.0001}\cr
+#'
+#' Hyndman, R.J. (1996)
+#' \emph{Computing and graphing highest density regions.}
+#'  American Statistician, 50, 120-126.
+#'  \doi{10.2307/2684423}\cr
 #'
 #' Pukelsheim, F. (1994)
 #' \emph{The Three Sigma Rule.}
 #' The American Statistician, 48(2), 88–91.
 #' \doi{10.2307/2684253}\cr
 #'
+#' Vinod, H. D., & Lopez-de-Lacalle, J. (2009).
+#' \emph{Maximum Entropy Bootstrap for Time Series: The meboot R Package.}
+#'  Journal of Statistical Software, 29(5), 1–19.
+#' \doi{10.18637/jss.v029.i05}
 #'
 #' @examples
 #' \donttest{
-#' res.dynlmgce <-
-#'   dynlmgce(
+#' res.cv.tsbootgce <-
+#'   cv.tsbootgce(
 #'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
 #'     data = moz_ts)
 #'
-#' res.dynlmgce
+#' res.tsbootgce
 #' }
 #'
 #' @importFrom stats density ts
@@ -102,14 +129,17 @@
 #' @importFrom zoo merge.zoo
 #' @export
 
-dynlmgce <- function(formula,
+cv.tsbootgce <- function(formula,
                       data,
                       subset,
                       na.action,
                       offset,
                       contrasts = NULL,
+                      trim = 0.05,
+                      reps = 1000,
                       start = NULL,
                       end = NULL,
+                      coef.method = c("median","mode"),
                       cv = TRUE,
                       cv.nfolds = 5,
                       errormeasure = c("RMSE", "MSE", "MAE",
@@ -136,11 +166,10 @@ dynlmgce <- function(formula,
                       support.signal.vector.min = 0.3,
                       support.signal.vector.max = 20,
                       support.signal.vector.n = 20,
-                      support.signal.points =
-                       c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
+                      support.signal.points = c(3, 5, 7, 9),
                       support.noise = NULL,
-                      support.noise.points = c(1 / 3, 1 / 3, 1 / 3),
-                      weight = 0.5,
+                      support.noise.points = c(3, 5, 7, 9),
+                      weight = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
                       twosteps.n = 1,
                       method = c("dual.BFGS",
                                  "dual.lbfgsb3c",
@@ -157,6 +186,8 @@ dynlmgce <- function(formula,
                       OLS = TRUE,
                       verbose = 0) {
 
+  cv.repeats <- 1
+
   if(!is.ts(data))
     stop("argument `data` must be a \"ts\" object")
 
@@ -165,6 +196,7 @@ dynlmgce <- function(formula,
   x = TRUE
   y = TRUE
   model = TRUE
+  coef.method <- match.arg(coef.method)
   support.method <- match.arg(support.method)
   errormeasure <- match.arg(errormeasure)
   errormeasure.which <- match.arg(errormeasure.which)
@@ -216,7 +248,8 @@ dynlmgce <- function(formula,
                                      TRUE))
     freq <- round(freq)
     res <- zoo::zoo(seq_along(zoo::index(x))/freq,
-                    zoo::index(x), frequency = ofreq)
+                    zoo::index(x),
+                    frequency = ofreq)
     return(res)
   }, envir = Zenv)
   assign("harmon", function(x, order = 1) {
@@ -300,9 +333,10 @@ dynlmgce <- function(formula,
   mfna <- attr(mf, "na.action")
   if (length(zoo::index(mf[, 1])) > nrow(mf)) {
     for (i in 1:NCOL(mf)) {
-      attr(mf[, i], "index") <- attr(mf[, i], "index")[-as.vector(mfna)]
+      attr(mf[, i], "index") <-
+        attr(mf[, i], "index")[-as.vector(mfna)]
       }
-    }
+  }
   is.zoofactor <- function(x) !is.null(attr(x, "oclass")) &&
     attr(x, "oclass") == "factor"
   for (i in 1:NCOL(mf)) if (is.zoofactor(mf[, i]))
@@ -313,7 +347,7 @@ dynlmgce <- function(formula,
     start <- start(data)
 
   if (length(start) > 1)
-      start <- start[1] + (start[2] - 1)/frequency(mf1)
+    start <- start[1] + (start[2] - 1)/frequency(mf1)
 
   start <- min(which(zoo::index(mf1) >= start))
 
@@ -321,7 +355,7 @@ dynlmgce <- function(formula,
     end <- end(data)
 
   if (length(end) > 1)
-   end <- end[1] + (end[2] - 1)/frequency(mf1)
+    end <- end[1] + (end[2] - 1)/frequency(mf1)
 
   end <- max(which(zoo::index(mf1) <= end))
 
@@ -396,8 +430,8 @@ dynlmgce <- function(formula,
     colnames(data.lmgce)[-1] <- colnames(x)
   }
 
-  res <-
-    lmgce(
+  res$lmgce <-
+    cv.lmgce(
       formula = y ~ .,
       data = data.lmgce,
       model = model,
@@ -435,10 +469,244 @@ dynlmgce <- function(formula,
       OLS = OLS,
       verbose = verbose
     )
+
+  res$lmgce$index <- zoo::index(mf1)
+  res$lmgce$frequency <- frequency(mf1)
+
+  ## end lmgce
+
+  mf_ts <- mf
+
+  me_mf_ts <- list()
+
+  if (!is.null(seed))
+    set.seed(seed)
+
+  for (i in 1:ncol(mf_ts)) {
+    me_mf_ts[[i]] <-
+      data.frame(meboot::meboot(x = mf_ts[, i],
+                                reps = reps,
+                                trim = trim)$ensemble)
+  }
+
+  coef.df <- data.frame(matrix(
+    NA,
+    nrow = ncol(mf) - 1 + attr(mt, "intercept"),
+    ncol = reps
+  ))
+  colnames(coef.df) <- sprintf(paste0("rep_%0",
+                                      floor(log10(reps)) + 1,
+                                      "d"),
+                               1:reps)
+  rownames(coef.df) <- c(ifelse(attr(mt, "intercept") == 1,
+                                "(Intercept)"),
+                         attr(mt, "term.labels"))
+
+  nepk.df <- coef.OLS.df <- coef.df
+
+  coefnepk.list <- list(coef = vector(mode = "list",
+                                      length = cv.nfolds),
+                        nepk = vector(mode = "list",
+                                      length = cv.nfolds))
+
+  coef.OLS.list <- list(coef = vector(mode = "list",
+                                      length = cv.nfolds))
+
+  for (i in 1:cv.nfolds){
+    coefnepk.list$coef[[i]] <- coef.df
+    coefnepk.list$nepk[[i]] <- nepk.df
+    coef.OLS.list$coef[[i]] <- coef.df
+  }
+
+  nep <- NULL
+
+  for (i in 1:reps) {
+    data_me_mf_ts <- data.frame(sapply(me_mf_ts, function(x){x[, i]}))
+
+    res.aux.lmgce <-
+      suppressWarnings(
+        lmgce(
+          formula = as.formula(paste0("X1 ~",
+                                      ifelse(attr(mt,
+                                                  "intercept") == 1,
+                                             " 1 + ",
+                                             " -1 + "),
+                                      ".")),
+          data = data_me_mf_ts,
+          contrasts = contrasts,
+          model = TRUE,
+          x = TRUE,
+          y = TRUE,
+          cv = cv,
+          cv.nfolds = cv.nfolds,
+          errormeasure = errormeasure,
+          errormeasure.which =
+            {if (errormeasure.which == "1se") {
+                "min"
+              } else {errormeasure.which}
+            },
+          support.method = "standardized",
+          support.signal = res$lmgce$best$support.matrix,
+          support.signal.vector = support.signal.vector,
+          support.signal.vector.min = support.signal.vector.min,
+          support.signal.vector.max = support.signal.vector.max,
+          support.signal.vector.n = support.signal.vector.n,
+          support.signal.points = res$lmgce$support.signal.points.best,
+          support.noise = support.noise,
+          support.noise.points = res$lmgce$support.noise.points.best,
+          weight = res$lmgce$weight.best,
+          twosteps.n =
+            {if (is.null(support.signal)) {
+              0
+            } else {
+              twosteps.n}},
+          method = method,
+          caseGLM = caseGLM,
+          boot.B = 0,
+          boot.method = boot.method,
+          seed = seed,
+          OLS = TRUE,
+          verbose = verbose
+        ))
+
+    coef.df[, i] <- coef(res.aux.lmgce)
+    nepk.df[, i] <- NormEnt(res.aux.lmgce, model = FALSE)
+    nep[i] <- NormEnt(res.aux.lmgce, model = TRUE)
+
+    coef.OLS.df[, i] <- coef(res.aux.lmgce$results$OLS$res)
+
+    if (isTRUE(cv)) {
+    for (j in 1:cv.nfolds){
+      coefnepk.list$coef[[j]][, i] <-
+        res.aux.lmgce$results$cv$repeats1[[j]]$coefficients
+      coefnepk.list$nepk[[j]][, i] <-
+        res.aux.lmgce$results$cv$repeats1[[j]]$nepk
+      coef.OLS.list$coef[[j]][, i] <- res.aux.lmgce$results$OLS$matrix.coef[, j]
+    }
+    }
+  }
+
+  if (coef.method == "mode") {
+    if (!is.null(seed))
+      set.seed(seed)
+    coef.matrix.cv <-
+      sapply(coefnepk.list$coef,
+             function(x){
+               apply(x,
+                     1,
+                     function(x) {
+                       hdrcde::hdr(x = as.numeric(x), prob = 95)[[2]]} )})
+    coef.OLS.matrix.cv <-
+      sapply(coef.OLS.list$coef,
+             function(x){
+               apply(x,
+                     1,
+                     function(x) {
+                       hdrcde::hdr(x = as.numeric(x), prob = 95)[[2]]} )})
+  } else {
+    coef.matrix.cv <-
+      sapply(coefnepk.list$coef,
+             function(x){apply(x,
+                               1,
+                               median)})
+    coef.OLS.matrix.cv <-
+      sapply(coef.OLS.list$coef,
+             function(x){apply(x,
+                               1,
+                               median)})
+  }
+
+  if (!is.null(seed))
+    set.seed(seed)
+
+  auxfolds = cut(seq(1, nrow(x)),
+                 breaks = cv.nfolds,
+                 labels = FALSE)
+  change_order <- sample(nrow(x))
+
+  error.cv <- error.OLS.cv <- NULL
+
+  for (cv.n in 1:cv.nfolds) {
+    y.cv = y[change_order][auxfolds != cv.n]
+    X.cv = x[change_order, ][auxfolds != cv.n,]
+    error.cv[cv.n] <- accmeasure(y.cv,
+                                 X.cv %*% coef.matrix.cv[, cv.n],
+                                 errormeasure)
+    error.OLS.cv[cv.n] <- accmeasure(y.cv,
+                                     X.cv %*% coef.OLS.matrix.cv[, cv.n],
+                                     errormeasure)
+  }
+  res$na.action <- attr(mf, "na.action")
+  res$offset <- offset
+  res$contrasts <- attr(x, "contrasts")
+  res$xlevels <- .getXlevels(mt, mf)
+  res$call <- cl
+  res$terms <- mt
+  if (model)
+    res$model <- mf
+  if (ret.x)
+    res$x <- x
+  if (ret.y)
+    res$y <- y
   res$index <- zoo::index(mf1)
   res$frequency <- frequency(mf1)
-  res$call <- cl
+  # res$twostage <- twostage
+  # if (twostage) {
+  #   res$formula <- ff
+  #res$residuals <- y1 - as.vector(x1 %*% res$coefficients)
+  #res$fitted.values <- y1 - res$residuals
+  # }
+  res$results$bootstrap$coef.matrix <- coef.df
+  res$results$bootstrap$nepk.matrix <- nepk.df
+  res$results$bootstrap$nep.vector <- nep
+  res$results$bootstrap$coef.matrix.OLS <- coef.OLS.df
+  if (coef.method == "mode") {
+    if (!is.null(seed)) set.seed(seed)
+    res$coefficients <- apply(res$results$bootstrap$coef.matrix,
+                              1,
+                              function(x) {
+                                hdrcde::hdr(x = as.numeric(x), prob = 95)[[2]]
+    })
+    res$coefficients.OLS <- apply(res$results$bootstrap$coef.matrix.OLS,
+                                  1,
+                                  function(x) {
+                                    hdrcde::hdr(x = as.numeric(x),
+                                                prob = 95)[[2]]
+    })
+  } else {
+    res$coefficients <-
+      apply(res$results$bootstrap$coef.matrix, 1, median)
+    res$coefficients.OLS <-
+      apply(res$results$bootstrap$coef.matrix.OLS, 1, median)
   }
-  class(res) <- "lmgce"
+  res$coefficients.cv <- coef.matrix.cv
+  res$coefficients.OLS.cv <- coef.OLS.matrix.cv
+  #res$res.aux.lmgce <- res.aux.lmgce
+  res$fitted.values <- model.matrix(mt, mf, contrasts) %*% res$coefficients
+  res$residuals <- model.response(mf, "numeric") - res$fitted.values
+  res$fitted.values.OLS <-
+    model.matrix(mt, mf, contrasts) %*% res$coefficients.OLS
+  res$residuals.OLS <- model.response(mf, "numeric") - res$fitted.values.OLS
+  res$nep <- median(res$results$bootstrap$nep.vector)
+  res$nepk <- apply(res$results$bootstrap$nepk.matrix, 1, median)
+  res$data.ts <- mf_ts
+  names(me_mf_ts) <- colnames(mf)
+  res$meboot <- me_mf_ts
+  res$error <- errormeasure
+  res$error.measure <-
+    accmeasure(model.response(mf, "numeric"),
+                        res$fitted.values,
+                        errormeasure)
+  res$error.measure.OLS <-
+    accmeasure(model.response(mf, "numeric"),
+                        res$fitted.values.OLS,
+                        errormeasure)
+  res$error.measure.cv.mean <- mean(error.cv)
+  res$error.measure.cv.sd <- sd(error.cv)
+  res$error.measure.OLS.cv.mean <- mean(error.OLS.cv)
+  res$error.measure.OLS.cv.sd <- sd(error.OLS.cv)
+  res$seed <- seed
+  }
+  class(res) <- "cv.tsbootgce"
   return(res)
 }

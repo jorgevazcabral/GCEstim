@@ -26,14 +26,16 @@ scalebackcoef <-
 
     aux <-
       sapply(1:k, function(feat) {
-        attributes(X.scaled)$`scaled:center`[feat] * sigma_y * betas.scaled[feat + 1] /
+        attributes(
+          X.scaled)$`scaled:center`[feat] * sigma_y * betas.scaled[feat + 1] /
           sigma_X[feat]
       })
 
     if (isTRUE(intercept)) {
       betas <- rep(0, k + 1)
       betas[1] <-
-        betas.scaled[1] * sigma_y + attributes(y.scaled)$`scaled:center` - sum(aux)
+        betas.scaled[1] * sigma_y + attributes(y.scaled)$`scaled:center` -
+        sum(aux)
       betas[-1] <-
         sapply(1:k, function(feat) {
           betas.scaled[feat + 1] * sigma_y / sigma_X[feat]

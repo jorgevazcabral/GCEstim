@@ -12,8 +12,8 @@
 #'   Jobs;}
 #'   \item{EU}{Energy use (kg of oil equivalent per capita). Data from database:
 #'   World Development Indicators;}
-#'   \item{GDP}{Gross domestic product per capita (current US$); Data from: World Development
-#'   Indicators.}
+#'   \item{GDP}{Gross domestic product per capita (current US$); Data from:
+#'   World Development Indicators.}
 #' }
 #'
 #' @keywords datasets

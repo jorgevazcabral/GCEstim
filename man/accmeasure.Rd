@@ -21,7 +21,8 @@ accmeasure(
 The value of the chosen error is returned.
 }
 \description{
-Function that allows to calculate different types of errors for point predictions:
+Function that allows to calculate different types of errors for point
+predictions:
 \enumerate{
 \item MAE - Mean Absolute Error,
 \item MAD - Mean Absolute Deviation,

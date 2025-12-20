@@ -76,8 +76,9 @@ corresponding columns; ii) scaling is done by dividing the (centered) columns
 intercept will be penalized when \code{standardize = FALSE}.}
 
 \item{errormeasure}{Loss function (error) to be used for the selection
-of the support spaces. One of c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE").
-The default is \code{errormeasure = "RMSE"}.}
+of the support spaces. One of
+c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE"). The default is
+\code{errormeasure = "RMSE"}.}
 
 \item{cv}{Boolean value. If \code{TRUE} the error, \code{errormeasure},
 will be computed using cross-validation. If \code{FALSE} the error will be
@@ -90,8 +91,8 @@ computed in sample. The default is \code{cv = TRUE}.}
 or \code{NULL} for randomness. The default is \code{seed = 230676}.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{ridgetrace} is a list containing
- at least the following components:
+An object of \code{\link[base]{class}} \code{ridgetrace} is a list
+ containing at least the following components:
 
 \item{lambda}{the lambda sequence used}
 \item{min.coef}{a named vector of coefficients (minimum

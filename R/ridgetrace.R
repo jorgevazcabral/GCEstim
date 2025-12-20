@@ -50,14 +50,15 @@
 #' @param cv.nfolds number of folds used for cross-validation when
 #' \code{cv = TRUE}. The default is \code{cv.nfolds = 5}.
 #' @param errormeasure Loss function (error) to be used for the selection
-#' of the support spaces. One of c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE").
-#' The default is \code{errormeasure = "RMSE"}.
+#' of the support spaces. One of
+#' c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE"). The default is
+#' \code{errormeasure = "RMSE"}.
 #' @param seed A single value, interpreted as an integer, for reproducibility
 #' or \code{NULL} for randomness. The default is \code{seed = 230676}.
 #'
 #' @return
-#'  An object of \code{\link[base]{class}} \code{ridgetrace} is a list containing
-#'  at least the following components:
+#'  An object of \code{\link[base]{class}} \code{ridgetrace} is a list
+#'  containing at least the following components:
 #'
 #' \item{lambda}{the lambda sequence used}
 #' \item{min.coef}{a named vector of coefficients (minimum
@@ -99,7 +100,8 @@ ridgetrace <- function(formula,
                        lambda.n = 100,
                        standardize = TRUE,
                        penalize.intercept = TRUE,
-                       errormeasure = c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE"),
+                       errormeasure = c("RMSE","MSE", "MAE",
+                                        "MAPE", "sMAPE", "MASE"),
                        cv = TRUE,
                        cv.nfolds = 5,
                        seed = 230676)
@@ -107,7 +109,8 @@ ridgetrace <- function(formula,
   errormeasure <- match.arg(errormeasure)
   cl <- match.call()
   mf <- match.call(expand.dots = FALSE)
-  m <- match(c("formula", "data", "subset", "na.action", "offset"), names(mf), 0L)
+  m <- match(c("formula", "data", "subset", "na.action", "offset"),
+             names(mf), 0L)
   mf <- mf[c(1L, m)]
   mf$drop.unused.levels <- TRUE
   mf[[1L]] <- quote(stats::model.frame)
@@ -170,16 +173,18 @@ ridgetrace <- function(formula,
   return(res)
 }
 
-#' Function to obtain the ridge trace and choose the support limits given X and y
+#' Function to obtain the ridge trace and choose the support limits given X
+#' and y
 #'
-#' Function to obtain the ridge trace and choose the support limits given X and y
+#' Function to obtain the ridge trace and choose the support limits given X
+#' and y
 #'
 #' @param X A model matriz.
 #' @param y A vector containing the response.
 #' @param lambda Ridge parameter. The default is \code{lambda = NULL} and a
 #' lambda logarithmic sequence will be computed based on \code{lambda.n},
-#' \code{lambda.min} and \code{lambda.max}. Supplying a lambda sequence overrides
-#'  this.
+#' \code{lambda.min} and \code{lambda.max}. Supplying a lambda sequence
+#' overrides this.
 #' @param lambda.min Minimum value for the \code{lambda} sequence. The default
 #' id \code{lambda.min = 10^-3}.
 #' @param lambda.max Maximum value for the \code{lambda} sequence. The default
@@ -198,8 +203,9 @@ ridgetrace <- function(formula,
 #' @param cv.nfolds number of folds used for cross-validation when
 #' \code{cv = TRUE}. The default is \code{cv.nfolds = 5}.
 #' @param errormeasure Loss function (error) to be used for the selection
-#' of the support spaces. One of c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE").
-#' The default is \code{errormeasure = "RMSE"}.
+#' of the support spaces. One of
+#' c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE"). The default is
+#' \code{errormeasure = "RMSE"}.
 #' @param seed A single value, interpreted as an integer, for reproducibility
 #' or \code{NULL} for randomness. The default is \code{seed = 230676}.
 #'
@@ -215,14 +221,16 @@ ridgetrace.Xy <- function(X,
                           lambda.n = 100,
                           standardize = TRUE,
                           penalize.intercept = TRUE,
-                          errormeasure = c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE"),
+                          errormeasure = c("RMSE","MSE", "MAE",
+                                           "MAPE", "sMAPE", "MASE"),
                           cv = TRUE,
                           cv.nfolds = 5,
                           seed = 230676){
 
   if (is.null(lambda)) {
     lambda <-
-      lambda.min * (lambda.max / lambda.min) ^ ((0:(lambda.n - 1)) / (lambda.n - 1))
+      lambda.min * (lambda.max / lambda.min) ^ (
+        (0:(lambda.n - 1)) / (lambda.n - 1))
   } else {
     lambda.n <- length(lambda)
   }
@@ -276,7 +284,9 @@ ridgetrace.Xy <- function(X,
   for (i in 1:lambda.n) {
     if (standardize) {
       coef_lambda_tilde[, i] <-
-        solve(t(X_tilde) %*% X_tilde + lambda[i] * penalty) %*% (t(X_tilde) %*% y_tilde)
+        solve(
+          t(X_tilde) %*% X_tilde + lambda[i] * penalty) %*% (
+            t(X_tilde) %*% y_tilde)
       if (X.intercept) {
         coef_lambda[, i] <-
           scalebackcoef(X_tilde,
@@ -291,7 +301,8 @@ ridgetrace.Xy <- function(X,
                         intercept = FALSE)
         }
     } else {
-      coef_lambda[, i] <- solve(t(X) %*% X + lambda[i] * penalty) %*% (t(X) %*% y)
+      coef_lambda[, i] <-
+        solve(t(X) %*% X + lambda[i] * penalty) %*% (t(X) %*% y)
     }
 
     fitted_lambda[, i] <- X %*% coef_lambda[, i]
@@ -316,7 +327,8 @@ ridgetrace.Xy <- function(X,
             attr(X_tilde, "scaled:scale")
 
           coef_lambda_cv <-
-            solve(t(X_tilde.cv) %*% X_tilde.cv + lambda[i] * penalty) %*% (t(X_tilde.cv) %*% y_tilde.cv)
+            solve(t(X_tilde.cv) %*% X_tilde.cv + lambda[i] * penalty) %*% (
+              t(X_tilde.cv) %*% y_tilde.cv)
           if (X.intercept) {
             coef_lambda_cv <-
               scalebackcoef(X_tilde.cv,

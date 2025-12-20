@@ -21,9 +21,9 @@ lmgce.ss <- function(y,
                      max.abs.residual = NULL,
                      support.signal = NULL,
                      support.signal.vector = NULL,
-                     support.signal.points = c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
+                     support.signal.points = c(1/5, 1/5, 1/5, 1/5, 1/5),
                      support.noise = NULL,
-                     support.noise.points = c(1 / 3, 1 / 3, 1 / 3),
+                     support.noise.points = c(1/3, 1/3, 1/3),
                      weight = 0.5,
                      method = "dual.lbfgsb3c",
                      caseGLM = "D",
@@ -97,7 +97,8 @@ lmgce.ss <- function(y,
         which(!is.na(error.measure.ss))))
 
   if (length(res$support.ok) < 2)
-    stop('Estimation successfully completed for less than 2 supports.\nPlease choose different supports.',
+    stop('Estimation successfully completed for less than 2 supports.\nPlease
+         choose different supports.',
          call. = FALSE)
 
   coef.matrix.ss <- matrix(NA,

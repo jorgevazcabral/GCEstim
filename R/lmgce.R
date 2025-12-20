@@ -37,21 +37,21 @@
 #' @param cv.nfolds number of folds used for cross-validation when
 #' \code{cv = TRUE}. The default is \code{cv.nfolds = 5} and the smallest value
 #' allowable is \code{cv.nfolds = 3}.
-#' @param errormeasure Loss function (error) to be used for the selection
-#' of the support spaces. One of c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE").
+#' @param errormeasure Loss function (error) to be used for the selection of
+#' the support spaces. One of c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE").
 #' The default is \code{errormeasure = "RMSE"}.
 #' @param errormeasure.which Which value of \code{errormeasure}
-#' to be used for selecting a support space upper limit from \code{support.signal.vector}.
-#' One of \code{c("min", "1se", "elbow")} where \code{"min"} corresponds to the
-#' support spaces that produced the lowest error, \code{"1se"} corresponds to
-#' the support spaces such that error is within 1 standard error of the CV error
-#' for \code{"min"} and \code{"elbow"} corresponds to the elbow point of the error
-#' curve (the point that maximizes the distance between each observation, i.e,
-#' the pair composed by the upper limit of the support space and the error, and
-#' the line between the first and last observations, i.e., the lowest and the
-#' highest upper limits of the support space respectively. See
-#' \code{\link[pathviewr]{find_curve_elbow}}). The default is
-#' \code{errormeasure.which = "1se"}.
+#' to be used for selecting a support space upper limit from
+#' \code{support.signal.vector}. One of \code{c("min", "1se", "elbow")}
+#' where \code{"min"} corresponds to the support spaces that produced the lowest
+#'  error, \code{"1se"} corresponds to the support spaces such that error is
+#'  within 1 standard error of the CV error for \code{"min"} and \code{"elbow"}
+#'  corresponds to the elbow point of the error curve (the point that maximizes
+#'  the distance between each observation, i.e, the pair composed by the upper
+#'  limit of the support space and the error, and the line between the first and
+#'  last observations, i.e., the lowest and the highest upper limits of the
+#'  support space respectively. See \code{\link[pathviewr]{find_curve_elbow}}).
+#'  The default is \code{errormeasure.which = "1se"}.
 #' @param support.method One of c("standardized", "ridge"). If
 #' \code{support.method = "standardized}, the default, standardized coefficients
 #' are used to define the signal support spaces. If
@@ -66,14 +66,17 @@
 #' @param support.method.ridge.lambda.min Minimum value for the
 #' \code{support.method.ridge.lambda} sequence. The default is
 #' \code{support.method.ridge.lambda.min = 10^-3}. To be used when
-#' \code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.
+#' \code{support.method = "ridge"} and
+#' \code{support.method.ridge.lambda = NULL}.
 #' @param support.method.ridge.lambda.max Maximum value for the
 #' \code{support.method.ridge.lambda} sequence. The default is
 #' \code{support.method.ridge.lambda.max = 10^3}. To be used when
-#' \code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.
+#' \code{support.method = "ridge"} and
+#' \code{support.method.ridge.lambda = NULL}.
 #' @param support.method.ridge.lambda.n The number of ridge parameters values.
 #' The default is \code{support.method.ridge.lambda.n = 100}. To be used when
-#'  \code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.
+#'  \code{support.method = "ridge"} and
+#'  \code{support.method.ridge.lambda = NULL}.
 #' @param support.method.ridge.standardize Boolean value. If \code{TRUE}, the
 #' default, then: i) centering is done by subtracting the column means of x and
 #' y from their corresponding columns; ii) scaling is done by dividing the
@@ -104,18 +107,18 @@
 #' @param support.signal.vector NULL or a vector of positive values when
 #' \code{support.signal = NULL}. If \code{support.signal.vector = NULL},
 #' the default, a vector
-#' \code{c(support.signal.vector.min,...,support.signal.vector.max)} of dimension
-#'  \code{support.signal.vector.n} and logarithmically equally spaced will be
-#' generated. Each value represents the upper limits for the standardized support
-#'  spaces, when \code{support.method = "standardized"} or the factor to be
-#'  multiplied by the maximum absolute value of the ridge trace for each
-#'  coefficient, when \code{support.method = "ridge"}.
+#' \code{c(support.signal.vector.min,...,support.signal.vector.max)} of
+#' dimension \code{support.signal.vector.n} and logarithmically equally spaced
+#' will be generated. Each value represents the upper limits for the
+#' standardized support spaces, when \code{support.method = "standardized"} or
+#' the factor to be multiplied by the maximum absolute value of the ridge trace
+#' for each coefficient, when \code{support.method = "ridge"}.
 #' @param support.signal.vector.min A positive value for the lowest limit of the
 #' \code{support.signal.vector} when \code{support.signal = NULL} and
 #' \code{support.signal.vector = NULL}. The default is
 #' \code{support.signal.vector.min = 0.3}.
-#' @param support.signal.vector.max A positive value for the highest limit of the
-#' \code{support.signal.vector} when \code{support.signal = NULL} and
+#' @param support.signal.vector.max A positive value for the highest limit of
+#' the \code{support.signal.vector} when \code{support.signal = NULL} and
 #' \code{support.signal.vector = NULL}. The default is
 #' \code{support.signal.vector.max = 20}.
 #' @param support.signal.vector.n A positive integer for the number of support
@@ -177,8 +180,8 @@
 #' is \code{boot.B = 0}.
 #' @param boot.method Method to be use for bootstrapping. One of
 #' \code{c("residuals", "cases", "wild")} which corresponds to resampling on
-#' residuals, on individual cases or on residuals multiplied by a N(0,1) variable,
-#' respectively. The default is \code{boot.method = "residuals"}.
+#' residuals, on individual cases or on residuals multiplied by a N(0,1)
+#' variable, respectively. The default is \code{boot.method = "residuals"}.
 #' @param seed A single value, interpreted as an integer, for reproducibility
 #' or \code{NULL} for randomness. The default is \code{seed = 230676}.
 #' @param OLS Boolean value. if \code{TRUE}, the default, OLS estimation is
@@ -190,9 +193,10 @@
 #' @details
 #'
 #' The \code{lmgce} function fits a linear regression model via generalized cross
-#' entropy. Models for \code{lmgce} are specified symbolically. A typical model has the
-#' form response ~ terms where response is the (numeric) response vector and
-#' terms is a series of terms which specifies a linear predictor for response.
+#' entropy. Models for \code{lmgce} are specified symbolically. A typical model
+#' has the form response ~ terms where response is the (numeric) response vector
+#' and terms is a series of terms which specifies a linear predictor for
+#' response.
 #'  \code{lmgce} calls the lower level functions \code{lmgce.validate},
 #'  \code{lmgce.assign.ci}, \code{lmgce.assign.noci}, \code{lmgce.sscv},
 #'  \code{lmgce.ss}, \code{lmgce.cv} and \code{lmgce.fit}.
@@ -244,7 +248,8 @@
 #' factor that produced the error within one standard error from the minimum
 #' error.}
 #' \item{support.signal.elbow}{upper limit of the standardized support space or
-#' factor that produced the error correspondent to the elbow of the error curve.}
+#' factor that produced the error correspondent to the elbow of the error
+#' curve.}
 #' \item{support.signal.min}{upper limit of the standardized support space or
 #' factor that produced the minimum error.}
 #' \item{p0}{vector of prior weights used for the signal.}
@@ -274,11 +279,12 @@
 #' \item{support.method}{method chosen for the support's limits}
 #' \item{support.ok}{vector of successful positive upper limits for the
 #' support spaces on standardized data (\code{support.method = "standardized"})
-#' or factors (\code{support.method = "ridge"}), when \code{support.signal = NULL}
-#'  or \code{support.signal = L}, or \code{"interval"} otherwise.}
+#' or factors (\code{support.method = "ridge"}), when
+#' \code{support.signal = NULL} or \code{support.signal = L}, or
+#' \code{"interval"} otherwise.}
 #' \item{support.stdUL}{when applicable, the upper limit of the standardized
-#' support chosen, when \code{support.method = "standardized"} or the factor used
-#'  when \code{support.method = "ridge"}.}
+#' support chosen, when \code{support.method = "standardized"} or the factor
+#' used when \code{support.method = "ridge"}.}
 #' \item{vcov}{variance-covariance matrix of the coefficients.}
 #'
 #' @seealso
@@ -297,7 +303,8 @@
 #' Foundations and Trends® in Econometrics, 2(1–2), 1–145.
 #' \doi{10.1561/0800000004}\cr
 #' Golan, A. (2017)
-#' \emph{Foundations of Info-Metrics: Modeling, Inference, and Imperfect Information (Vol. 1).}
+#' \emph{Foundations of Info-Metrics: Modeling, Inference, and Imperfect
+#' Information (Vol. 1).}
 #' Oxford University Press.
 #' \doi{10.1093/oso/9780199349524.001.0001}\cr
 #' Pukelsheim, F. (1994)
@@ -307,7 +314,8 @@
 #' Macedo, P., Cabral, J., Afreixo, V., Macedo, F., Angelelli, M. (2025)
 #' \emph{RidGME estimation and inference in ill-conditioned models.}
 #' In: Gervasi O, Murgante B, Garau C, et al., eds. Computational Science and
-#' Its Applications – ICCSA 2025 Workshops. Springer Nature Switzerland; 2025:300-313.
+#' Its Applications – ICCSA 2025 Workshops. Springer Nature Switzerland;
+#' 2025:300-313.
 #' \doi{10.1007/978-3-031-97589-9_21}
 #'
 #' @examples
@@ -338,9 +346,12 @@ lmgce <- function(formula,
                   y = FALSE,
                   cv = TRUE,
                   cv.nfolds = 5,
-                  errormeasure = c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE"),
+                  errormeasure = c("RMSE","MSE", "MAE",
+                                   "MAPE", "sMAPE", "MASE"),
                   errormeasure.which =
-                    {if (isTRUE(cv)) c("1se", "min", "elbow") else c("min", "elbow")},
+                    {if (isTRUE(cv))
+                      c("1se", "min", "elbow") else
+                        c("min", "elbow")},
                   support.method = c("standardized", "ridge"),
                   support.method.ridge.lambda = NULL,
                   support.method.ridge.lambda.min = 10^-3,
@@ -427,7 +438,8 @@ lmgce <- function(formula,
   ret.y <- y
   cl <- match.call()
   mf <- match.call(expand.dots = FALSE)
-  m <- match(c("formula", "data", "subset", "na.action", "offset"), names(mf), 0L)
+  m <- match(c("formula", "data", "subset", "na.action", "offset"),
+             names(mf), 0L)
   mf <- mf[c(1L, m)]
   mf$drop.unused.levels <- TRUE
   mf[[1L]] <- quote(stats::model.frame)
@@ -442,8 +454,10 @@ lmgce <- function(formula,
   offset <- as.vector(model.offset(mf))
   if(!is.null(offset)) {
     if(length(offset) != NROW(y))
-      stop(gettextf("number of offsets is %d, should equal %d (number of observations)",
-                    length(offset), NROW(y)), domain = NA)
+      stop(
+        gettextf(
+          "number of offsets is %d, should equal %d (number of observations)",
+          length(offset), NROW(y)), domain = NA)
   }
 
   X <- model.matrix(mt, mf, contrasts)
@@ -461,13 +475,15 @@ lmgce <- function(formula,
   if (is.null(support.signal) || length((support.signal) == 1)){
     if (any(c("(Intercept)", "X.Intercept.") %in% colnames(X))) {
       if (any(as.numeric(apply(cbind(X[, -1], y), 2, sd)) == 0)) {
-        stop("standardization not possible because some predictors are constants.",
-             call. = FALSE)
+        stop(
+          "standardization not possible because some predictors are constants.",
+          call. = FALSE)
         }
       } else {
         if (any(as.numeric(apply(cbind(X, y), 2, sd)) == 0)) {
-          stop("standardization not possible because some predictors are constants.",
-               call. = FALSE)
+          stop(
+          "standardization not possible because some predictors are constants.",
+          call. = FALSE)
         }
       }
   }
@@ -672,7 +688,8 @@ lmgce <- function(formula,
 
       res.OLS.cv <-
         lm(as.formula(formula),
-           data[row.names(data) %in% row.names(X), ][change_order, ][auxfolds != cv.n, ]
+           data[row.names(data) %in% row.names(X),
+                ][change_order, ][auxfolds != cv.n, ]
            # , subset,
            # na.action,
            # offset,
@@ -681,9 +698,11 @@ lmgce <- function(formula,
 
       coef.OLS[, (r - 1) * cv.nfolds + cv.n] <- coef(res.OLS.cv)
       error.OLS[(r - 1) * cv.nfolds + cv.n] <-
-        accmeasure(predict(res.OLS.cv,
-                           data[row.names(data) %in% row.names(X), ][change_order, ][auxfolds == cv.n, ]),
-                   y[change_order][auxfolds == cv.n],
+        accmeasure(
+          predict(res.OLS.cv,
+                  data[row.names(data) %in% row.names(X),
+                       ][change_order, ][auxfolds == cv.n, ]),
+          y[change_order][auxfolds == cv.n],
                    errormeasure)
       }
     }
@@ -723,14 +742,17 @@ lmgce <- function(formula,
 
   res <- res[order(names(res))]
 
-  if (is.null(support.signal) && max(res$support.ok) == res$support.signal.min) {
-    #cat("\n")
-    warning("\n\nThe minimum error was found for the highest upper limit of the support. Confirm if higher values should be tested.")
+  if (is.null(support.signal) && max(res$support.ok) ==
+      res$support.signal.min) {
+    warning("\n\nThe minimum error was found for the highest upper limit of the
+            support. Confirm if higher values should be tested.")
   }
 
-  if (is.null(support.signal) && cv && min(res$support.ok) == res$support.signal.1se) {
+  if (is.null(support.signal) && cv &&
+      min(res$support.ok) == res$support.signal.1se) {
     #cat("\n")
-    warning("\n\nThe 1se error was found for the lowest upper limit of the support. Confirm if lower values should be tested.")
+    warning("\n\nThe 1se error was found for the lowest upper limit of the
+            support. Confirm if lower values should be tested.")
     }
 
   class(res) <- "lmgce"

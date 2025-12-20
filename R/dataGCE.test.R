@@ -11,9 +11,9 @@
 #'   \item{X003}{A N(0,1) independent variable.}
 #'   \item{X004}{A N(0,1) independent variable.}
 #'   \item{X005}{A N(0,1) independent variable.}
-#'   \item{y}{A Dependent variable: y = 1 + 3 * X003 + 6 * X004 + 9 * X005 + error;
-#'   the error follows a normal distribution with mean equal to zero and variance
-#'   such that the signal to noise ratio is equal to 5.}
+#'   \item{y}{A Dependent variable: y = 1 + 3 * X003 + 6 * X004 + 9 * X005 +
+#'   error; the error follows a normal distribution with mean equal to zero and
+#'   variance such that the signal to noise ratio is equal to 5.}
 #' }
 #'
 #' @keywords datasets

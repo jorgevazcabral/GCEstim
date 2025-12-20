@@ -23,7 +23,8 @@ lmgce.sscv <- function(y,
                        max.abs.residual = NULL,
                        support.signal = NULL,
                        support.signal.vector = NULL,
-                       support.signal.points = c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
+                       support.signal.points =
+                         c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
                        support.noise = NULL,
                        support.noise.points = c(1 / 3, 1 / 3, 1 / 3),
                        weight = 0.5,
@@ -88,7 +89,10 @@ lmgce.sscv <- function(y,
   mean.nep.ss <- mean.measure.ss
 
   if (verbose >= 2)
-    cat("\n[", round(1 / (cv.repeats * cv.nfolds + 1) * 100, 0), "%]\n", sep = "")
+    cat("\n[",
+        round(1 / (cv.repeats * cv.nfolds + 1) * 100, 0),
+        "%]\n",
+        sep = "")
 
   for (r in 1:cv.repeats) {
     res$results$cvresults[[r]] <- list()
@@ -132,17 +136,19 @@ lmgce.sscv <- function(y,
       #aux.mean.nep.ss <- NULL
 
       for (amm.ss in 1:nsupports) {
-        mean.measure.ss[(r - 1) * cv.nfolds + cv, amm.ss] <- res_k$support.results[[amm.ss]]$error.measure[[1]]
-        mean.nep.ss[(r - 1) * cv.nfolds + cv, amm.ss] <- res_k$support.results[[amm.ss]]$nep[[1]]
+        mean.measure.ss[(r - 1) * cv.nfolds + cv, amm.ss] <-
+          res_k$support.results[[amm.ss]]$error.measure[[1]]
+        mean.nep.ss[(r - 1) * cv.nfolds + cv, amm.ss] <-
+          res_k$support.results[[amm.ss]]$nep[[1]]
       }
 
       res$results$cvresults[[r]][[cv]] <- res_k
 
       if (verbose >= 2)
-        cat("\n[", round(((r - 1) * cv.nfolds + cv + 1) / (cv.repeats * cv.nfolds + 1) *
+        cat("\n[",
+          round(((r - 1) * cv.nfolds + cv + 1) / (cv.repeats * cv.nfolds + 1) *
                            100, 0), "%]\n", sep = ""
         )
-
     }
 
     names(res$results$cvresults[[r]]) <- paste0("fold", 1:cv.nfolds)
@@ -190,17 +196,20 @@ lmgce.sscv <- function(y,
           isTRUE)))))
 
   if (length(res$support.ok) < 2)
-    stop('Estimation successfully completed for less than 2 supports.\nPlease choose different supports.',
+    stop('Estimation successfully completed for less than 2 supports.
+         \nPlease choose different supports.',
          call. = FALSE)
 
   res$support.signal.manual <- NULL
   res$support.signal.min <-
     as.numeric(names(which.min(res$results$cvresults$error.measure.cv.mean)))
 
-  aux.support.signal.1se <- which.min(res$results$cvresults$error.measure.cv.mean)
+  aux.support.signal.1se <-
+    which.min(res$results$cvresults$error.measure.cv.mean)
   res$support.signal.1se <-
     (res$results$cvresults$error.measure.cv.mean[[aux.support.signal.1se]] +
-       res$results$cvresults$error.measure.cv.sd[[aux.support.signal.1se]] / cv.nfolds) -
+       res$results$cvresults$error.measure.cv.sd[[
+         aux.support.signal.1se]] / cv.nfolds) -
     res$results$cvresults$error.measure.cv.mean
   res$support.signal.1se[res$support.signal.1se > 0] <- -Inf
   res$support.signal.1se[

@@ -16,7 +16,8 @@ lmgce.assign.ci <- function(y,
                             offset,
                             errormeasure = "RMSE",
                             support.signal = NULL,
-                            support.signal.points = c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
+                            support.signal.points =
+                              c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
                             support.noise = NULL,
                             support.noise.points = c(1 / 3, 1 / 3, 1 / 3),
                             weight = 0.5,
@@ -113,14 +114,17 @@ lmgce.assign.ci <- function(y,
       b <<- b - 1L
     })
 
-    if (verbose >= 1L && (b %% 10 == 0)) cat(round(b / boot.B * 100, 0), "% ", sep = "")
+    if (verbose >= 1L && (b %% 10 == 0)) cat(round(b / boot.B * 100, 0),
+                                             "% ",
+                                             sep = "")
   }
 
   if (b < boot.B & attempts_b == boot.B * 3L) {
     res$results$bootstrap$coefficients <- NULL
     res$results$bootstrap$nep <- NULL
     res$results$bootstrap$nepk <- NULL
-    warning("\nNot possible to determine bootstrapp CI. Number of attemps exceeded.")
+    warning("\nNot possible to determine bootstrapp CI.
+            Number of attemps exceeded.")
   }
 
   res$results$bootstrap$attempts <- attempts_b

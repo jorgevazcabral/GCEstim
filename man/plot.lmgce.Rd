@@ -40,16 +40,18 @@ c("z","percentile", "basic"). The default is \code{method = "z"}.}
 of bootstrap replicates for the computation of the bootstrap confidence
 interval(s), to be used when \code{method = c("percentile", "basic")} and
 when \code{object} was created with \code{boot.B = 0}. The default is
-\code{boot.B = 100} when the \code{object} has no previous sampling information
-and \code{boot.B = object$boot.B} otherwise, which corresponds to
+\code{boot.B = 100} when the \code{object} has no previous sampling
+information and \code{boot.B = object$boot.B} otherwise, which corresponds to
 the \code{boot.B} given to \code{lmgce} when the \code{object} was created.}
 
 \item{boot.method}{Method used for bootstrapping. One of
 \code{c("residuals", "cases", "wild")} which corresponds to resampling on
-residuals, on individual cases or on residuals multiplied by a N(0,1) variable,
-respectively. The default is \code{boot.method = object$boot.method}.}
+residuals, on individual cases or on residuals multiplied by a N(0,1)
+variable, respectively. The default is
+\code{boot.method = object$boot.method}.}
 
-\item{coef}{A vector of true coefficients to be used when \code{which = c(5,7)}.}
+\item{coef}{A vector of true coefficients to be used when
+\code{which = c(5,7)}.}
 
 \item{OLS}{Boolean value. if \code{TRUE}, the default, plots the OLS results.}
 
@@ -73,8 +75,8 @@ Seven plots (selectable by \code{which}) are currently available to
 evaluate a \code{\link{lmgce}} object: a plot of the Estimates and confidence
 intervals; four plots of supports against Prediction Error, Estimates,
 Normalized Entropy and Precision Error; two plots of GCE reestimation against
-Prediction and Precision Errors. Note that plots regarding Precision Error are
-only produced if the argument \code{coef} is not \code{NULL}.
+Prediction and Precision Errors. Note that plots regarding Precision Error
+are only produced if the argument \code{coef} is not \code{NULL}.
 }
 \examples{
 \donttest{

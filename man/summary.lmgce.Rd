@@ -39,14 +39,15 @@ c("z","percentile", "basic"). The default is \code{ci.method = "z"}.}
 of bootstrap replicates for the computation of the bootstrap confidence
 interval(s), to be used when \code{method = c("percentile", "basic")} and
 when \code{object} was created with \code{boot.B = 0}. The default is
-\code{boot.B = 100} when the \code{object} has no previous sampling information
-and \code{boot.B = object$boot.B} otherwise, which corresponds to
+\code{boot.B = 100} when the \code{object} has no previous sampling
+information and \code{boot.B = object$boot.B} otherwise, which corresponds to
 the \code{boot.B} given to \code{lmgce} when the \code{object} was created.}
 
 \item{boot.method}{Method used for bootstrapping. One of
 \code{c("residuals", "cases", "wild")} which corresponds to resampling on
-residuals, on individual cases or on residuals multiplied by a N(0,1) variable,
-respectively. The default is \code{boot.method = object$boot.method}.}
+residuals, on individual cases or on residuals multiplied by a N(0,1)
+variable, respectively. The default is
+\code{boot.method = object$boot.method}.}
 
 \item{...}{additional arguments.}
 }
@@ -70,14 +71,14 @@ aliased.}
 \item{df}{degrees of freedom, a 3-vector \eqn{(p, n - p)} the first being the
 number of non-aliased coefficients, the last being the \eqn{p} minus the
 number of included individuals \eqn{n}.}
-\item{r.squared}{\eqn{R^2}, the ‘fraction of variance explained by the model’}
+\item{r.squared}{\eqn{R^2}, ‘fraction of variance explained by the model’}
 \item{adj.r.squared}{the above \eqn{R^2} statistic ‘adjusted’, penalizing for
 higher \eqn{p}.}
 \item{cov.unscaled}{a \eqn{p \times p} matrix of covariances of the
 \eqn{\hat \beta}}
 \item{support.stdUL}{when applicable, the upper limit of the standardized
-support chosen, when \code{support.method = "standardized"} or the factor used
- when \code{support.method = "ridge"}.}
+support chosen, when \code{support.method = "standardized"} or the factor
+used when \code{support.method = "ridge"}.}
 \item{support.method}{method chosen for the support's limits}
 \item{nep}{the normalized entropy of the model.}
 \item{nep.cv.mean}{the cross-validation normalized entropy of the model.}

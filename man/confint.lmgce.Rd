@@ -45,14 +45,15 @@ is only valid for the parameters.}
 of bootstrap replicates for the computation of the bootstrap confidence
 interval(s), to be used when \code{method = c("percentile", "basic")} and
 when \code{object} was created with \code{boot.B = 0}. The default is
-\code{boot.B = 100} when the \code{object} has no previous sampling information
-and \code{boot.B = object$boot.B} otherwise, which corresponds to
+\code{boot.B = 100} when the \code{object} has no previous sampling
+information and \code{boot.B = object$boot.B} otherwise, which corresponds to
 the \code{boot.B} given to \code{lmgce} when the \code{object} was created.}
 
 \item{boot.method}{Method used for bootstrapping. One of
 \code{c("residuals", "cases", "wild")} which corresponds to resampling on
-residuals, on individual cases or on residuals multiplied by a N(0,1) variable,
-respectively. The default is \code{boot.method = object$boot.method}.}
+residuals, on individual cases or on residuals multiplied by a N(0,1)
+variable, respectively. The default is
+\code{boot.method = object$boot.method}.}
 
 \item{...}{additional arguments.}
 }
@@ -62,8 +63,8 @@ limits for each parameter. These will be labelled as (1-level)/2 and
 1 - (1-level)/2 in percentage (by default 2.5 percent and 97.5 percent).
 }
 \description{
-Computes confidence intervals for one or more parameters or Normalized Entropy
-in a \code{\link{lmgce}} fitted model.
+Computes confidence intervals for one or more parameters or Normalized
+Entropy in a \code{\link{lmgce}} fitted model.
 }
 \examples{
 \donttest{

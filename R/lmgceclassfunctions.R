@@ -455,8 +455,8 @@ df.residual.lmgce <- function(object, ...) {
 #' Confidence Intervals for \code{\link{lmgce}} Model Parameters and
 #' Normalized Entropy
 #'
-#' Computes confidence intervals for one or more parameters or Normalized Entropy
-#' in a \code{\link{lmgce}} fitted model.
+#' Computes confidence intervals for one or more parameters or Normalized
+#' Entropy in a \code{\link{lmgce}} fitted model.
 #'
 #' @param object Fitted \code{\link{lmgce}} model object.
 #' @param parm a specification of which parameters are to be given confidence
@@ -473,13 +473,14 @@ df.residual.lmgce <- function(object, ...) {
 #' of bootstrap replicates for the computation of the bootstrap confidence
 #' interval(s), to be used when \code{method = c("percentile", "basic")} and
 #' when \code{object} was created with \code{boot.B = 0}. The default is
-#' \code{boot.B = 100} when the \code{object} has no previous sampling information
-#' and \code{boot.B = object$boot.B} otherwise, which corresponds to
+#' \code{boot.B = 100} when the \code{object} has no previous sampling
+#' information and \code{boot.B = object$boot.B} otherwise, which corresponds to
 #' the \code{boot.B} given to \code{lmgce} when the \code{object} was created.
 #' @param boot.method Method used for bootstrapping. One of
 #' \code{c("residuals", "cases", "wild")} which corresponds to resampling on
-#' residuals, on individual cases or on residuals multiplied by a N(0,1) variable,
-#' respectively. The default is \code{boot.method = object$boot.method}.
+#' residuals, on individual cases or on residuals multiplied by a N(0,1)
+#' variable, respectively. The default is
+#' \code{boot.method = object$boot.method}.
 #' @param ... additional arguments.
 #'
 #' @return A matrix (or vector) with columns giving lower and upper confidence
@@ -512,7 +513,11 @@ confint.lmgce <- function(object,
                           level = 0.95,
                           which = c("estimates", "NormEnt"),
                           method = {if (which == "estimates") {
-                            c("z","percentile", "basic")} else {c("percentile", "basic")}},
+                            c("z",
+                              "percentile",
+                              "basic")} else {
+                                c("percentile",
+                                  "basic")}},
                           boot.B = ifelse(object$boot.B == 0,
                                           100,
                                           object$boot.B),
@@ -611,13 +616,14 @@ confint.lmgce <- function(object,
 #' of bootstrap replicates for the computation of the bootstrap confidence
 #' interval(s), to be used when \code{method = c("percentile", "basic")} and
 #' when \code{object} was created with \code{boot.B = 0}. The default is
-#' \code{boot.B = 100} when the \code{object} has no previous sampling information
-#' and \code{boot.B = object$boot.B} otherwise, which corresponds to
+#' \code{boot.B = 100} when the \code{object} has no previous sampling
+#' information and \code{boot.B = object$boot.B} otherwise, which corresponds to
 #' the \code{boot.B} given to \code{lmgce} when the \code{object} was created.
 #' @param boot.method Method used for bootstrapping. One of
 #' \code{c("residuals", "cases", "wild")} which corresponds to resampling on
-#' residuals, on individual cases or on residuals multiplied by a N(0,1) variable,
-#' respectively. The default is \code{boot.method = object$boot.method}.
+#' residuals, on individual cases or on residuals multiplied by a N(0,1)
+#' variable, respectively. The default is
+#' \code{boot.method = object$boot.method}.
 #' @param ... additional arguments.
 #'
 #' @return The function \code{summary.lmgce} computes and returns a list of
@@ -639,14 +645,14 @@ confint.lmgce <- function(object,
 #' \item{df}{degrees of freedom, a 3-vector \eqn{(p, n - p)} the first being the
 #' number of non-aliased coefficients, the last being the \eqn{p} minus the
 #' number of included individuals \eqn{n}.}
-#' \item{r.squared}{\eqn{R^2}, the ‘fraction of variance explained by the model’}
+#' \item{r.squared}{\eqn{R^2}, ‘fraction of variance explained by the model’}
 #' \item{adj.r.squared}{the above \eqn{R^2} statistic ‘adjusted’, penalizing for
 #' higher \eqn{p}.}
 #' \item{cov.unscaled}{a \eqn{p \times p} matrix of covariances of the
 #' \eqn{\hat \beta}}
 #' \item{support.stdUL}{when applicable, the upper limit of the standardized
-#' support chosen, when \code{support.method = "standardized"} or the factor used
-#'  when \code{support.method = "ridge"}.}
+#' support chosen, when \code{support.method = "standardized"} or the factor
+#' used when \code{support.method = "ridge"}.}
 #' \item{support.method}{method chosen for the support's limits}
 #' \item{nep}{the normalized entropy of the model.}
 #' \item{nep.cv.mean}{the cross-validation normalized entropy of the model.}
@@ -983,8 +989,8 @@ print.summary.lmgce <-
 #' evaluate a \code{\link{lmgce}} object: a plot of the Estimates and confidence
 #' intervals; four plots of supports against Prediction Error, Estimates,
 #' Normalized Entropy and Precision Error; two plots of GCE reestimation against
-#' Prediction and Precision Errors. Note that plots regarding Precision Error are
-#' only produced if the argument \code{coef} is not \code{NULL}.
+#' Prediction and Precision Errors. Note that plots regarding Precision Error
+#' are only produced if the argument \code{coef} is not \code{NULL}.
 #'
 #' @param x Fitted \code{\link{lmgce}} model object.
 #' @param type One of \code{c("ggplot2", "plotly")}. "ggplot2" is used
@@ -998,14 +1004,16 @@ print.summary.lmgce <-
 #' of bootstrap replicates for the computation of the bootstrap confidence
 #' interval(s), to be used when \code{method = c("percentile", "basic")} and
 #' when \code{object} was created with \code{boot.B = 0}. The default is
-#' \code{boot.B = 100} when the \code{object} has no previous sampling information
-#' and \code{boot.B = object$boot.B} otherwise, which corresponds to
+#' \code{boot.B = 100} when the \code{object} has no previous sampling
+#' information and \code{boot.B = object$boot.B} otherwise, which corresponds to
 #' the \code{boot.B} given to \code{lmgce} when the \code{object} was created.
 #' @param boot.method Method used for bootstrapping. One of
 #' \code{c("residuals", "cases", "wild")} which corresponds to resampling on
-#' residuals, on individual cases or on residuals multiplied by a N(0,1) variable,
-#' respectively. The default is \code{boot.method = object$boot.method}.
-#' @param coef A vector of true coefficients to be used when \code{which = c(5,7)}.
+#' residuals, on individual cases or on residuals multiplied by a N(0,1)
+#' variable, respectively. The default is
+#' \code{boot.method = object$boot.method}.
+#' @param coef A vector of true coefficients to be used when
+#' \code{which = c(5,7)}.
 #' @param OLS Boolean value. if \code{TRUE}, the default, plots the OLS results.
 #' @param NormEnt Boolean value. if \code{TRUE}, the default, plots the
 #' normalized entropy.
@@ -1036,7 +1044,8 @@ print.summary.lmgce <-
 #' @method plot lmgce
 #' @importFrom rlang .data
 #' @importFrom grDevices as.graphicsAnnot
-#' @importFrom graphics abline arrows axis legend lines matplot mtext par points title
+#' @importFrom graphics abline arrows axis legend lines matplot mtext par points
+#'  title
 #' @export
 
 plot.lmgce <-
@@ -1152,9 +1161,12 @@ plot.lmgce <-
             panel.grid.major = ggplot2::element_blank(),
             panel.grid.minor = ggplot2::element_blank(),
             axis.line = ggplot2::element_line(colour = "black"),
-            axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-            axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-            axis.title.x = ggplot2::element_text(size = 12, colour = "black")) +
+            axis.text.y = ggplot2::element_text(size = 12,
+                                                colour = "black"),
+            axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                       colour = "black"),
+            axis.title.x = ggplot2::element_text(size = 12,
+                                                 colour = "black")) +
           ggplot2::ggtitle(getCaption(1))
 
         if (length(object$results$OLS$error) != 0 &&
@@ -1162,7 +1174,8 @@ plot.lmgce <-
           plots$p1 <-
           plots$p1 +
           ggplot2::geom_point(
-            data = data.frame(x = coef(object$results$OLS$res), y = length(coefs):1),
+            data = data.frame(x = coef(object$results$OLS$res),
+                              y = length(coefs):1),
             ggplot2::aes(x = .data$x, y = .data$y),
             shape = 1,
             size = 1.5,
@@ -1191,8 +1204,10 @@ plot.lmgce <-
     x <- round(as.numeric(object$support.ok), 8)
 
     if (!is.null(object$results$cv)) {
-      ycv <- object$results$cv$error.measure.cv.mean[as.character(object$support.ok)]
-      sderror <- object$results$cv$error.measure.cv.sd[as.character(object$support.ok)]
+      ycv <-
+        object$results$cv$error.measure.cv.mean[as.character(object$support.ok)]
+      sderror <-
+        object$results$cv$error.measure.cv.sd[as.character(object$support.ok)]
 
       nepcv <- object$results$cv$nep.cv.mean[as.character(object$support.ok)]
       sdnep <- object$results$cv$nep.cv.sd[as.character(object$support.ok)]
@@ -1267,7 +1282,8 @@ plot.lmgce <-
             ) +
             ggplot2::scale_y_continuous(
               paste0("CV-", object$error),
-              sec.axis =  ggplot2::sec_axis( ~ (. - a) / b, name = "CV Normalized Entropy")
+              sec.axis = ggplot2::sec_axis( ~ (. - a) / b,
+                                            name = "CV Normalized Entropy")
             )
         }
 
@@ -1306,9 +1322,12 @@ plot.lmgce <-
             panel.grid.major = ggplot2::element_blank(),
             panel.grid.minor = ggplot2::element_blank(),
             axis.line = ggplot2::element_line(colour = "black"),
-            axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-            axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-            axis.title.x = ggplot2::element_text(size = 12, colour = "black")
+            axis.text.y = ggplot2::element_text(size = 12,
+                                                colour = "black"),
+            axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                       colour = "black"),
+            axis.title.x = ggplot2::element_text(size = 12,
+                                                 colour = "black")
           ) +
           ggplot2::ggtitle(getCaption(2))
 
@@ -1320,8 +1339,11 @@ plot.lmgce <-
           plots$p2 <- plotly::ggplotly(plots$p2)
 
     } else {
-      y <- object$results$nocv$support.results$error.measure.ss[as.character(object$support.ok)]
-      nep <- object$results$nocv$support.results$nep.ss[as.character(object$support.ok)]
+      y <-
+        object$results$nocv$support.results$error.measure.ss[
+          as.character(object$support.ok)]
+      nep <- object$results$nocv$support.results$nep.ss[
+        as.character(object$support.ok)]
 
       if (length(object$results$OLS$error) != 0 && isTRUE(OLS))
         error.OLS <- object$results$OLS$error
@@ -1337,7 +1359,8 @@ plot.lmgce <-
           ggplot2::geom_point(size = 1.5, colour = "red") +
           ggplot2::geom_line(colour = "red", linetype = "dashed") +
           ggplot2::geom_point(
-            data = data.frame(x = object$support.stdUL, y = object$error.measure),
+            data = data.frame(x = object$support.stdUL,
+                              y = object$error.measure),
             ggplot2::aes(x = .data$x, y = .data$y),
             size = 1.5,
             colour = "red4"
@@ -1357,7 +1380,8 @@ plot.lmgce <-
                                 size = 1.5,
                                 colour = "green") +
             ggplot2::geom_point(
-              data = data.frame(x = object$support.stdUL, y = a + object$nep * b),
+              data = data.frame(x = object$support.stdUL,
+                                y = a + object$nep * b),
               ggplot2::aes(x = .data$x, y = .data$y),
               size = 1.5,
               colour = "green4"
@@ -1369,7 +1393,8 @@ plot.lmgce <-
             ) +
             ggplot2::scale_y_continuous(
               paste0("CV-", object$error),
-              sec.axis =  ggplot2::sec_axis( ~ (. - a) / b, name = "Normalized Entropy")
+              sec.axis =  ggplot2::sec_axis( ~ (. - a) / b,
+                                             name = "Normalized Entropy")
             )
         }
 
@@ -1408,9 +1433,12 @@ plot.lmgce <-
             panel.grid.major = ggplot2::element_blank(),
             panel.grid.minor = ggplot2::element_blank(),
             axis.line = ggplot2::element_line(colour = "black"),
-            axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-            axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-            axis.title.x = ggplot2::element_text(size = 12, colour = "black")) +
+            axis.text.y = ggplot2::element_text(size = 12,
+                                                colour = "black"),
+            axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                       colour = "black"),
+            axis.title.x = ggplot2::element_text(size = 12,
+                                                 colour = "black")) +
           ggplot2::ggtitle(getCaption(2))
 
         if (length(object$results$OLS$error) != 0 && isTRUE(OLS)) {
@@ -1438,11 +1466,16 @@ plot.lmgce <-
     for (i in 1:ncol(coef.matrix.wide)) {
       coef.matrix.long <-
         rbind(coef.matrix.long,
-              cbind(predictor = row.names(coef.matrix.wide)[1:(nrow(coef.matrix.wide) / 2)],
-                    support = colnames(coef.matrix.wide)[i],
-                    estimate =coef.matrix.wide[1:(nrow(coef.matrix.wide) / 2), i],
-                    nepk = coef.matrix.wide[(nrow(coef.matrix.wide) / 2 + 1):nrow(coef.matrix.wide), i],
-                    nepk_nep = coef.matrix.wide[(nrow(coef.matrix.wide) / 2 + 1):nrow(coef.matrix.wide), i] / object$results$nocv$support.results$nep.ss[i])
+              cbind(
+                predictor = row.names(
+                  coef.matrix.wide)[1:(nrow(coef.matrix.wide) / 2)],
+                support = colnames(coef.matrix.wide)[i],
+                estimate =coef.matrix.wide[1:(nrow(coef.matrix.wide) / 2), i],
+                nepk = coef.matrix.wide[
+                  (nrow(coef.matrix.wide) / 2 + 1):nrow(coef.matrix.wide), i],
+                nepk_nep = coef.matrix.wide[
+                  (nrow(coef.matrix.wide) / 2 + 1):nrow(coef.matrix.wide),
+                  i] / object$results$nocv$support.results$nep.ss[i])
               )
     }
     coef.matrix.long <- coef.matrix.long[-1, ]
@@ -1498,9 +1531,12 @@ plot.lmgce <-
             panel.grid.major = ggplot2::element_blank(),
             panel.grid.minor = ggplot2::element_blank(),
             axis.line = ggplot2::element_line(colour = "black"),
-            axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-            axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-            axis.title.x = ggplot2::element_text(size = 12, colour = "black"),
+            axis.text.y = ggplot2::element_text(size = 12,
+                                                colour = "black"),
+            axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                       colour = "black"),
+            axis.title.x = ggplot2::element_text(size = 12,
+                                                 colour = "black"),
             legend.title = ggplot2::element_blank()) +
           ggplot2::scale_color_manual(values = col.coef.all) +
           ggplot2::ggtitle(getCaption(3))
@@ -1534,7 +1570,8 @@ plot.lmgce <-
                                         colour = .data$predictor)) +
         ggplot2::geom_point(data = data.frame(x = rep(object$support.stdUL,
                                                       length(coef(object))),
-                                              y = NormEnt(object, model = FALSE)),
+                                              y = NormEnt(object,
+                                                          model = FALSE)),
                             ggplot2::aes(x = .data$x, y = .data$y),
                             size = 1.5,
                             colour = col.coef.all) +
@@ -1571,9 +1608,12 @@ plot.lmgce <-
           panel.grid.major = ggplot2::element_blank(),
           panel.grid.minor = ggplot2::element_blank(),
           axis.line = ggplot2::element_line(colour = "black"),
-          axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-          axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-          axis.title.x = ggplot2::element_text(size = 12, colour = "black"),
+          axis.text.y = ggplot2::element_text(size = 12,
+                                              colour = "black"),
+          axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                     colour = "black"),
+          axis.title.x = ggplot2::element_text(size = 12,
+                                               colour = "black"),
           legend.title = ggplot2::element_blank()) +
         ggplot2::scale_color_manual(values = col.coef.all) +
         ggplot2::ggtitle(getCaption(4))
@@ -1601,18 +1641,27 @@ plot.lmgce <-
                  ncol = length(object$results$twosteps) + 1,
                  nrow = length(coef(object)))
 
-        if (is.null(object$results$cv$repeats1[[nfolds]]$support.results$coef.matrix.ss)) {
-          beta.matrix[, 1] <- object$results$cv$repeats1$fold1$coefficients} else {
-            beta.matrix[, 1] <-
-              object$results$cv$repeats1[[nfolds]]$support.results$coef.matrix.ss[1:length(coef(object)),
-                                                                                  colnames(object$results$cv$repeats1[[nfolds]]$support.results$coef.matrix.ss) == object$support.stdUL]
+        if (is.null(
+          object$results$cv$repeats1[[nfolds]]$support.results$coef.matrix.ss)) {
+          beta.matrix[, 1] <-
+            object$results$cv$repeats1$fold1$coefficients} else {
+              beta.matrix[, 1] <-
+                object$results$cv$repeats1[[
+                  nfolds]]$support.results$coef.matrix.ss[
+                    1:length(coef(object)),
+                    colnames(
+                      object$results$cv$repeats1[[
+                        nfolds]]$support.results$coef.matrix.ss) ==
+                      object$support.stdUL]
           }
 
         for (i_mat in 2:(length(object$results$twosteps) + 1)) {
           beta.matrix[, i_mat] <-
-            object$results$twosteps[[i_mat - 1]]$results$cv$repeats1[[nfolds]]$coefficients
+            object$results$twosteps[[
+              i_mat - 1]]$results$cv$repeats1[[nfolds]]$coefficients
         }
-        beta.error.cv.step[nfolds, ] <- apply(beta.matrix, 2, accmeasure, coef)
+        beta.error.cv.step[nfolds, ] <-
+          apply(beta.matrix, 2, accmeasure, coef, object$error)
       }
       } else {
         beta.matrix.step <-
@@ -1621,9 +1670,12 @@ plot.lmgce <-
                  nrow = length(coef(object)))
 
         if (length(object$results$nocv$support.results) == 1) {
-          beta.matrix.step[, 1] <- object$results$nocv$support.results[[1]]$coefficients
+          beta.matrix.step[, 1] <-
+            object$results$nocv$support.results[[1]]$coefficients
         } else {
-          beta.matrix.step[, 1] <- object$results$nocv$support.results[[as.character(object$support.stdUL)]]$coefficients
+          beta.matrix.step[, 1] <-
+            object$results$nocv$support.results[[
+              as.character(object$support.stdUL)]]$coefficients
         }
         for (i_mat in 2:(length(object$results$twosteps) + 1)) {
           beta.matrix.step[, i_mat] <-
@@ -1638,16 +1690,19 @@ plot.lmgce <-
       if (!is.null(object$results$cv)) {
       beta.error.cv <-
         matrix(NA,
-               ncol = length(object$results$cv$repeats1$fold1$support.results) - 3,
+               ncol =
+                 length(object$results$cv$repeats1$fold1$support.results) - 3,
                nrow = length(object$results$cv$repeats1))
 
       for (i in 1:length(object$results$cv$repeats1)) {
         beta.error.cv[i,] <-
           apply(
-            object$results$cv$repeats1[[i]]$support.results$coef.matrix.ss[1:length(coef(object)),],
+            object$results$cv$repeats1[[i]]$support.results$coef.matrix.ss[
+              1:length(coef(object)),],
             2,
             accmeasure,
-            coef
+            coef,
+            object$error
           )
       }
 
@@ -1655,7 +1710,8 @@ plot.lmgce <-
         error.OLS <- mean(apply(object$results$OLS$matrix.coef,
                                 2,
                                 accmeasure,
-                                coef))
+                                coef,
+                                object$error))
 
       ycv <- apply(beta.error.cv,2,mean)
       sderror <- apply(beta.error.cv,2,sd)
@@ -1684,15 +1740,17 @@ plot.lmgce <-
           ggplot2::geom_point(size = 1.5, colour = "red") +
           ggplot2::geom_line(colour = "red",
                              linetype = "dashed") +
-          ggplot2::geom_point(data = data.frame(x = object$support.stdUL,
-                                                y = {if (length(object$results$twosteps) == 0) {
-                                                  ycv[object$support.ok == object$support.stdUL]
-                                                } else {
-                                                  mean(beta.error.cv.step[ ,ncol(beta.error.cv.step)])
-                                                }}),
-                              ggplot2::aes(x = .data$x, y = .data$y),
-                              size = 1.5,
-                              colour = "red4")
+          ggplot2::geom_point(
+            data = data.frame(
+              x = object$support.stdUL,
+              y = {if (length(object$results$twosteps) == 0) {
+                ycv[object$support.ok == object$support.stdUL]
+                } else {
+                  mean(
+                    beta.error.cv.step[ ,ncol(beta.error.cv.step)])}}),
+            ggplot2::aes(x = .data$x, y = .data$y),
+            size = 1.5,
+            colour = "red4")
 
         if (isTRUE(NormEnt)) {
           ylim.left <- c(min(data.plot.5$error.LL), max(data.plot.5$error.UL))
@@ -1730,8 +1788,8 @@ plot.lmgce <-
             ) +
             ggplot2::scale_y_continuous(
               paste0("CV-", object$error),
-              sec.axis =  ggplot2::sec_axis( ~ (. - a) /
-                                               b, name = "CV Normalized Entropy")
+              sec.axis =  ggplot2::sec_axis( ~ (. - a) / b,
+                                             name = "CV Normalized Entropy")
             )
         }
 
@@ -1770,9 +1828,12 @@ plot.lmgce <-
             panel.grid.major = ggplot2::element_blank(),
             panel.grid.minor = ggplot2::element_blank(),
             axis.line = ggplot2::element_line(colour = "black"),
-            axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-            axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-            axis.title.x = ggplot2::element_text(size = 12, colour = "black")) +
+            axis.text.y = ggplot2::element_text(size = 12,
+                                                colour = "black"),
+            axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                       colour = "black"),
+            axis.title.x = ggplot2::element_text(size = 12,
+                                                 colour = "black")) +
           ggplot2::ggtitle(getCaption(5))
 
         if (length(object$results$OLS$error) != 0 && isTRUE(OLS)) {
@@ -1787,19 +1848,24 @@ plot.lmgce <-
 
       y <-
         apply(
-          sapply(object$results$nocv$support.results[1:(length(object$results$nocv$support.results) - 3)],
+          sapply(object$results$nocv$support.results[
+            1:(length(object$results$nocv$support.results) - 3)],
                  function(x) {x$coefficients}
           ),
           2,
           accmeasure,
-          coef
+          coef,
+          object$error
         )
 
       nep <-
-          object$results$nocv$support.results$nep.ss[as.character(object$support.ok)]
+          object$results$nocv$support.results$nep.ss[
+            as.character(object$support.ok)]
 
       if (length(object$results$OLS$error) != 0 && isTRUE(OLS))
-        error.OLS <- accmeasure(object$results$OLS$matrix.coef, coef)
+        error.OLS <- accmeasure(object$results$OLS$matrix.coef,
+                                coef,
+                                object$error)
 
         data.plot.5 <-
           data.frame(support = x,
@@ -1812,16 +1878,19 @@ plot.lmgce <-
           ggplot2::geom_point(size = 1, colour = "red") +
           ggplot2::geom_line(colour = "red",
                              linetype = "dashed") +
-          ggplot2::geom_point(data = data.frame(x = object$support.stdUL,
-                                                y = {if (length(object$results$twosteps) == 0) {
-                                                  y[object$support.ok == object$support.stdUL]
-                                                } else {
-                                                  accmeasure(beta.matrix.step[ ,ncol(beta.matrix.step)],
-                                                             coef)
-                                                }}),
-                              ggplot2::aes(x = .data$x, y = .data$y),
-                              size = 1.5,
-                              colour = "red4")
+          ggplot2::geom_point(
+            data = data.frame(x = object$support.stdUL,
+                              y = {if (length(object$results$twosteps) == 0) {
+                                y[object$support.ok == object$support.stdUL]
+                                } else {
+                                  accmeasure(
+                                    beta.matrix.step[ ,ncol(beta.matrix.step)],
+                                    coef,
+                                    object$error)
+                                  }}),
+            ggplot2::aes(x = .data$x, y = .data$y),
+            size = 1.5,
+            colour = "red4")
 
         if (isTRUE(NormEnt)) {
           ylim.left <- c(min(data.plot.5$error), max(data.plot.5$error))
@@ -1837,7 +1906,8 @@ plot.lmgce <-
                                 size = 1.5,
                                 colour = "green") +
             ggplot2::geom_point(
-              data = data.frame(x = object$support.stdUL, y = a + object$nep * b),
+              data = data.frame(x = object$support.stdUL,
+                                y = a + object$nep * b),
               ggplot2::aes(x = .data$x, y = .data$y),
               size = 1.5,
               colour = "green4"
@@ -1889,9 +1959,12 @@ plot.lmgce <-
             panel.grid.major = ggplot2::element_blank(),
             panel.grid.minor = ggplot2::element_blank(),
             axis.line = ggplot2::element_line(colour = "black"),
-            axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-            axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-            axis.title.x = ggplot2::element_text(size = 12, colour = "black")) +
+            axis.text.y = ggplot2::element_text(size = 12,
+                                                colour = "black"),
+            axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                       colour = "black"),
+            axis.title.x = ggplot2::element_text(size = 12,
+                                                 colour = "black")) +
           ggplot2::ggtitle(getCaption(5))
 
         if (length(object$results$OLS$error) != 0 && isTRUE(OLS)) {
@@ -1920,12 +1993,16 @@ plot.lmgce <-
                          sapply(object$results$twosteps,
                                 function(x) {x$error.measure.cv.sd}))
           } else {
-          ycv <- c(object$results$cv$error.measure.cv.mean[as.character(object$support.stdUL)],
-                   sapply(object$results$twosteps,
-                          function(x) {x$error.measure.cv.mean}))
-          sderror <- c(object$results$cv$error.measure.cv.sd[as.character(object$support.stdUL)],
-                       sapply(object$results$twosteps,
-                              function(x) {x$error.measure.cv.sd}))
+          ycv <-
+            c(object$results$cv$error.measure.cv.mean[
+              as.character(object$support.stdUL)],
+              sapply(object$results$twosteps,
+                     function(x) {x$error.measure.cv.mean}))
+          sderror <-
+            c(object$results$cv$error.measure.cv.sd[
+              as.character(object$support.stdUL)],
+              sapply(object$results$twosteps,
+                     function(x) {x$error.measure.cv.sd}))
           }
 
           if (length(object$results$OLS$error) != 0 && isTRUE(OLS))
@@ -1946,12 +2023,13 @@ plot.lmgce <-
                                                 ymax = .data$error.UL),
                                    width = 0,
                                    colour = "darkgrey") +
-            ggplot2::geom_point(size = 1.5,
-                                colour = c("red",
-                                           {if (length(object$results$twosteps) > 1) {
-                                             rep("orange",
-                                                 length(object$results$twosteps) - 1)}},
-                                           "red4")) +
+            ggplot2::geom_point(
+              size = 1.5,
+              colour = c("red",
+                         {if (length(object$results$twosteps) > 1) {
+                           rep("orange",
+                               length(object$results$twosteps) - 1)}},
+                         "red4")) +
             ggplot2::xlab("number of reestimations") +
             ggplot2::ylab(paste0("CV-", object$error)) +
             ggplot2::theme_bw() +
@@ -1960,9 +2038,12 @@ plot.lmgce <-
               panel.grid.major = ggplot2::element_blank(),
               panel.grid.minor = ggplot2::element_blank(),
               axis.line = ggplot2::element_line(colour = "black"),
-              axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-              axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-              axis.title.x = ggplot2::element_text(size = 12, colour = "black")) +
+              axis.text.y = ggplot2::element_text(size = 12,
+                                                  colour = "black"),
+              axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                         colour = "black"),
+              axis.title.x = ggplot2::element_text(size = 12,
+                                                   colour = "black")) +
             ggplot2::ggtitle(getCaption(6)) +
             ggplot2::scale_x_continuous(breaks = x, labels = x)
 
@@ -1985,7 +2066,8 @@ plot.lmgce <-
             error.OLS <-  mean(apply(object$results$OLS$matrix.coef,
                                      2,
                                      accmeasure,
-                                     coef))
+                                     coef,
+                                     object$error))
 
             data.plot.2 <-
               data.frame(
@@ -2002,12 +2084,13 @@ plot.lmgce <-
                                                   ymax = .data$error.UL),
                                      width = 0,
                                      colour = "darkgrey") +
-              ggplot2::geom_point(size = 1.5,
-                                  colour = c("red",
-                                             {if (length(object$results$twosteps) > 1) {
-                                               rep("orange",
-                                                   length(object$results$twosteps) - 1)}},
-                                             "red4")) +
+              ggplot2::geom_point(
+                size = 1.5,
+                colour = c("red",
+                           {if (length(object$results$twosteps) > 1) {
+                             rep("orange",
+                                 length(object$results$twosteps) - 1)}},
+                           "red4")) +
               ggplot2::xlab("number of reestimations") +
               ggplot2::ylab(paste0("CV-", object$error)) +
               ggplot2::theme_bw() +
@@ -2016,9 +2099,12 @@ plot.lmgce <-
                 panel.grid.major = ggplot2::element_blank(),
                 panel.grid.minor = ggplot2::element_blank(),
                 axis.line = ggplot2::element_line(colour = "black"),
-                axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-                axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-                axis.title.x = ggplot2::element_text(size = 12, colour = "black")) +
+                axis.text.y = ggplot2::element_text(size = 12,
+                                                    colour = "black"),
+                axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                           colour = "black"),
+                axis.title.x = ggplot2::element_text(size = 12,
+                                                     colour = "black")) +
               ggplot2::ggtitle(getCaption(7)) +
               ggplot2::scale_x_continuous(breaks = x, labels = x)
 
@@ -2039,9 +2125,10 @@ plot.lmgce <-
                    sapply(object$results$twosteps,
                           function(x) {x$error.measure}))
             } else {
-            y <- c(object$results$nocv$support.results[[as.character(object$support.stdUL)]]$error.measure,
-                   sapply(object$results$twosteps,
-                          function(x) {x$error.measure}))
+            y <- c(object$results$nocv$support.results[[
+              as.character(object$support.stdUL)]]$error.measure,
+              sapply(object$results$twosteps,
+                     function(x) {x$error.measure}))
             }
 
           if (length(object$results$OLS$error) != 0 && isTRUE(OLS))
@@ -2055,12 +2142,13 @@ plot.lmgce <-
             ggplot2::ggplot(data.plot.2, ggplot2::aes(y = .data$error,
                                                       x = .data$support)) +
             ggplot2::geom_line(colour = "orange", linetype = "dashed") +
-            ggplot2::geom_point(size = 1.5,
-                                colour = c("red",
-                                           {if (length(object$results$twosteps) > 1) {
-                                             rep("orange",
-                                                 length(object$results$twosteps) - 1)}},
-                                           "red4")) +
+            ggplot2::geom_point(
+              size = 1.5,
+              colour = c("red",
+                         {if (length(object$results$twosteps) > 1) {
+                           rep("orange",
+                               length(object$results$twosteps) - 1)}},
+                         "red4")) +
             ggplot2::xlab("number of reestimations") +
             ggplot2::ylab(object$error) +
             ggplot2::theme_bw() +
@@ -2069,9 +2157,12 @@ plot.lmgce <-
               panel.grid.major = ggplot2::element_blank(),
               panel.grid.minor = ggplot2::element_blank(),
               axis.line = ggplot2::element_line(colour = "black"),
-              axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-              axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-              axis.title.x = ggplot2::element_text(size = 12, colour = "black")) +
+              axis.text.y = ggplot2::element_text(size = 12,
+                                                  colour = "black"),
+              axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                         colour = "black"),
+              axis.title.x = ggplot2::element_text(size = 12,
+                                                   colour = "black")) +
             ggplot2::ggtitle(getCaption(6)) +
             ggplot2::scale_x_continuous(breaks = x, labels = x)
 
@@ -2086,10 +2177,12 @@ plot.lmgce <-
 
           if (show[7L] && (!is.null(coef))) {
 
-            y <- apply(beta.matrix.step, 2, accmeasure, coef)
+            y <- apply(beta.matrix.step, 2, accmeasure, coef, object$error)
 
             if (length(object$results$OLS$error) != 0 && isTRUE(OLS))
-              error.OLS <-  accmeasure(object$results$OLS$matrix.coef, coef)
+              error.OLS <-  accmeasure(object$results$OLS$matrix.coef,
+                                       coef,
+                                       object$error)
 
             data.plot.2 <-
               data.frame(support = x,
@@ -2099,12 +2192,13 @@ plot.lmgce <-
               ggplot2::ggplot(data.plot.2, ggplot2::aes(y = .data$error,
                                                         x = .data$support)) +
               ggplot2::geom_line(colour = "orange", linetype = "dashed") +
-              ggplot2::geom_point(size = 1.5,
-                                  colour = c("red",
-                                             {if (length(object$results$twosteps) > 1) {
-                                               rep("orange",
-                                                   length(object$results$twosteps) - 1)}},
-                                             "red4")) +
+              ggplot2::geom_point(
+                size = 1.5,
+                colour = c("red",
+                           {if (length(object$results$twosteps) > 1) {
+                             rep("orange",
+                                 length(object$results$twosteps) - 1)}},
+                           "red4")) +
               ggplot2::xlab("number of reestimations") +
               ggplot2::ylab(object$error) +
               ggplot2::theme_bw() +
@@ -2113,9 +2207,12 @@ plot.lmgce <-
                 panel.grid.major = ggplot2::element_blank(),
                 panel.grid.minor = ggplot2::element_blank(),
                 axis.line = ggplot2::element_line(colour = "black"),
-                axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-                axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-                axis.title.x = ggplot2::element_text(size = 12, colour = "black")) +
+                axis.text.y = ggplot2::element_text(size = 12,
+                                                    colour = "black"),
+                axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                           colour = "black"),
+                axis.title.x = ggplot2::element_text(size = 12,
+                                                     colour = "black")) +
               ggplot2::ggtitle(getCaption(7)) +
               ggplot2::scale_x_continuous(breaks = x, labels = x)
 
@@ -2234,7 +2331,9 @@ predict.lmgce <-
 
       for (b in 1:ncol(predictor.ci)) {
         predictor.ci[, b] <-
-          drop(X[, piv, drop = FALSE] %*% object$results$bootstrap$coefficients[, b])
+          drop(X[,
+                 piv,
+                 drop = FALSE] %*% object$results$bootstrap$coefficients[, b])
         #X %*% object$results$bootstrap$coefficients[, b]
         if (!is.null(offset))
           predictor.ci[, b] <- predictor.ci[, b] + offset

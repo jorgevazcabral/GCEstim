@@ -76,7 +76,8 @@ coef.ridgetrace <- function(object, which = "min.error",...)
       if (is.null(object$error.lambda.cv)) {
         object$coef.lambda[, which.min(object$error.lambda)]
       } else {
-        object$coef.lambda[, which.min(apply(object$error.lambda.cv, 2, mean))[[1]]]
+        object$coef.lambda[, which.min(
+          apply(object$error.lambda.cv, 2, mean))[[1]]]
       }
     }
 }

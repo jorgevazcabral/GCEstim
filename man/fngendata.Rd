@@ -50,14 +50,14 @@ fngendata(
 
 \item{y.gen.bin.k}{Number of binary variables used for generating y.}
 
-\item{y.gen.bin.beta}{A vector of coefficients with length equal to \code{bin.k}
-used to generate y.}
+\item{y.gen.bin.beta}{A vector of coefficients with length equal to
+\code{bin.k}used to generate y.}
 
 \item{y.gen.bin.prob}{A vector of probabilities with length equal
 to \code{y.gen.bin.k}.}
 
-\item{y.gen.cont.beta}{A vector of coefficients with length equal to \code{cont.k}
-used to generate y.}
+\item{y.gen.cont.beta}{A vector of coefficients with length equal to
+\code{cont.k} used to generate y.}
 
 \item{y.gen.cont.mod.k}{Experimental}
 
@@ -95,8 +95,8 @@ when \code{Xgenerator} is \code{"svd"}.}
 \item{mu}{The mean of the variables. To be used when all variables have the
 same mean.}
 
-\item{muvect}{A vector of means. To be used when variables have different means.
-The length of \code{muvect} must be \code{k}.}
+\item{muvect}{A vector of means. To be used when variables have different
+means. The length of \code{muvect} must be \code{k}.}
 
 \item{sd}{Standard deviation of the variables. To be used when all variables
 have the same standard deviation.}

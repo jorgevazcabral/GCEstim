@@ -4,7 +4,7 @@
 \alias{coefficients.tsbootgce}
 \title{Extract \code{\link{tsbootgce}} Model Coefficients}
 \usage{
-\method{coefficients}{tsbootgce}(object, which = NULL, seed = object$seed, ...)
+\method{coefficients}{tsbootgce}(object, which = NULL, OLS = FALSE, seed = object$seed, ...)
 }
 \arguments{
 \item{object}{Fitted \code{\link{tsbootgce}} model object.}
@@ -13,6 +13,9 @@
 defined in the argument \code{coef.method} from the \code{tsbootgce} object.
 Can be set as "mode" or "median" and the mode and median coefficients will be
 computed, respectively (see \code{\link[hdrcde]{hdr}}).}
+
+\item{OLS}{Boolean value. If \code{TRUE}, returns
+OLS estimates. The default is \code{OLS = FALSE}.}
 
 \item{seed}{A single value, interpreted as an integer, for reproducibility
 or \code{NULL} for randomness. The default is \code{seed = object$seed}.}

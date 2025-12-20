@@ -1,10 +1,10 @@
-# Generic functions for the \code{\link{tsbootgce}} class
+# Generic functions for the \code{\link{cv.tsbootgce}} class
 
-#' Print \code{\link{tsbootgce}} object
+#' Print \code{\link{cv.tsbootgce}} object
 #'
-#' Print \code{\link{tsbootgce}} object
+#' Print \code{\link{cv.tsbootgce}} object
 #'
-#' @param x fitted \code{tsbootgce} object.
+#' @param x fitted \code{cv.tsbootgce} object.
 #' @param digits significant digits in printout.
 #' @param ... additional print arguments.
 #'
@@ -14,33 +14,49 @@
 #'
 #' @examples
 #' \donttest{
-#' res.tsbootgce <-
-#'   tsbootgce(
+#' res.cvtsbootgce <-
+#'   cv.tsbootgce(
 #'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
 #'     data = moz_ts)
 #'
-#' res.tsbootgce
+#' res.cvtsbootgce
 #' }
 #'
-#' @method print tsbootgce
+#' @method print cv.tsbootgce
 #' @export
 
-print.tsbootgce <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
+print.cv.tsbootgce <- function(x,
+                               digits = max(3L, getOption("digits") - 3L),
+                               ...)
 {
   cat("\nCall:\n",
       paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n\n",
       sep = "")
   if (length(coef(x))) {
+    cat("\nBest combination:\n",
+        paste(x$lmgce$support.signal.points.best,
+              "points for the signal support;",
+              x$lmgce$support.noise.points.best,
+              "points for the noise support;",
+              "a weight of",
+              x$lmgce$weight.best,
+              "for the noise support."
+        ),
+        "\n\n",
+        sep = "")
 
     res.print <-
       as.matrix(rbind(coef(x),
                       x$coefficients.OLS,
                       coef(x$lmgce),
-                      coef(x$lmgce$results$OLS$res)),
+                      coef(x$lmgce$best$results$OLS$res)),
                 nrow = 2)
 
-    dimnames(res.print) <- list(c("tsbootgce", "MEbootOLS", "lmgce", "lm"),
+    dimnames(res.print) <- list(c("cv.tsbootgce",
+                                  "MEbootOLS",
+                                  "cv.lmgce",
+                                  "lm"),
                                 row.names(x$results$bootstrap$coef.matrix))
 
     cat("Coefficients:\n")
@@ -54,43 +70,43 @@ print.tsbootgce <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
   invisible(x)
 }
 
-#' Extract \code{\link{tsbootgce}} Model Coefficients
+#' Extract \code{\link{cv.tsbootgce}} Model Coefficients
 #'
-#' Extract coefficients from a \code{\link{tsbootgce}} object
+#' Extract coefficients from a \code{\link{cv.tsbootgce}} object
 #'
-#' @param object Fitted \code{\link{tsbootgce}} model object.
+#' @param object Fitted \code{\link{cv.tsbootgce}} model object.
 #' @param which  The default is \code{which = NULL} and returns the coefficients
-#' defined in the argument \code{coef.method} from the \code{tsbootgce} object.
-#' Can be set as "mode" or "median" and the mode and median coefficients will be
-#' computed, respectively (see \code{\link[hdrcde]{hdr}}).
-#' @param OLS Boolean value. If \code{TRUE}, returns
-#' OLS estimates. The default is \code{OLS = FALSE}.
+#' defined in the argument \code{coef.method} from the \code{cv.tsbootgce}
+#' object. Can be set as "mode" or "median" and the mode and median coefficients
+#' will be computed, respectively (see \code{\link[hdrcde]{hdr}}).
+#' @param OLS Boolean value. If \code{TRUE}, the confidence interval returned
+#' is based on OLS estimates. The default is \code{OLS = FALSE}.
 #' @param seed A single value, interpreted as an integer, for reproducibility
 #' or \code{NULL} for randomness. The default is \code{seed = object$seed}.
 #' @param ... Additional arguments.
 #'
-#' @return Returns the coefficients from a \code{tsbootgce} object
+#' @return Returns the coefficients from a \code{cv.tsbootgce} object
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
 #' @examples
 #' \donttest{
-#' res.tsbootgce <-
-#'   tsbootgce(
+#' res.cv.tsbootgce <-
+#'   cv.tsbootgce(
 #'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
 #'     data = moz_ts)
 #'
-#' coef(res.tsbootgce)
+#' coef(res.cv.tsbootgce)
 #' }
 #'
-#' @method coef tsbootgce
+#' @method coef cv.tsbootgce
 #' @importFrom stats coef
 #' @export
 
-coef.tsbootgce <- function(object,
-                           which = NULL,
-                           OLS = FALSE,
-                           seed = object$seed, ...)
+coef.cv.tsbootgce <- function(object,
+                              which = NULL,
+                              OLS = FALSE,
+                              seed = object$seed, ...)
 {
   if (is.null(which)) {
     if (OLS) {
@@ -120,49 +136,49 @@ coef.tsbootgce <- function(object,
     }
 }
 
-#' Extract \code{\link{tsbootgce}} Model Coefficients
+#' Extract \code{\link{cv.tsbootgce}} Model Coefficients
 #'
-#' Extract coefficients from a \code{\link{tsbootgce}} object
+#' Extract coefficients from a \code{\link{cv.tsbootgce}} object
 #'
-#' @param object Fitted \code{\link{tsbootgce}} model object.
+#' @param object Fitted \code{\link{cv.tsbootgce}} model object.
 #' @param which  The default is \code{which = NULL} and returns the coefficients
-#' defined in the argument \code{coef.method} from the \code{tsbootgce} object.
-#' Can be set as "mode" or "median" and the mode and median coefficients will be
-#' computed, respectively (see \code{\link[hdrcde]{hdr}}).
-#' @param OLS Boolean value. If \code{TRUE}, returns
-#' OLS estimates. The default is \code{OLS = FALSE}.
+#' defined in the argument \code{coef.method} from the \code{cv.tsbootgce}
+#' object. Can be set as "mode" or "median" and the mode and median coefficients
+#' will be computed, respectively (see \code{\link[hdrcde]{hdr}}).
+#' @param OLS Boolean value. If \code{TRUE}, the confidence interval returned
+#' is based on OLS estimates. The default is \code{OLS = FALSE}.
 #' @param seed A single value, interpreted as an integer, for reproducibility
 #' or \code{NULL} for randomness. The default is \code{seed = object$seed}.
 #' @param ... Additional arguments.
 #'
-#' @return Returns the coefficients from a \code{tsbootgce} object
+#' @return Returns the coefficients from a \code{cv.tsbootgce} object
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
-#' @rdname coefficients.tsbootgce
+#' @rdname coefficients.cv.tsbootgce
 #' @examples
 #' \donttest{
-#' res.tsbootgce <-
-#'   tsbootgce(
+#' res.cv.tsbootgce <-
+#'   cv.tsbootgce(
 #'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
 #'     data = moz_ts)
 #'
-#' coefficients(res.tsbootgce)
+#' coefficients(res.cv.tsbootgce)
 #' }
 #'
-#' @method coefficients tsbootgce
+#' @method coefficients cv.tsbootgce
 #' @importFrom stats coefficients
 #' @export
 
-coefficients.tsbootgce <- coef.tsbootgce
+coefficients.cv.tsbootgce <- coef.cv.tsbootgce
 
-#' Confidence Intervals for \code{\link{tsbootgce}} Model Parameters and
+#' Confidence Intervals for \code{\link{cv.tsbootgce}} Model Parameters and
 #' Normalized Entropy
 #'
 #' Computes confidence intervals for one or more parameters or Normalized
-#' Entropy in a \code{\link{tsbootgce}} fitted model.
+#' Entropy in a \code{\link{cv.tsbootgce}} fitted model.
 #'
-#' @param object Fitted \code{\link{tsbootgce}} model object.
+#' @param object Fitted \code{\link{cv.tsbootgce}} model object.
 #' @param parm a specification of which parameters are to be given confidence
 #' intervals, either a vector of numbers or a vector of names. If missing,
 #' all parameters are considered.
@@ -187,33 +203,33 @@ coefficients.tsbootgce <- coef.tsbootgce
 #'
 #' @examples
 #' \donttest{
-#' res.tsbootgce <-
-#'   tsbootgce(
+#' res.cv.tsbootgce <-
+#'   cv.tsbootgce(
 #'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
 #'     data = moz_ts)
 #'
-#' confint(res.tsbootgce, method = "percentile")
+#' confint(res.cv.tsbootgce, method = "percentile")
 #'
-#' confint(res.tsbootgce, which = "NormEnt", level = 0.99)
+#' confint(res.cv.tsbootgce, which = "NormEnt", level = 0.99)
 #'
-#' confint(res.tsbootgce, parm = c("L(GDP, 1)"), level = 0.99)
+#' confint(res.cv.tsbootgce, parm = c("L(GDP, 1)"), level = 0.99)
 #' }
 #'
-#' @method confint tsbootgce
+#' @method confint cv.tsbootgce
 #' @importFrom stats confint
 #' @export
 
-confint.tsbootgce <- function(object,
-                              parm,
-                              level = 0.95,
-                              which = c("estimates", "NormEnt"),
-                              method = c("hdr", "percentile", "basic"),
-                              seed = object$seed,
-                              OLS = FALSE,
-                              ...)
+confint.cv.tsbootgce <- function(object,
+                                 parm,
+                                 level = 0.95,
+                                 which = c("estimates", "NormEnt"),
+                                 method = c("hdr", "percentile", "basic"),
+                                 seed = object$seed,
+                                 OLS = FALSE,
+                                 ...)
 {
-  if (!inherits(object, "tsbootgce"))
-    stop("use only with \"tsbootgce\" objects")
+  if (!inherits(object, "cv.tsbootgce"))
+    stop("use only with \"cv.tsbootgce\" objects")
 
   #which <- match.arg(which)
   which <- which[1]
@@ -305,12 +321,12 @@ confint.tsbootgce <- function(object,
 }
 
 
-#' Plot Diagnostics for a \code{\link{tsbootgce}} object
+#' Plot Diagnostics for a \code{\link{cv.tsbootgce}} object
 #'
 #' Four plots (selectable by \code{which}) are currently available to
-#' evaluate a \code{\link{tsbootgce}} object.
+#' evaluate a \code{\link{cv.tsbootgce}} object.
 #'
-#' @param x Fitted \code{tsbootgce} object.
+#' @param x Fitted \code{cv.tsbootgce} object.
 #' @param which Integers from 1 to 4. The default is \code{which = c(1,2)}.
 #' @param group Boolean value. If \code{group = TRUE}, the default, plots are
 #' grouped in one image.
@@ -335,23 +351,23 @@ confint.tsbootgce <- function(object,
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
-#' @seealso \code{\link[GCEstim]{tsbootgce}}
+#' @seealso \code{\link[GCEstim]{cv.tsbootgce}}
 #'
 #' @examples
 #' \donttest{
-#' res.tsbootgce <-
-#'   tsbootgce(
+#' res.cv.tsbootgce <-
+#'   cv.tsbootgce(
 #'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
 #'     data = moz_ts)
 #'
-#' plot(res.tsbootgce, which = 2, group = TRUE)
+#' plot(res.cv.tsbootgce, which = 2, group = TRUE)
 #' }
 #'
-#' @method plot tsbootgce
+#' @method plot cv.tsbootgce
 #' @importFrom rlang .data
 #' @export
 
-plot.tsbootgce <-
+plot.cv.tsbootgce <-
   function (x,
             which = c(1, 2),
             group = TRUE,
@@ -366,8 +382,8 @@ plot.tsbootgce <-
             legend.position = "bottom",
             ...) {
     object <- x
-    if (!inherits(object, "tsbootgce"))
-      stop("use only with \"tsbootgce\" objects")
+    if (!inherits(object, "cv.tsbootgce"))
+      stop("use only with \"cv.tsbootgce\" objects")
     if (length(ci.levels) > 4)
       stop("argument `ci.levels` must have length not greater than 4.",
            call. = FALSE)
@@ -493,7 +509,7 @@ plot.tsbootgce <-
                        names(falphamax) <- paste0(rev(100-prob), "%")
                        falphamax
                        }
-                     )
+          )
 
           for (ci.l in 1:length(prob)) {
             hd$hdr[ci.l,] <-
@@ -506,7 +522,7 @@ plot.tsbootgce <-
             hd$falphamax[ci.l] <- den$y[which.min(abs(den$x - hd$hdr[ci.l, 2]))]
           }
           hd$mode <- median(x)
-          }
+        }
 
         nregions <- nrow(hd$hdr)
         leng <- dim(hd$hdr)[[2]]
@@ -533,8 +549,8 @@ plot.tsbootgce <-
                 "$b_",
                 i-ifelse("(Intercept)" %in% rownames(
                   object$results$bootstrap$coef.matrix),
-                         1,
-                         0),
+                  1,
+                  0),
                 "$",
                 " estimates - ",
                 rownames(object$results$bootstrap$coef.matrix)[i]))) +
@@ -553,21 +569,21 @@ plot.tsbootgce <-
               #   ggplot2::geom_hline(yintercept = hd$falpha[r],
               #                       col = col[r],
               #                       linetype = "dashed")
-            for (j in 1:length(hd$hdr[r, ])) {
-              data.segment <- data.frame(x = hd$hdr[r, j],
-                                         xend = hd$hdr[r, j],
-                                         y = stepy * (r - nregions),
-                                         yend = hd$falpha[r])
-              p2 <- p2 +
-                ggplot2::geom_segment(data = data.segment,
-                                      ggplot2::aes(x = .data$x,
-                                                   xend = .data$xend,
-                                                   y = .data$y,
-                                                   yend = .data$yend),
-                                      colour = col[r],
-                                      linetype = "dashed")
+              for (j in 1:length(hd$hdr[r, ])) {
+                data.segment <- data.frame(x = hd$hdr[r, j],
+                                           xend = hd$hdr[r, j],
+                                           y = stepy * (r - nregions),
+                                           yend = hd$falpha[r])
+                p2 <- p2 +
+                  ggplot2::geom_segment(data = data.segment,
+                                        ggplot2::aes(x = .data$x,
+                                                     xend = .data$xend,
+                                                     y = .data$y,
+                                                     yend = .data$yend),
+                                        colour = col[r],
+                                        linetype = "dashed")
 
-            }
+              }
             } else {
               for (j in 1:length(hd$hdr[r, ])) {
                 data.segment <- data.frame(x = hd$hdr[r, j],
@@ -584,7 +600,7 @@ plot.tsbootgce <-
                                         linetype = "dashed")
 
               }
-              }
+            }
           }
         }
 
@@ -729,8 +745,8 @@ plot.tsbootgce <-
                 "$b_",
                 i-ifelse("(Intercept)" %in% rownames(
                   object$results$bootstrap$coef.matrix),
-                         1,
-                         0),
+                  1,
+                  0),
                 "$",
                 " estimates - ",
                 rownames(object$results$bootstrap$coef.matrix)[i]))) +
@@ -1056,47 +1072,47 @@ plot.tsbootgce <-
         plots$p4[[i]] <- p4
       }
     }
-      if (group) {
-        plotsg <- list(p1 = NULL,
-                       p2 = NULL,
-                       p3 = NULL,
-                       p4 = NULL)
+    if (group) {
+      plotsg <- list(p1 = NULL,
+                     p2 = NULL,
+                     p3 = NULL,
+                     p4 = NULL)
 
-        if (show[1L]) {
-          plotsg$p1 <-
-            ggpubr::ggarrange(plotlist = plots$p1,
-                              common.legend = TRUE,
-                              legend = legend.position,
-                              ncol = group.ncol,
-                              nrow = group.nrow)
-        }
-        if (show[2L]) {
-          plotsg$p2 <-
-            ggpubr::ggarrange(plotlist = plots$p2,
-                              common.legend = TRUE,
-                              legend = legend.position,
-                              ncol = group.ncol,
-                              nrow = group.nrow)
-        }
-        if (show[3L]) {
-          plotsg$p3 <-
-            ggpubr::ggarrange(plotlist = plots$p3,
-                              common.legend = TRUE,
-                              legend = legend.position,
-                              ncol = group.ncol,
-                              nrow = group.nrow)
-        }
-        if (show[4L]) {
-          plotsg$p4 <-
-            ggpubr::ggarrange(plotlist = plots$p4,
-                              common.legend = TRUE,
-                              legend = legend.position,
-                              ncol = group.ncol,
-                              nrow = group.nrow)
-        }
-
-        plotsg[!sapply(plotsg, is.null)]
-      } else {
-        plots[!sapply(plots, is.null)]
+      if (show[1L]) {
+        plotsg$p1 <-
+          ggpubr::ggarrange(plotlist = plots$p1,
+                            common.legend = TRUE,
+                            legend = legend.position,
+                            ncol = group.ncol,
+                            nrow = group.nrow)
       }
+      if (show[2L]) {
+        plotsg$p2 <-
+          ggpubr::ggarrange(plotlist = plots$p2,
+                            common.legend = TRUE,
+                            legend = legend.position,
+                            ncol = group.ncol,
+                            nrow = group.nrow)
+      }
+      if (show[3L]) {
+        plotsg$p3 <-
+          ggpubr::ggarrange(plotlist = plots$p3,
+                            common.legend = TRUE,
+                            legend = legend.position,
+                            ncol = group.ncol,
+                            nrow = group.nrow)
+      }
+      if (show[4L]) {
+        plotsg$p4 <-
+          ggpubr::ggarrange(plotlist = plots$p4,
+                            common.legend = TRUE,
+                            legend = legend.position,
+                            ncol = group.ncol,
+                            nrow = group.nrow)
+      }
+
+      plotsg[!sapply(plotsg, is.null)]
+    } else {
+      plots[!sapply(plots, is.null)]
+    }
   }

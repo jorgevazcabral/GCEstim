@@ -34,8 +34,8 @@
 changesupport <- function(object, support, verbose = 0)
 {
   if (is.null(object$error.which)) {
-    stop(cat('It is not possible to change the support since the lmgce object was
-             computed for a specific support'),
+    stop(cat('It is not possible to change the support since the lmgce object
+    was computed for a specific support'),
          call. = FALSE)
   }
 

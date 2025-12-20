@@ -7,7 +7,8 @@
 lmgceAPP()
 }
 \value{
-\code{NULL}. This function is called for its side effect (launching the app).
+\code{NULL}. This function is called for its side effect
+(launching the app).
 }
 \description{
 A Shiny application to execute \code{\link{lmgce}}

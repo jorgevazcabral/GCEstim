@@ -150,9 +150,12 @@ plot.neagging <-
           panel.grid.major = ggplot2::element_blank(),
           panel.grid.minor = ggplot2::element_blank(),
           axis.line = ggplot2::element_line(colour = "black"),
-          axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-          axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-          axis.title.x = ggplot2::element_text(size = 12, colour = "black"),
+          axis.text.y = ggplot2::element_text(size = 12,
+                                              colour = "black"),
+          axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                     colour = "black"),
+          axis.title.x = ggplot2::element_text(size = 12,
+                                               colour = "black"),
           legend.title = ggplot2::element_blank()) +
         ggplot2::geom_hline(yintercept = object$error.object,
                             linetype = "dotted")
@@ -173,9 +176,12 @@ plot.neagging <-
           panel.grid.major = ggplot2::element_blank(),
           panel.grid.minor = ggplot2::element_blank(),
           axis.line = ggplot2::element_line(colour = "black"),
-          axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-          axis.text.x.bottom = ggplot2::element_text(size = 12, colour = "black"),
-          axis.title.x = ggplot2::element_text(size = 12, colour = "black"),
+          axis.text.y = ggplot2::element_text(size = 12,
+                                              colour = "black"),
+          axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                     colour = "black"),
+          axis.title.x = ggplot2::element_text(size = 12,
+                                               colour = "black"),
           legend.title = ggplot2::element_blank()) +
         ggplot2::scale_color_manual(values = col.coef.all) +
         ggplot2::geom_hline(yintercept = object$coefficients.object,

@@ -133,8 +133,10 @@ lmgce.fit <-
     } else {
       zlim <-
         as.matrix(cbind(
-          (max.coef + min.coef) / 2 + support.signal * (max.coef - min.coef) * (-0.5),
-          (max.coef + min.coef) / 2 + support.signal * (max.coef - min.coef) * (0.5)))
+          (max.coef + min.coef) / 2 +
+            support.signal * (max.coef - min.coef) * (-0.5),
+          (max.coef + min.coef) / 2 +
+            support.signal * (max.coef - min.coef) * (0.5)))
       }
   }
     } else if (length(support.signal) == 2) {
@@ -448,7 +450,8 @@ lmgce.fit <-
       temp <- sum(lambda_hat * X_model[, k_aux])
 
       for (m_aux in 1:m) {
-        p[k_aux, m_aux] <- p0[k_aux, m_aux] * exp(s1[k_aux, m_aux] * temp * (1 / (1 - weight)))
+        p[k_aux, m_aux] <-
+          p0[k_aux, m_aux] * exp(s1[k_aux, m_aux] * temp * (1 / (1 - weight)))
       }
 
       Omega[k_aux] <- sum(p[k_aux, ])
@@ -481,7 +484,8 @@ lmgce.fit <-
         sum((s2 * s2) * w[n_aux, ]) - (sum(s2 * w[n_aux, ]))^2
     }
     var_beta <-
-      ((sum(lambda_hat * lambda_hat) / n) / ((sum(1 / sigma2_zeta) / n)^2)) * solve(t(X_model) %*% X_model)
+      ((sum(lambda_hat * lambda_hat) / n) / ((sum(1 / sigma2_zeta) / n)^2)) *
+      solve(t(X_model) %*% X_model)
   }
 
   if (method %in% c("primal.solnp")){
@@ -498,7 +502,8 @@ lmgce.fit <-
         sum((s2 * s2) * w[n_aux, ]) - (sum(s2 * w[n_aux, ]))^2
     }
     var_beta <-
-      ((sum(lambda_hat * lambda_hat) / n) / ((sum(1 / sigma2_zeta) / n)^2)) * solve(t(X_model) %*% X_model)
+      ((sum(lambda_hat * lambda_hat) / n) / ((sum(1 / sigma2_zeta) / n)^2)) *
+      solve(t(X_model) %*% X_model)
 
   }
 

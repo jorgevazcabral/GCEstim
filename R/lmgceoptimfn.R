@@ -22,7 +22,8 @@
 #'
 #' @noRd
 
-ObjFunGCE.primal.solnp <- function(x0, X, n, k, m, j, p0, w0, s1, S, weight, ...) {
+ObjFunGCE.primal.solnp <- function(x0, X, n, k, m, j, p0, w0,
+                                   s1, S, weight, ...) {
   p <- x0[1:(k*m)]
   w <- x0[(k*m + 1):length(x0)]
 
@@ -44,7 +45,8 @@ ObjFunGCE.primal.solnp <- function(x0, X, n, k, m, j, p0, w0, s1, S, weight, ...
 #'
 #' @noRd
 
-ConstFunGCE.primal.solnp <- function(x0, X, n, k, m, j, p0, w0, s1, S, weight) {
+ConstFunGCE.primal.solnp <- function(x0, X, n, k, m, j,
+                                     p0, w0, s1, S, weight) {
   p <- matrix(x0[1:(k * m)], nrow = k, ncol = m)
   w <- matrix(x0[(k * m + 1):length(x0)], nrow = n, ncol = j)
 
@@ -141,7 +143,8 @@ row_logsumexp <- function(mat) {
 #'
 #' @noRd
 
-ObjFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0, w0, n, k, weight,...)
+ObjFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0,
+                                 w0, n, k, weight,...)
 {
   temp_scalar <- t(X) %*% x0 / (1 - weight)
   temp_scalar_mat <- temp_scalar %*% matrix(1, ncol = ncol(s1))
@@ -179,7 +182,8 @@ ObjFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0, w0, n, k, weight,...)
 #'
 #' @noRd
 
-GradFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0, w0, n, k, m.optim, j, weight) {
+GradFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0, w0,
+                                  n, k, m.optim, j, weight) {
 
   temp_scalar <- t(X) %*% x0 / (1 - weight)
   temp_scalar_mat <- temp_scalar %*% matrix(1, ncol=ncol(s1))
@@ -194,7 +198,7 @@ GradFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0, w0, n, k, m.optim, j, we
   exponent_Psi <- x0 %*% t(s2) / weight
 
   w <- exp(log(w0) + exponent_Psi - row_logsumexp(log(w0) +
-                                                    exponent_Psi) %*% t(rep(1, length(s2))))
+        exponent_Psi) %*% t(rep(1, length(s2))))
 
   epsilon <- w %*% matrix(s2, ncol = 1)
 

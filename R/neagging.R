@@ -10,15 +10,17 @@
 #' when \code{object} was created with \code{boot.B = 0}. The default is
 #' \code{boot.B = 100} when the \code{object} has no previous sampling
 #' information and \code{boot.B = object$boot.B} otherwise, which corresponds
-#' to the \code{boot.B} given to \code{lmgce} when the \code{object} was created.
+#' to the \code{boot.B} given to \code{lmgce} when the \code{object} was
+#' created.
 #' @param boot.method To use with a \code{\link{lmgce}} object. Method used for
-#' bootstrapping. One of \code{c("residuals", "cases", "wild")} which corresponds
-#' to resampling on residuals, on individual cases or on residuals multiplied by
-#'  a N(0,1) variable, respectively. The default is
+#' bootstrapping. One of \code{c("residuals", "cases", "wild")} which
+#' corresponds to resampling on residuals, on individual cases or on residuals
+#' multiplied by a N(0,1) variable, respectively. The default is
 #'  \code{boot.method = object$boot.method}.
 #' @param error Loss function (error) to be used for the selection
-#' of the support spaces. One of c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE").
-#' The default is \code{boot.method = object$error}.
+#' of the support spaces. One of
+#' c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE"). The default is
+#' \code{boot.method = object$error}.
 #'
 #' @return
 #'  An object of \code{\link[base]{class}} \code{neagging} is a list containing
@@ -42,7 +44,8 @@
 #' @references
 #' da Conceição Costa, M. and Macedo, P. (2019).
 #' \emph{Normalized Entropy Aggregation for Inhomogeneous Large-Scale Data.}
-#' In O. Valenzuela, F. Rojas, H. Pomares, & I. Rojas (Eds.), Theory and Applications of Time Series Analysis (pp. 19–29).
+#' In O. Valenzuela, F. Rojas, H. Pomares, & I. Rojas (Eds.), Theory and
+#' Applications of Time Series Analysis (pp. 19–29).
 #' Springer International Publishing.
 #' \doi{10.1007/978-3-030-26036-1_2}
 #'
@@ -129,7 +132,9 @@ neagging <- function(object,
           function(x) {x/sum(x)}))
 
     res$matrix[, i] <-
-      diag(as.matrix(object$results$bootstrap$coefficients[, 1:i]) %*% t(nepkweights))
+      diag(
+        as.matrix(
+          object$results$bootstrap$coefficients[, 1:i]) %*% t(nepkweights))
 
     res$error[i] <- accmeasure(object$x %*% res$matrix[, i],
                                object$y,
@@ -168,7 +173,9 @@ neagging <- function(object,
           function(x) {x/sum(x)}))
 
       res$matrix[, i] <-
-        diag(as.matrix(object$results$bootstrap$coef.matrix[, 1:i]) %*% t(nepkweights))
+        diag(
+          as.matrix(
+            object$results$bootstrap$coef.matrix[, 1:i]) %*% t(nepkweights))
 
       res$error[i] <- accmeasure(object$lmgce$x %*% res$matrix[, i],
                                           object$lmgce$y,

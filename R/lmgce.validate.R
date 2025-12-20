@@ -32,7 +32,8 @@ lmgce.validate <- function(formula,
                            support.signal.vector.min = 0.5,
                            support.signal.vector.max = 50,
                            support.signal.vector.n = 20,
-                           support.signal.points = c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
+                           support.signal.points =
+                             c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
                            support.noise = NULL,
                            support.noise.points = c(1 / 3, 1 / 3, 1 / 3),
                            weight = 0.5,
@@ -49,7 +50,8 @@ lmgce.validate <- function(formula,
   if (missing(data)) stop("argument `data` is required.",call. = FALSE)
 
   if (support.method == "ridge" & (length(support.signal) > 1))
-    stop("argument `support.signal` must be NULL or an integer when `support.method='ridge'`.",
+    stop("argument `support.signal` must be NULL or an integer when
+         `support.method='ridge'`.",
          call. = FALSE)
 
   if (is.null(method) ||
@@ -61,7 +63,8 @@ lmgce.validate <- function(formula,
                       "dual.lbfgsb3c",
                       "dual.optimParallel"))) {
     stop(
-      'argument `method` must be one of c("primal.solnl", "primal.solnp", "dual",
+      'argument `method` must be one of c("primal.solnl", "primal.solnp",
+      "dual",
       "dual.BFGS", "dual.CG", "dual.L-BFGS-B", "dual.Rcgmin", "dual.bobyqa",
       "dual.newuoa", "dual.nlminb", "dual.nlm",
       "dual.lbfgs",
@@ -77,13 +80,15 @@ lmgce.validate <- function(formula,
   }
 
   if (method == "dual" & weight != 0.5) {
-    stop('`method` = "dual" supports only equal weights for the signal and noise.',
+    stop('`method` = "dual" supports only equal weights for the signal and
+         noise.',
          call. = FALSE)
   }
 
   if (is.null(support.signal)) {
     if(any(support.signal.vector <= 0)) {
-      stop('argument `support.signal.vector` must be an positive number or a vector of positive numbers',
+      stop('argument `support.signal.vector` must be an positive number or a
+           vector of positive numbers',
            call. = FALSE)
       }
     }
@@ -111,14 +116,16 @@ lmgce.validate <- function(formula,
     y = y,
     cv = cv,
     OLS = OLS,
-    support.method.ridge.penalize.intercept = support.method.ridge.penalize.intercept
+    support.method.ridge.penalize.intercept =
+      support.method.ridge.penalize.intercept
   )
 
   if (!is.logical(logical.param) |
       length(logical.param) != 6) {
     stop(
       "The following arguments must be TRUE or FALSE:
-          `model`, `x`, `y`, `cv`, `OLS`, `support.method.ridge.penalize.intercept`",
+          `model`, `x`, `y`, `cv`, `OLS`,
+          `support.method.ridge.penalize.intercept`",
       call. = FALSE
     )
   }
@@ -133,37 +140,50 @@ lmgce.validate <- function(formula,
          call. = FALSE)
 
   if (is.null(cv.repeats) || cv.repeats < 1 || cv.repeats %% 1 != 0)
-    stop("argument `cv.repeats` must be a positive integer.", call. = FALSE)
+    stop("argument `cv.repeats` must be a positive integer.",
+         call. = FALSE)
 
   if (!is.numeric(support.signal.points)) {
-    stop("argument `support.signal.points` must be a numeric vector.", call. = FALSE)
+    stop("argument `support.signal.points` must be a numeric vector.",
+         call. = FALSE)
   } else if (length(support.signal.points) != 1) {
-    if (is.vector(support.signal.points) && !all.equal(sum(support.signal.points), 1)) {
-    stop("the sum of the elements of argument `support.signal.points` must be equal to 1.",
+    if (is.vector(support.signal.points) && !all.equal(
+      sum(support.signal.points), 1)) {
+    stop("the sum of the elements of argument `support.signal.points` must be
+         equal to 1.",
          call. = FALSE)
     } else {
       if (is.matrix(support.signal.points) &&
-          !all(apply(matrix(apply(support.signal.points, 1, sum), ncol = 1), 1, all.equal, 1))
+          !all(apply(matrix(apply(support.signal.points, 1, sum), ncol = 1),
+                     1,
+                     all.equal,
+                     1))
       ) {
-        stop("the sum of the elements by row of argument `support.signal.points` must be
-             equal to 1.",
+        stop("the sum of the elements by row of argument `support.signal.points`
+              must be equal to 1.",
              call. = FALSE)
     }
     }
   }
 
   if (!is.numeric(support.noise.points)) {
-    stop("argument `support.noise.points` must be a numeric vector.", call. = FALSE)
+    stop("argument `support.noise.points` must be a numeric vector.",
+         call. = FALSE)
   } else if (length(support.noise.points) != 1) {
-    if (is.vector(support.noise.points) && !all.equal(sum(support.noise.points), 1)) {
-      stop("the sum of the elements of argument `support.noise.points` must be equal to 1.",
+    if (is.vector(support.noise.points) && !all.equal(sum(support.noise.points),
+                                                      1)) {
+      stop("the sum of the elements of argument `support.noise.points` must be
+           equal to 1.",
            call. = FALSE)
     } else {
       if (is.matrix(support.noise.points) &&
-          !all(apply(matrix(apply(support.noise.points, 1, sum), ncol = 1), 1, all.equal, 1))
+          !all(apply(matrix(apply(support.noise.points, 1, sum), ncol = 1),
+                     1,
+                     all.equal,
+                     1))
           ) {
-        stop("the sum of the elements by row of argument `support.noise.points` must be
-             equal to 1.",
+        stop("the sum of the elements by row of argument `support.noise.points`
+             must be equal to 1.",
              call. = FALSE)
       }
     }
@@ -176,12 +196,13 @@ lmgce.validate <- function(formula,
          call. = FALSE)
 
   if (!is.numeric(boot.B) || boot.B < 0 || (boot.B > 0 & boot.B < 10))
-    stop("argument `boot.B` must be 0 or a positive integer greater or equal to 10.",
+    stop("argument `boot.B` must be 0 or a positive integer greater or
+         equal to 10.",
          call. = FALSE)
 
   if (is.null(boot.method) ||
       (!boot.method %in% c("residuals", "cases", "wild")))
-    stop('argument `boot.method` must be one of c("residuals", "cases", "wild")',
+   stop('argument `boot.method` must be one of c("residuals", "cases", "wild")',
          call. = FALSE)
 
 }

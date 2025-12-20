@@ -44,18 +44,19 @@
 #' \code{cv = TRUE}. The default is \code{cv.nfolds = 5} and the smallest value
 #' allowable is \code{cv.nfolds = 3}.
 #' @param errormeasure Loss function (error) to be used for the selection
-#' of the support spaces. One of c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE").
-#' The default is \code{errormeasure = "RMSE"}.
-#' @param errormeasure.which Which value of \code{errormeasure}
-#' to be used for selecting a support space upper limit from \code{support.signal.vector}.
+#' of the support spaces. One of
+#' c("RMSE","MSE", "MAE", "MAPE", "sMAPE", "MASE"). The default is
+#' \code{errormeasure = "RMSE"}.
+#' @param errormeasure.which Which value of \code{errormeasure} to be used for
+#' selecting a support space upper limit from \code{support.signal.vector}.
 #' One of \code{c("min", "1se", "elbow")} where \code{"min"} corresponds to the
 #' support spaces that produced the lowest error, \code{"1se"} corresponds to
 #' the support spaces such that error is within 1 standard error of the CV error
-#' for \code{"min"} and \code{"elbow"} corresponds to the elbow point of the error
-#' curve (the point that maximizes the distance between each observation, i.e,
-#' the pair composed by the upper limit of the support space and the error, and
-#' the line between the first and last observations, i.e., the lowest and the
-#' highest upper limits of the support space respectively. See
+#' for \code{"min"} and \code{"elbow"} corresponds to the elbow point of the
+#' error curve (the point that maximizes the distance between each observation,
+#' i.e, the pair composed by the upper limit of the support space and the error,
+#' and the line between the first and last observations, i.e., the lowest and
+#' the highest upper limits of the support space respectively. See
 #' \code{\link[pathviewr]{find_curve_elbow}}). The default is
 #' \code{errormeasure.which = "1se"}.
 #' @param support.method One of c("standardized", "ridge"). If
@@ -72,14 +73,17 @@
 #' @param support.method.ridge.lambda.min Minimum value for the
 #' \code{support.method.ridge.lambda} sequence. The default is
 #' \code{support.method.ridge.lambda.min = 10^-3}. To be used when
-#' \code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.
+#' \code{support.method = "ridge"} and
+#' \code{support.method.ridge.lambda = NULL}.
 #' @param support.method.ridge.lambda.max Maximum value for the
 #' \code{support.method.ridge.lambda} sequence. The default is
 #' \code{support.method.ridge.lambda.max = 10^3}. To be used when
-#' \code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.
+#' \code{support.method = "ridge"} and
+#' \code{support.method.ridge.lambda = NULL}.
 #' @param support.method.ridge.lambda.n The number of ridge parameters values.
 #' The default is \code{support.method.ridge.lambda.n = 100}. To be used when
-#'  \code{support.method = "ridge"} and \code{support.method.ridge.lambda = NULL}.
+#'  \code{support.method = "ridge"} and
+#'  \code{support.method.ridge.lambda = NULL}.
 #' @param support.method.ridge.standardize Boolean value. If \code{TRUE}, the
 #' default, then: i) centering is done by subtracting the column means of x and
 #' y from their corresponding columns; ii) scaling is done by dividing the
@@ -110,33 +114,33 @@
 #' @param support.signal.vector NULL or a vector of positive values when
 #' \code{support.signal = NULL}. If \code{support.signal.vector = NULL},
 #' the default, a vector
-#' \code{c(support.signal.vector.min,...,support.signal.vector.max)} of dimension
-#'  \code{support.signal.vector.n} and logarithmically equally spaced will be
-#' generated. Each value represents the upper limits for the standardized support
-#'  spaces, when \code{support.method = "standardized"} or the factor to be
-#'  multiplied by the maximum absolute value of the ridge trace for each
-#'  coefficient, when \code{support.method = "ridge"}.
+#' \code{c(support.signal.vector.min,...,support.signal.vector.max)} of
+#' dimension \code{support.signal.vector.n} and logarithmically equally spaced
+#' will be generated. Each value represents the upper limits for the
+#' standardized support spaces, when \code{support.method = "standardized"} or
+#' the factor to be multiplied by the maximum absolute value of the ridge trace
+#' for each coefficient, when \code{support.method = "ridge"}.
 #' @param support.signal.vector.min A positive value for the lowest limit of the
 #' \code{support.signal.vector} when \code{support.signal = NULL} and
 #' \code{support.signal.vector = NULL}. The default is
 #' \code{support.signal.vector.min = 0.3}.
-#' @param support.signal.vector.max A positive value for the highest limit of the
-#' \code{support.signal.vector} when \code{support.signal = NULL} and
+#' @param support.signal.vector.max A positive value for the highest limit of
+#' the \code{support.signal.vector} when \code{support.signal = NULL} and
 #' \code{support.signal.vector = NULL}. The default is
 #' \code{support.signal.vector.max = 20}.
 #' @param support.signal.vector.n A positive integer for the number of support
 #' spaces to be used when \code{support.signal = NULL} and
 #' \code{support.signal.vector = NULL}. The default is
 #' \code{support.signal.vector.n = 20}.
-#' @param support.signal.points A vector of positive integers defining the number
-#'  of points for the signal support to be tested .The default is
+#' @param support.signal.points A vector of positive integers defining the
+#' number of points for the signal support to be tested .The default is
 #' \code{support.signal.points = c(3, 5, 7, 9)}.
-#' @param support.noise An interval, preferably centered around zero, given in the form
-#' \code{c(LL,UL)}. If \code{support.noise = NULL}, the default, then a vector
-#' \code{c(-L,L)} is computed using the empirical three-sigma rule
+#' @param support.noise An interval, preferably centered around zero, given in
+#' the form \code{c(LL,UL)}. If \code{support.noise = NULL}, the default, then a
+#'  vector \code{c(-L,L)} is computed using the empirical three-sigma rule
 #' Pukelsheim (1994).
 #' @param support.noise.points A vector of positive integers defining the number
-#'  of points for the noise support to be tested .The default is
+#'  of points for the noise support to be tested. The default is
 #' \code{support.noise.points = c(3, 5, 7, 9)}.
 #' @param weight a vector of values between zero and one representing the
 #' prediction-precision loss trade-off. The default is
@@ -180,8 +184,8 @@
 #' is \code{boot.B = 0}.
 #' @param boot.method Method to be use for bootstrapping. One of
 #' \code{c("residuals", "cases", "wild")} which corresponds to resampling on
-#' residuals, on individual cases or on residuals multiplied by a N(0,1) variable,
-#' respectively. The default is \code{boot.method = "residuals"}.
+#' residuals, on individual cases or on residuals multiplied by a N(0,1)
+#' variable, respectively. The default is \code{boot.method = "residuals"}.
 #' @param seed A single value, interpreted as an integer, for reproducibility
 #' or \code{NULL} for randomness. The default is \code{seed = 230676}.
 #' @param OLS Boolean value. if \code{TRUE}, the default, OLS estimation is
@@ -236,7 +240,8 @@
 #' Foundations and Trends® in Econometrics, 2(1–2), 1–145.
 #' \doi{10.1561/0800000004}\cr
 #' Golan, A. (2017)
-#' \emph{Foundations of Info-Metrics: Modeling, Inference, and Imperfect Information (Vol. 1).}
+#' \emph{Foundations of Info-Metrics: Modeling, Inference, and Imperfect
+#' Information (Vol. 1).}
 #' Oxford University Press.
 #' \doi{10.1093/oso/9780199349524.001.0001}\cr
 #' Pukelsheim, F. (1994)
@@ -269,7 +274,8 @@ cv.dynlmgce <- function(formula,
                      end = NULL,
                      cv = TRUE,
                      cv.nfolds = 5,
-                     errormeasure = c("RMSE", "MSE", "MAE", "MAPE", "sMAPE", "MASE"),
+                     errormeasure = c("RMSE", "MSE", "MAE",
+                                      "MAPE", "sMAPE", "MASE"),
                      errormeasure.which =
                        {
                          if (isTRUE(cv))
@@ -298,8 +304,8 @@ cv.dynlmgce <- function(formula,
                      weight = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
                      twosteps.n = 1,
                      method = c(
-                       "dual.lbfgsb3c",
                        "dual.BFGS",
+                       "dual.lbfgsb3c",
                        "dual",
                        "primal.solnl",
                        "primal.solnp",
@@ -339,8 +345,9 @@ cv.dynlmgce <- function(formula,
   boot.method <- match.arg(boot.method)
 
   Zenv <- new.env(parent = environment(formula))
-  assign("dynformula", function(x) structure(x, class = unique(c("dynformula",
-                                                                 oldClass(x)))), envir = Zenv)
+  assign("dynformula",
+         function(x) structure(x, class = unique(c("dynformula",
+                                                   oldClass(x)))), envir = Zenv)
   assign("L", function(x, k = 1) {
     if (length(k) > 1) {
       res <- lapply(k, function(i) lag(x, k = -i))
@@ -380,7 +387,9 @@ cv.dynlmgce <- function(formula,
     stopifnot(freq >= 1 && identical(all.equal(freq, round(freq)),
                                      TRUE))
     freq <- round(freq)
-    res <- zoo::zoo(seq_along(zoo::index(x))/freq, zoo::index(x), frequency = ofreq)
+    res <- zoo::zoo(seq_along(zoo::index(x))/freq,
+                    zoo::index(x),
+                    frequency = ofreq)
     return(res)
   }, envir = Zenv)
   assign("harmon", function(x, order = 1) {
@@ -403,9 +412,13 @@ cv.dynlmgce <- function(formula,
       res <- res[, -(2 * order)]
     return(res)
   }, envir = Zenv)
-  assign("model.frame.dynformula", function(formula, data = NULL,
-                                            subset = NULL, na.action = na.omit, drop.unused.levels = FALSE,
-                                            xlev = NULL, ...) {
+  assign("model.frame.dynformula",
+         function(formula,
+                  data = NULL,
+                  subset = NULL,
+                  na.action = na.omit,
+                  drop.unused.levels = FALSE,
+                  xlev = NULL, ...) {
     if (is.null(data)) {
       data <- as.list(parent.frame())
       data <- data[!sapply(data, inherits, "function")]
@@ -459,8 +472,10 @@ cv.dynlmgce <- function(formula,
   mf <- eval(mf, envir = Zenv)
   mfna <- attr(mf, "na.action")
   if (length(zoo::index(mf[, 1])) > nrow(mf)) {
-    for (i in 1:NCOL(mf)) attr(mf[, i], "index") <- attr(mf[,
-                                                            i], "index")[-as.vector(mfna)]
+    for (i in 1:NCOL(mf)) {
+      attr(mf[, i], "index") <-
+        attr(mf[, i], "index")[-as.vector(mfna)]
+      }
   }
   is.zoofactor <- function(x) !is.null(attr(x, "oclass")) &&
     attr(x, "oclass") == "factor"
@@ -493,8 +508,9 @@ cv.dynlmgce <- function(formula,
     mf <- mf[start:end, , drop = FALSE]
     mf1 <- mf1[start:end]
     if (!is.null(mfna))
-      attr(mf, "na.action") <- structure(mfna[as.vector(mfna) >=
-                                                start & as.vector(mfna) <= end], class = class(mfna))
+      attr(mf, "na.action") <-
+      structure(mfna[as.vector(mfna) >= start & as.vector(mfna) <= end],
+                class = class(mfna))
   }
   if ("ts" %in% orig.class && zoo::is.regular(mf1, strict = TRUE)) {
     for (i in 1:ncol(mf)) if (!is.factor(mf[, i])) {
@@ -554,7 +570,8 @@ cv.dynlmgce <- function(formula,
       colnames(data.lmgce)[-1] <- colnames(x)
     }
 
-    res <- cv.lmgce(
+    res <-
+      cv.lmgce(
       formula = y ~ .,
       data = data.lmgce,
       model = model,
@@ -570,7 +587,8 @@ cv.dynlmgce <- function(formula,
       support.method.ridge.lambda.max = support.method.ridge.lambda.max,
       support.method.ridge.lambda.n = support.method.ridge.lambda.n,
       support.method.ridge.standardize = support.method.ridge.standardize,
-      support.method.ridge.penalize.intercept = support.method.ridge.penalize.intercept,
+      support.method.ridge.penalize.intercept =
+        support.method.ridge.penalize.intercept,
       support.method.ridge.symm = support.method.ridge.symm,
       support.method.ridge.maxresid = support.method.ridge.maxresid,
       support.signal = support.signal,
