@@ -560,10 +560,23 @@ confint.lmgce <- function(object,
       rownames(aux.conf.int) <- parm
     return(aux.conf.int)
   } else {
-    if (which == "estimates")
-      mcf <- object$results$bootstrap$coefficients
-      else
-        mcf <- object$results$bootstrap$nepk
+    if (which == "estimates") {
+      boot_valid <-
+        apply(object$results$bootstrap$coefficients,
+              2,
+              function(x){!any(is.na(x))})
+
+      mcf <-
+        object$results$bootstrap$coefficients[, boot_valid] }
+    else {
+      boot_valid <-
+        apply(object$results$bootstrap$nepk,
+              2,
+              function(x){!any(is.na(x))})
+
+      mcf <- object$results$bootstrap$nepk[, boot_valid]
+      }
+
     if (is.null(mcf) ||
         boot.B != object$boot.B ||
         boot.method != object$boot.method) {
@@ -576,11 +589,23 @@ confint.lmgce <- function(object,
           verbose = 0
         )$results$bootstrap
 
-      if (which == "estimates")
-        mcf <- object$results$bootstrap$coefficients
-      else
-        mcf <- object$results$bootstrap$nepk
+      if (which == "estimates") {
+        boot_valid <-
+          apply(object$results$bootstrap$coefficients,
+                2,
+                function(x){!any(is.na(x))})
+
+        mcf <-
+          object$results$bootstrap$coefficients[, boot_valid] }
+      else {
+        boot_valid <-
+          apply(object$results$bootstrap$nepk,
+                2,
+                function(x){!any(is.na(x))})
+
+        mcf <- object$results$bootstrap$nepk[, boot_valid]
       }
+    }
       if (method == "basic") {
         aux.conf.int <-
           2 * cf[parm] -
@@ -669,6 +694,7 @@ confint.lmgce <- function(object,
 #' \item{symbolic.cor}{(only if \code{correlation = TRUE}) The value of the
 #' argument \code{symbolic.cor}.}
 #' \item{na.action}{from object, if present there.}
+#' \item{ci.method}{method used to compute a confidence interval}
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
@@ -808,6 +834,7 @@ summary.lmgce <- function(object,
   ans$error.measure <- object$error.measure
   ans$error.measure.cv.mean <- object$error.measure.cv.mean
   ans$error.measure.cv.sd <- object$error.measure.cv.sd
+  ans$ci.method <- ci.method
 
   class(ans) <- "summary.lmgce"
   ans
@@ -906,7 +933,7 @@ print.summary.lmgce <-
                    na.print = "NA", ...)
 
       if (!is.null(x$conf.int.est)) {
-        cat("\n")
+        cat("\n", x$ci.method,"\n")
         print(round(x$conf.int.est,
                     max(1L, getOption("digits") - 1L)))
       }

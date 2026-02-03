@@ -95,6 +95,7 @@ cov.unscaled, if \code{correlation = TRUE} is specified.}
 \item{symbolic.cor}{(only if \code{correlation = TRUE}) The value of the
 argument \code{symbolic.cor}.}
 \item{na.action}{from object, if present there.}
+\item{ci.method}{method used to compute a confidence interval}
 }
 \description{
 summary method for class \code{\link{lmgce}}. Function used to produce
