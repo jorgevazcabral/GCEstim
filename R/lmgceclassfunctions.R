@@ -1277,7 +1277,6 @@ plot.lmgce <-
           )
 
         if (isTRUE(NormEnt)) {
-          local({
           ylim.left <- c(min(data.plot.2$error.LL), max(data.plot.2$error.UL))
           ylim.right <- c(min(data.plot.2$nep.LL), max(data.plot.2$nep.UL))
 
@@ -1316,7 +1315,6 @@ plot.lmgce <-
               sec.axis = ggplot2::sec_axis( ~ (. - a) / b,
                                             name = "CV Normalized Entropy")
             )
-          })
         }
 
         plots$p2 <-
@@ -1399,7 +1397,6 @@ plot.lmgce <-
           )
 
         if (isTRUE(NormEnt)) {
-          local({
           ylim.left <- c(min(data.plot.2$error), max(data.plot.2$error))
           ylim.right <- c(min(data.plot.2$nep), max(data.plot.2$nep))
 
@@ -1429,7 +1426,6 @@ plot.lmgce <-
               sec.axis =  ggplot2::sec_axis( ~ (. - a) / b,
                                              name = "Normalized Entropy")
             )
-          })
         }
 
         plots$p2 <-
@@ -1790,7 +1786,6 @@ plot.lmgce <-
             colour = "red4")
 
         if (isTRUE(NormEnt)) {
-          local({
           ylim.left <- c(min(data.plot.5$error.LL), max(data.plot.5$error.UL))
           ylim.right <- c(min(data.plot.5$nep.LL), max(data.plot.5$nep.UL))
 
@@ -1829,7 +1824,6 @@ plot.lmgce <-
               sec.axis =  ggplot2::sec_axis( ~ (. - a) / b,
                                              name = "CV Normalized Entropy")
             )
-          })
         }
 
         plots$p5 <-
@@ -1932,7 +1926,6 @@ plot.lmgce <-
             colour = "red4")
 
         if (isTRUE(NormEnt)) {
-          local({
           ylim.left <- c(min(data.plot.5$error), max(data.plot.5$error))
           ylim.right <- c(min(data.plot.5$nep), max(data.plot.5$nep))
 
@@ -1963,7 +1956,6 @@ plot.lmgce <-
               sec.axis =  ggplot2::sec_axis( ~ (. - a) /
                                                b, name = "Normalized Entropy")
             )
-          })
         }
         plots$p5 <-
           plots$p5 +
