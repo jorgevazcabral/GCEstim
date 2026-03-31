@@ -152,14 +152,14 @@ coefficients.cv.lmgce <- coef.cv.lmgce
 
 plot.cv.lmgce <-
   function (x,
-            which = 1,
+            which = c(1, 2),
             ncol = 1,
             scales = "free",
             ...) {
     if (!inherits(x, "cv.lmgce"))
       stop("use only with \"cv.lmgce\" objects")
 
-    show <- rep(FALSE, 1)
+    show <- rep(FALSE, 2)
     show[which] <- TRUE
 
     if (show[1L]) {
@@ -179,5 +179,9 @@ plot.cv.lmgce <-
           ggplot2::guide_legend(title = "Number of points of the noise support")
         )
 
+    }
+
+    if (show[2L]) {
+      plot(x$best)
     }
   }

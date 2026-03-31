@@ -1234,10 +1234,13 @@ plot.lmgce <-
       ycv <-
         object$results$cv$error.measure.cv.mean[as.character(object$support.ok)]
       sderror <-
-        object$results$cv$error.measure.cv.sd[as.character(object$support.ok)]
+        object$results$cv$error.measure.cv.sd[as.character(object$support.ok)] /
+        sqrt(length(object$results$cv$repeats1))
 
       nepcv <- object$results$cv$nep.cv.mean[as.character(object$support.ok)]
-      sdnep <- object$results$cv$nep.cv.sd[as.character(object$support.ok)]
+      sdnep <-
+        object$results$cv$nep.cv.sd[as.character(object$support.ok)] /
+        sqrt(length(object$results$cv$repeats1))
 
       if (length(object$results$OLS$error) != 0 && isTRUE(OLS))
         error.OLS <- mean(object$results$OLS$error)
@@ -1741,10 +1744,13 @@ plot.lmgce <-
                                 object$error))
 
       ycv <- apply(beta.error.cv,2,mean)
-      sderror <- apply(beta.error.cv,2,sd)
+      sderror <-
+        apply(beta.error.cv,2,sd) / sqrt(length(object$results$cv$repeats1))
 
       nepcv <- object$results$cv$nep.cv.mean[as.character(object$support.ok)]
-      sdnep <- object$results$cv$nep.cv.sd[as.character(object$support.ok)]
+      sdnep <-
+        object$results$cv$nep.cv.sd[as.character(object$support.ok)] /
+        sqrt(length(object$results$cv$repeats1))
 
         data.plot.5 <-
           data.frame(

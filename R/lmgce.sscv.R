@@ -209,7 +209,7 @@ lmgce.sscv <- function(y,
   res$support.signal.1se <-
     (res$results$cvresults$error.measure.cv.mean[[aux.support.signal.1se]] +
        res$results$cvresults$error.measure.cv.sd[[
-         aux.support.signal.1se]] / cv.nfolds) -
+         aux.support.signal.1se]] / sqrt(cv.nfolds)) -
     res$results$cvresults$error.measure.cv.mean
   res$support.signal.1se[res$support.signal.1se > 0] <- -Inf
   res$support.signal.1se[

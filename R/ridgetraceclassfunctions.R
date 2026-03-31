@@ -170,9 +170,9 @@ plot.ridgetrace <- function(x, coef = NULL, log = TRUE, ...){
     ggplot2::ggtitle("RIDGE TRACE")
 
   if (isTRUE(log)) {
-    p1 <- p1 + ggplot2::xlab("log(lambda)")
+    p1 <- p1 + ggplot2::xlab(expression(log[lambda[max]/lambda[min]](lambda)))
   } else {
-    p1 <- p1 + ggplot2::xlab("lambda")
+    p1 <- p1 + ggplot2::xlab(expression(lambda))
   }
   if (!is.null(coef)) {
     p1 <- p1 +

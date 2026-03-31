@@ -4,7 +4,7 @@
 \alias{plot.cv.lmgce}
 \title{Plot Diagnostics for a \code{\link{cv.lmgce}} Object}
 \usage{
-\method{plot}{cv.lmgce}(x, which = 1, ncol = 1, scales = "free", ...)
+\method{plot}{cv.lmgce}(x, which = c(1, 2), ncol = 1, scales = "free", ...)
 }
 \arguments{
 \item{x}{Fitted \code{cv.lmgce} model object.}
