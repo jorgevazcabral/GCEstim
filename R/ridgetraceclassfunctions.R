@@ -119,6 +119,8 @@ coefficients.ridgetrace <- coef.ridgetrace
 #' @param coef A vector of true coefficients if available.
 #' @param log Boolean. If \code{log = TRUE}, the default, horizontal axis will
 #' display the logarithm of lambda.
+#' @param range Boolean. If \code{range = TRUE}, the default, minimum and
+#' maximum values for each coefficient will be shown.
 #' @param ... additional arguments.
 #'
 #' @return Supports are returned.
@@ -136,7 +138,7 @@ coefficients.ridgetrace <- coef.ridgetrace
 #' @importFrom rlang .data
 #' @export
 
-plot.ridgetrace <- function(x, coef = NULL, log = TRUE, ...){
+plot.ridgetrace <- function(x, coef = NULL, log = TRUE, range = TRUE, ...){
 
   if (!inherits(x, "ridgetrace"))
     stop("use only with \"ridgetrace\" objects")
@@ -144,25 +146,49 @@ plot.ridgetrace <- function(x, coef = NULL, log = TRUE, ...){
   col.coef.all <- viridis::turbo(length(x$max.abs.coef))
 
   if (isTRUE(log)) {
-  p1.data <-
-    data.frame(variable = row.names(x$coef.lambda),
-               lambda = rep(log(x$lambda, base = x$lambda[2] / x$lambda[1]),
-                            each = nrow(x$coef.lambda)),
-               coefficient = as.vector(x$coef.lambda))}
+    p1.data <-
+      data.frame(variable = row.names(x$coef.lambda),
+                 lambda = rep(log(x$lambda, base = x$lambda[2] / x$lambda[1]),
+                              each = nrow(x$coef.lambda)),
+                 coefficient = as.vector(x$coef.lambda))
+
+    if (isTRUE(range)) {
+      df_point_limits <- data.frame(
+        variable = rownames(x$coef.lambda),
+        max_x =
+          log(x$lambda[apply(x$coef.lambda, 1, which.max)],
+              base = x$lambda[2] / x$lambda[1]),
+        max_y = x$max.coef,
+        min_x = log(x$lambda[apply(x$coef.lambda, 1, which.min)],
+                    base = x$lambda[2] / x$lambda[1]),
+        min_y = x$min.coef
+      )
+    }
+  }
   else {
     p1.data <-
       data.frame(variable = row.names(x$coef.lambda),
                  lambda = rep(x$lambda,
                               each = nrow(x$coef.lambda)),
                  coefficient = as.vector(x$coef.lambda))
+
+    if (isTRUE(range)) {
+      df_point_limits <- data.frame(
+        variable = rownames(x$coef.lambda),
+        max_x = x$lambda[apply(x$coef.lambda, 1, which.max)],
+        max_y = x$max.coef,
+        min_x = x$lambda[apply(x$coef.lambda, 1, which.min)],
+        min_y = x$min.coef
+      )
+    }
   }
 
   p1 <-
     ggplot2::ggplot(p1.data,
-      ggplot2::aes(x = .data$lambda,
-                   y = .data$coefficient,
-                   group = .data$variable,
-                   colour = .data$variable)) +
+                    ggplot2::aes(x = .data$lambda,
+                                 y = .data$coefficient,
+                                 group = .data$variable,
+                                 colour = .data$variable)) +
     ggplot2::geom_line() +
     ggplot2::scale_color_manual(values = col.coef.all) +
     ggplot2::theme_minimal() +
@@ -170,10 +196,34 @@ plot.ridgetrace <- function(x, coef = NULL, log = TRUE, ...){
     ggplot2::ggtitle("RIDGE TRACE")
 
   if (isTRUE(log)) {
-    p1 <- p1 + ggplot2::xlab(expression(log[lambda[max]/lambda[min]](lambda)))
+    p1 <-
+      p1 +
+      ggplot2::xlab(
+        expression(log[(lambda[max]/lambda[min])^(1/(n[lambda]-1))](lambda)))
   } else {
     p1 <- p1 + ggplot2::xlab(expression(lambda))
   }
+
+  if (isTRUE(range)) {
+    p1 <- p1 +
+      geom_point(
+        data = df_point_limits,
+        aes(x = max_x, y = max_y, color = variable),
+        size = 1,
+        shape = 24,
+        stroke = 0.8,
+        show.legend = FALSE
+      ) +
+      geom_point(
+        data = df_point_limits,
+        aes(x = min_x, y = min_y, color = variable),
+        size = 1,
+        shape = 25,
+        stroke = 0.8,
+        show.legend = FALSE
+      )
+  }
+
   if (!is.null(coef)) {
     p1 <- p1 +
       ggplot2::geom_hline(yintercept = coef,

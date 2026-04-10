@@ -4,7 +4,7 @@
 \alias{plot.ridgetrace}
 \title{Plot Diagnostics for a \code{\link{ridgetrace}} Object}
 \usage{
-\method{plot}{ridgetrace}(x, coef = NULL, log = TRUE, ...)
+\method{plot}{ridgetrace}(x, coef = NULL, log = TRUE, range = TRUE, ...)
 }
 \arguments{
 \item{x}{Fitted \code{\link{ridgetrace}} model object.}
@@ -13,6 +13,9 @@
 
 \item{log}{Boolean. If \code{log = TRUE}, the default, horizontal axis will
 display the logarithm of lambda.}
+
+\item{range}{Boolean. If \code{range = TRUE}, the default, minimum and
+maximum values for each coefficient will be shown.}
 
 \item{...}{additional arguments.}
 }
