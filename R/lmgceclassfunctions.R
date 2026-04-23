@@ -1659,41 +1659,41 @@ plot.lmgce <-
     if ((show[5L] | show[7]) &
         !is.null(coef) &
          (length(object$results$twosteps) != 0)) {
-      if (!is.null(object$results$cv)) {
-      beta.error.cv.step <-
-        matrix(NA,
-               ncol = length(object$results$twosteps) + 1,
-               nrow = length(object$results$cv$repeats1))
-
-      for (nfolds in 1:length(object$results$cv$repeats1)) {
-        beta.matrix <-
-          matrix(NA,
-                 ncol = length(object$results$twosteps) + 1,
-                 nrow = length(coef(object)))
-
-        if (is.null(
-          object$results$cv$repeats1[[nfolds]]$support.results$coef.matrix.ss)) {
-          beta.matrix[, 1] <-
-            object$results$cv$repeats1$fold1$coefficients} else {
-              beta.matrix[, 1] <-
-                object$results$cv$repeats1[[
-                  nfolds]]$support.results$coef.matrix.ss[
-                    1:length(coef(object)),
-                    colnames(
-                      object$results$cv$repeats1[[
-                        nfolds]]$support.results$coef.matrix.ss) ==
-                      object$support.stdUL]
-          }
-
-        for (i_mat in 2:(length(object$results$twosteps) + 1)) {
-          beta.matrix[, i_mat] <-
-            object$results$twosteps[[
-              i_mat - 1]]$results$cv$repeats1[[nfolds]]$coefficients
-        }
-        beta.error.cv.step[nfolds, ] <-
-          apply(beta.matrix, 2, accmeasure, coef, object$error)
-      }
-      } else {
+      # if (!is.null(object$results$cv)) {
+      # beta.error.cv.step <-
+      #   matrix(NA,
+      #          ncol = length(object$results$twosteps) + 1,
+      #          nrow = length(object$results$cv$repeats1))
+      #
+      # for (nfolds in 1:length(object$results$cv$repeats1)) {
+      #   beta.matrix <-
+      #     matrix(NA,
+      #            ncol = length(object$results$twosteps) + 1,
+      #            nrow = length(coef(object)))
+      #
+      #   if (is.null(
+      #     object$results$cv$repeats1[[nfolds]]$support.results$coef.matrix.ss)) {
+      #     beta.matrix[, 1] <-
+      #       object$results$cv$repeats1$fold1$coefficients} else {
+      #         beta.matrix[, 1] <-
+      #           object$results$cv$repeats1[[
+      #             nfolds]]$support.results$coef.matrix.ss[
+      #               1:length(coef(object)),
+      #               colnames(
+      #                 object$results$cv$repeats1[[
+      #                   nfolds]]$support.results$coef.matrix.ss) ==
+      #                 object$support.stdUL]
+      #     }
+      #
+      #   for (i_mat in 2:(length(object$results$twosteps) + 1)) {
+      #     beta.matrix[, i_mat] <-
+      #       object$results$twosteps[[
+      #         i_mat - 1]]$results$cv$repeats1[[nfolds]]$coefficients
+      #   }
+      #   beta.error.cv.step[nfolds, ] <-
+      #     apply(beta.matrix, 2, accmeasure, coef, object$error)
+      # }
+      # } else {
         beta.matrix.step <-
           matrix(NA,
                  ncol = length(object$results$twosteps) + 1,
@@ -1711,173 +1711,174 @@ plot.lmgce <-
           beta.matrix.step[, i_mat] <-
             object$results$twosteps[[i_mat - 1]]$coefficients
         }
-    }}
+      #}
+      }
 
     if (show[5L] && (!is.null(coef)) &&
         (length(object$support.ok) > 1)) {
       x <- round(as.numeric(object$support.ok), 8)
 
-      if (!is.null(object$results$cv)) {
-      beta.error.cv <-
-        matrix(NA,
-               ncol =
-                 length(object$results$cv$repeats1$fold1$support.results) - 3,
-               nrow = length(object$results$cv$repeats1))
-
-      for (i in 1:length(object$results$cv$repeats1)) {
-        beta.error.cv[i,] <-
-          apply(
-            object$results$cv$repeats1[[i]]$support.results$coef.matrix.ss[
-              1:length(coef(object)),],
-            2,
-            accmeasure,
-            coef,
-            object$error
-          )
-      }
-
-      if (length(object$results$OLS$error) != 0 && isTRUE(OLS))
-        error.OLS <- mean(apply(object$results$OLS$matrix.coef,
-                                2,
-                                accmeasure,
-                                coef,
-                                object$error))
-
-      ycv <- apply(beta.error.cv,2,mean)
-      sderror <-
-        apply(beta.error.cv,2,sd) / sqrt(length(object$results$cv$repeats1))
-
-      nepcv <- object$results$cv$nep.cv.mean[as.character(object$support.ok)]
-      sdnep <-
-        object$results$cv$nep.cv.sd[as.character(object$support.ok)] /
-        sqrt(length(object$results$cv$repeats1))
-
-        data.plot.5 <-
-          data.frame(
-            support = x,
-            error = ycv,
-            error.LL = ycv - sderror,
-            error.UL = ycv + sderror,
-            nep = nepcv,
-            nep.LL = nepcv - sdnep,
-            nep.UL = nepcv + sdnep
-          )
-
-        plots$p5 <-
-          ggplot2::ggplot(data.plot.5, ggplot2::aes(y = .data$error,
-                                                    x = .data$support)) +
-          ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$error.LL,
-                                              ymax = .data$error.UL),
-                                 width = 0,
-                                 colour = "darkgrey") +
-          ggplot2::geom_point(size = 1.5, colour = "red") +
-          ggplot2::geom_line(colour = "red",
-                             linetype = "dashed") +
-          ggplot2::geom_point(
-            data = data.frame(
-              x = object$support.stdUL,
-              y = {if (length(object$results$twosteps) == 0) {
-                ycv[object$support.ok == object$support.stdUL]
-                } else {
-                  mean(
-                    beta.error.cv.step[ ,ncol(beta.error.cv.step)])}}),
-            ggplot2::aes(x = .data$x, y = .data$y),
-            size = 1.5,
-            colour = "red4")
-
-        if (isTRUE(NormEnt)) {
-          ylim.left <- c(min(data.plot.5$error.LL), max(data.plot.5$error.UL))
-          ylim.right <- c(min(data.plot.5$nep.LL), max(data.plot.5$nep.UL))
-
-          b <- diff(ylim.left) / diff(ylim.right)
-          a <- ylim.left[1] - b * ylim.right[1]
-
-          plots$p5 <-
-            plots$p5 +
-            ggplot2::geom_errorbar(
-              ggplot2::aes(ymin = a + .data$nep.LL * b,
-                           ymax = a + .data$nep.UL * b),
-              width = 0,
-              colour = "black"
-            ) +
-            ggplot2::geom_point(ggplot2::aes(y = a + .data$nep * b,
-                                             x = .data$support),
-                                size = 1.5,
-                                colour = "green") +
-            ggplot2::geom_line(
-              ggplot2::aes(y = a + .data$nep * b,
-                           x = .data$support),
-              colour = "green",
-              linetype = "dashed"
-            ) +
-            ggplot2::geom_point(
-              data = data.frame(
-                x = object$support.stdUL,
-                y = a + object$nep.cv.mean * b
-              ),
-              ggplot2::aes(x = .data$x, y = .data$y),
-              size = 1.5,
-              colour = "green4"
-            ) +
-            ggplot2::scale_y_continuous(
-              paste0("CV-", object$error),
-              sec.axis =  ggplot2::sec_axis( ~ (. - a) / b,
-                                             name = "CV Normalized Entropy")
-            )
-        }
-
-        plots$p5 <-
-          plots$p5 +
-          ggplot2::xlab("Upper limit of the support spaces") +
-          ggplot2::ylab(paste0("CV-", object$error)) +
-          ggplot2::geom_vline(
-            xintercept = c(stdULmin, stdUL1se, elbow, manual),
-            linetype = c(3, {
-              if (is.null(stdUL1se))
-                NULL
-              else
-                2
-            }, 3, {
-              if (is.null(manual))
-                NULL
-              else
-                3
-            }),
-            colour = c(1, {
-              if (is.null(stdUL1se))
-                NULL
-              else
-                1
-            }, 2, {
-              if (is.null(manual))
-                NULL
-              else
-                3
-            })
-          ) +
-          ggplot2::theme_bw() +
-          ggplot2::theme(
-            panel.background = ggplot2::element_blank(),
-            panel.grid.major = ggplot2::element_blank(),
-            panel.grid.minor = ggplot2::element_blank(),
-            axis.line = ggplot2::element_line(colour = "black"),
-            axis.text.y = ggplot2::element_text(size = 12,
-                                                colour = "black"),
-            axis.text.x.bottom = ggplot2::element_text(size = 12,
-                                                       colour = "black"),
-            axis.title.x = ggplot2::element_text(size = 12,
-                                                 colour = "black")) +
-          ggplot2::ggtitle(getCaption(5))
-
-        if (length(object$results$OLS$error) != 0 && isTRUE(OLS)) {
-          plots$p5 <- plots$p5 +
-            ggplot2::geom_hline(yintercept = error.OLS,
-                                linetype = "dotted")}
-
-        if (type == "plotly")
-          plots$p5 <- plotly::ggplotly(plots$p5)
-
-    } else {
+    #   if (!is.null(object$results$cv)) {
+    #   beta.error.cv <-
+    #     matrix(NA,
+    #            ncol =
+    #              length(object$results$cv$repeats1$fold1$support.results) - 3,
+    #            nrow = length(object$results$cv$repeats1))
+    #
+    #   for (i in 1:length(object$results$cv$repeats1)) {
+    #     beta.error.cv[i,] <-
+    #       apply(
+    #         object$results$cv$repeats1[[i]]$support.results$coef.matrix.ss[
+    #           1:length(coef(object)),],
+    #         2,
+    #         accmeasure,
+    #         coef,
+    #         object$error
+    #       )
+    #   }
+    #
+    #   if (length(object$results$OLS$error) != 0 && isTRUE(OLS))
+    #     error.OLS <- mean(apply(object$results$OLS$matrix.coef,
+    #                             2,
+    #                             accmeasure,
+    #                             coef,
+    #                             object$error))
+    #
+    #   ycv <- apply(beta.error.cv,2,mean)
+    #   sderror <-
+    #     apply(beta.error.cv,2,sd) / sqrt(length(object$results$cv$repeats1))
+    #
+    #   nepcv <- object$results$cv$nep.cv.mean[as.character(object$support.ok)]
+    #   sdnep <-
+    #     object$results$cv$nep.cv.sd[as.character(object$support.ok)] /
+    #     sqrt(length(object$results$cv$repeats1))
+    #
+    #     data.plot.5 <-
+    #       data.frame(
+    #         support = x,
+    #         error = ycv,
+    #         error.LL = ycv - sderror,
+    #         error.UL = ycv + sderror,
+    #         nep = nepcv,
+    #         nep.LL = nepcv - sdnep,
+    #         nep.UL = nepcv + sdnep
+    #       )
+    #
+    #     plots$p5 <-
+    #       ggplot2::ggplot(data.plot.5, ggplot2::aes(y = .data$error,
+    #                                                 x = .data$support)) +
+    #       ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$error.LL,
+    #                                           ymax = .data$error.UL),
+    #                              width = 0,
+    #                              colour = "darkgrey") +
+    #       ggplot2::geom_point(size = 1.5, colour = "red") +
+    #       ggplot2::geom_line(colour = "red",
+    #                          linetype = "dashed") +
+    #       ggplot2::geom_point(
+    #         data = data.frame(
+    #           x = object$support.stdUL,
+    #           y = {if (length(object$results$twosteps) == 0) {
+    #             ycv[object$support.ok == object$support.stdUL]
+    #             } else {
+    #               mean(
+    #                 beta.error.cv.step[ ,ncol(beta.error.cv.step)])}}),
+    #         ggplot2::aes(x = .data$x, y = .data$y),
+    #         size = 1.5,
+    #         colour = "red4")
+    #
+    #     if (isTRUE(NormEnt)) {
+    #       ylim.left <- c(min(data.plot.5$error.LL), max(data.plot.5$error.UL))
+    #       ylim.right <- c(min(data.plot.5$nep.LL), max(data.plot.5$nep.UL))
+    #
+    #       b <- diff(ylim.left) / diff(ylim.right)
+    #       a <- ylim.left[1] - b * ylim.right[1]
+    #
+    #       plots$p5 <-
+    #         plots$p5 +
+    #         ggplot2::geom_errorbar(
+    #           ggplot2::aes(ymin = a + .data$nep.LL * b,
+    #                        ymax = a + .data$nep.UL * b),
+    #           width = 0,
+    #           colour = "black"
+    #         ) +
+    #         ggplot2::geom_point(ggplot2::aes(y = a + .data$nep * b,
+    #                                          x = .data$support),
+    #                             size = 1.5,
+    #                             colour = "green") +
+    #         ggplot2::geom_line(
+    #           ggplot2::aes(y = a + .data$nep * b,
+    #                        x = .data$support),
+    #           colour = "green",
+    #           linetype = "dashed"
+    #         ) +
+    #         ggplot2::geom_point(
+    #           data = data.frame(
+    #             x = object$support.stdUL,
+    #             y = a + object$nep.cv.mean * b
+    #           ),
+    #           ggplot2::aes(x = .data$x, y = .data$y),
+    #           size = 1.5,
+    #           colour = "green4"
+    #         ) +
+    #         ggplot2::scale_y_continuous(
+    #           paste0("CV-", object$error),
+    #           sec.axis =  ggplot2::sec_axis( ~ (. - a) / b,
+    #                                          name = "CV Normalized Entropy")
+    #         )
+    #     }
+    #
+    #     plots$p5 <-
+    #       plots$p5 +
+    #       ggplot2::xlab("Upper limit of the support spaces") +
+    #       ggplot2::ylab(paste0("CV-", object$error)) +
+    #       ggplot2::geom_vline(
+    #         xintercept = c(stdULmin, stdUL1se, elbow, manual),
+    #         linetype = c(3, {
+    #           if (is.null(stdUL1se))
+    #             NULL
+    #           else
+    #             2
+    #         }, 3, {
+    #           if (is.null(manual))
+    #             NULL
+    #           else
+    #             3
+    #         }),
+    #         colour = c(1, {
+    #           if (is.null(stdUL1se))
+    #             NULL
+    #           else
+    #             1
+    #         }, 2, {
+    #           if (is.null(manual))
+    #             NULL
+    #           else
+    #             3
+    #         })
+    #       ) +
+    #       ggplot2::theme_bw() +
+    #       ggplot2::theme(
+    #         panel.background = ggplot2::element_blank(),
+    #         panel.grid.major = ggplot2::element_blank(),
+    #         panel.grid.minor = ggplot2::element_blank(),
+    #         axis.line = ggplot2::element_line(colour = "black"),
+    #         axis.text.y = ggplot2::element_text(size = 12,
+    #                                             colour = "black"),
+    #         axis.text.x.bottom = ggplot2::element_text(size = 12,
+    #                                                    colour = "black"),
+    #         axis.title.x = ggplot2::element_text(size = 12,
+    #                                              colour = "black")) +
+    #       ggplot2::ggtitle(getCaption(5))
+    #
+    #     if (length(object$results$OLS$error) != 0 && isTRUE(OLS)) {
+    #       plots$p5 <- plots$p5 +
+    #         ggplot2::geom_hline(yintercept = error.OLS,
+    #                             linetype = "dotted")}
+    #
+    #     if (type == "plotly")
+    #       plots$p5 <- plotly::ggplotly(plots$p5)
+    #
+    # } else {
 
       y <-
         apply(
@@ -2008,7 +2009,7 @@ plot.lmgce <-
         if (type == "plotly")
           plots$p5 <- plotly::ggplotly(plots$p5)
 
-    }
+    #}
     }
 
     # plot 6 and 7 ####
