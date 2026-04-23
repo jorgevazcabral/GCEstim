@@ -150,12 +150,20 @@ lmgce.fit <-
 
   if (is.null(support.noise)) {
     if (is.null(max.abs.residual)) {
-      vlim <- c(-3 * sd(y_model), 3 * sd(y_model))
+      vlim <- matrix(c(-3 * sd(y_model), 3 * sd(y_model)),
+                     n,
+                     2,
+                     byrow = TRUE)
     } else {
-      vlim <- c(-max.abs.residual, max.abs.residual)
+      vlim <- matrix(c(-max.abs.residual, max.abs.residual),
+                     n,
+                     2,
+                     byrow = TRUE)
     }
-      } else {
-    vlim <- support.noise
+  } else if (length(support.noise) == 2) {
+    vlim <- matrix(sort(support.noise), n, 2, byrow = TRUE)
+  } else {
+    zlim <- t(apply(support.noise, 1, sort))
   }
 
   s1 <- matrix(0, k, m)
@@ -167,11 +175,13 @@ lmgce.fit <-
     Z[i, ((i - 1) * m + 1):(i * m)] <- s1[i, 1:m]
   }
 
-  s2 <- seq(vlim[1], vlim[2], by = (vlim[2] - vlim[1]) / (j - 1))
-  S <- matrix(rep(s2, n), ncol = length(s2), byrow = TRUE)
+  s2 <- matrix(0, n, j)
   V <- matrix(0, n, n * j)
   for (i in 1:n) {
-    V[i, ((i - 1) * j + 1):(i * j)] <- s2
+    s2[i, ] <- seq(vlim[i, 1],
+                   vlim[i, 2],
+                   by = (vlim[i, 2] - vlim[i, 1]) / (j - 1))
+    V[i, ((i - 1) * j + 1):(i * j)] <- s2[i, 1:j]
   }
 
   #method.maxfeval = 1e+04
@@ -325,7 +335,7 @@ lmgce.fit <-
       p0 = as.numeric(p0),
       w0 = as.numeric(w0),
       s1 = s1,
-      S = S,
+      s2 = s2,
       weight = weight
     )
 
@@ -392,11 +402,11 @@ lmgce.fit <-
       lambda <- lambda + increm
       newz <- exp(-t(X_model) %*% lambda %*% matrix(1, 1, dimZ) * Z)
       p_m2 <- newz / (newz %*% matrix(1, dimZ, dimZ))
-      newv <- exp(-lambda %*% matrix(1, 1, j) * S)
+      newv <- exp(-lambda %*% matrix(1, 1, j) * s2)
       w9 <- newv / (newv %*% matrix(1, j, j))
       g9 <-
         y_model - as.matrix(X_model) %*% ((Z * p_m2) %*% matrix(1, dimZ, 1)) -
-        ((S * w9) %*% matrix(1, j, 1))
+        ((s2 * w9) %*% matrix(1, j, 1))
       inv_z <-
         diag((apply((p_m2 * (
           Z ^ 2
@@ -404,9 +414,9 @@ lmgce.fit <-
           apply((p_m2 * Z), 1, sum) ^ 2) ^ (-1))
       inv_v <-
         diag((apply((w9 * (
-          S ^ 2
+          s2 ^ 2
         )), 1, sum) -
-          apply((w9 * S), 1, sum) ^ 2) ^ (-1))
+          apply((w9 * s2), 1, sum) ^ 2) ^ (-1))
       temp <- inv_v %*% as.matrix(X_model)
       inv_H = -inv_v +
         ((temp %*% solve(inv_z + t(as.matrix(
@@ -463,13 +473,13 @@ lmgce.fit <-
 
     beta_hat <- matrix(apply(s1 * p, 1, sum), ncol = 1)
 
+    w <- matrix(0, n, j)
     Psi <- rep(0, n)
 
-    w <- matrix(0, n, j)
     for (n_aux in 1:n) {
       for (j_aux in 1:j) {
         w[n_aux, j_aux] <-
-          w0[n_aux, j_aux] * exp(s2[j_aux] * lambda_hat[n_aux] * (1 / weight))
+          w0[n_aux, j_aux] * exp(s2[n_aux, j_aux] * lambda_hat[n_aux] * (1 / weight))
       }
       Psi[n_aux]  <- sum(w[n_aux, ])
       w[n_aux, ] <- w[n_aux, ] / Psi[n_aux]
@@ -478,13 +488,14 @@ lmgce.fit <-
     w <- round(w, 8)
     w[w == 0] <- 10^-8
 
-    sigma2_zeta <- rep(0, n)
-    for (n_aux in 1:n) {
-      sigma2_zeta[n_aux] <-
-        sum((s2 * s2) * w[n_aux, ]) - (sum(s2 * w[n_aux, ]))^2
-    }
+    mu_zeta <- rowSums(s2 * w)
+    sigma2_zeta <- rowSums((s2^2) * w) - mu_zeta^2
+
+    eps <- 1e-12
+    sigma2_zeta <- pmax(sigma2_zeta, eps)
+
     var_beta <-
-      ((sum(lambda_hat * lambda_hat) / n) / ((sum(1 / sigma2_zeta) / n)^2)) *
+      ((sum(lambda_hat^2) / n) / ((sum(1 / sigma2_zeta) / n)^2)) *
       solve(t(X_model) %*% X_model)
   }
 
@@ -496,15 +507,15 @@ lmgce.fit <-
     w <- round(w, 8)
     w[w == 0] <- 10^-8
 
-    sigma2_zeta <- rep(0, n)
-    for (n_aux in 1:n) {
-      sigma2_zeta[n_aux] <-
-        sum((s2 * s2) * w[n_aux, ]) - (sum(s2 * w[n_aux, ]))^2
-    }
-    var_beta <-
-      ((sum(lambda_hat * lambda_hat) / n) / ((sum(1 / sigma2_zeta) / n)^2)) *
-      solve(t(X_model) %*% X_model)
+    mu_zeta <- rowSums(s2 * w)
+    sigma2_zeta <- rowSums((s2^2) * w) - mu_zeta^2
 
+    eps <- 1e-12
+    sigma2_zeta <- pmax(sigma2_zeta, eps)
+
+    var_beta <-
+      ((sum(lambda_hat^2) / n) / ((sum(1 / sigma2_zeta) / n)^2)) *
+      solve(t(X_model) %*% X_model)
   }
 
   nep <- sum(p * log(p)) / (- k * log(m))

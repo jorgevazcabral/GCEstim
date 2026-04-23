@@ -125,7 +125,10 @@ lmgce.sscv <- function(y,
           support.signal.vector,
           support.signal.points,
           support.noise,
-          support.noise.points,
+          {if (!is.vector(support.noise.points)) {
+            support.noise.points[change_order, ][auxfolds != cv,]} else {
+              support.noise.points
+            }},
           weight,
           method,
           caseGLM,

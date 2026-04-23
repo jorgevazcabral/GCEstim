@@ -13,7 +13,7 @@
 #' @param p0 .
 #' @param w0 .
 #' @param s1 .
-#' @param S .
+#' @param s2 .
 #' @param weight .
 #'
 #' @return Entropy value
@@ -23,9 +23,9 @@
 #' @noRd
 
 ObjFunGCE.primal.solnp <- function(x0, X, n, k, m, j, p0, w0,
-                                   s1, S, weight, ...) {
-  p <- x0[1:(k*m)]
-  w <- x0[(k*m + 1):length(x0)]
+                                   s1, s2, weight, ...) {
+  p <- x0[1:(k * m)]
+  w <- x0[(k  *m + 1):length(x0)]
 
   return(
    (1 - weight) * sum(p * log(p / as.numeric(p0))) +
@@ -46,12 +46,12 @@ ObjFunGCE.primal.solnp <- function(x0, X, n, k, m, j, p0, w0,
 #' @noRd
 
 ConstFunGCE.primal.solnp <- function(x0, X, n, k, m, j,
-                                     p0, w0, s1, S, weight) {
+                                     p0, w0, s1, s2, weight) {
   p <- matrix(x0[1:(k * m)], nrow = k, ncol = m)
   w <- matrix(x0[(k * m + 1):length(x0)], nrow = n, ncol = j)
 
   signal_term <- X %*% rowSums(p * s1)
-  error_term <- rowSums(w * S)
+  error_term <- rowSums(w * s2)
 
   y_constraint <- signal_term + error_term
 
@@ -152,7 +152,9 @@ ObjFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0,
   exponent_Omega <- s1 * temp_scalar_mat
   Omega_log <- row_logsumexp(log(p0) + exponent_Omega)
 
-  exponent_Psi <- x0 %*% t(s2) / weight
+  x0_mat <- matrix(x0 / weight, nrow = nrow(s2), ncol = ncol(s2))
+
+  exponent_Psi <- s2 * x0_mat
   Psi_log <- row_logsumexp(log(w0) + exponent_Psi)
 
   -sum(x0 * y) + (1 - weight) * sum(Omega_log) + weight * sum(Psi_log)
@@ -195,12 +197,15 @@ GradFunGCE.dual.optim <- function(x0, y, X, s1, s2, p0, w0,
 
   beta <- matrix(rowSums(s1 * p), ncol = 1)
 
-  exponent_Psi <- x0 %*% t(s2) / weight
+  x0_mat <- matrix(x0 / weight, nrow = nrow(s2), ncol = ncol(s2))
+  exponent_Psi <- s2 * x0_mat
 
-  w <- exp(log(w0) + exponent_Psi - row_logsumexp(log(w0) +
-        exponent_Psi) %*% t(rep(1, length(s2))))
+  Psi_lse <- row_logsumexp(log(w0) + exponent_Psi)
+  Psi_lse_mat <- matrix(Psi_lse, nrow = nrow(s2), ncol = ncol(s2))
 
-  epsilon <- w %*% matrix(s2, ncol = 1)
+  w <- exp(log(w0) + exponent_Psi - Psi_lse_mat)
+
+  epsilon <- matrix(rowSums(w * s2), ncol = 1)
 
   -y + X %*% beta + epsilon
 }

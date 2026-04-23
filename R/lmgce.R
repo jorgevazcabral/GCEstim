@@ -570,7 +570,7 @@ lmgce <- function(formula,
         errormeasure.which,
         NULL,
         NULL,
-        NULL,
+        max.abs.residual,
         {if (ts == 1)
           res$support.matrix
           else
