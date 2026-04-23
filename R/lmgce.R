@@ -584,7 +584,10 @@ lmgce <- function(formula,
           else
             res$results$twosteps[[ts - 1]]$p},
         support.noise,
-        support.noise.points,
+        {if (ts == 1)
+          res$w
+          else
+            res$results$twosteps[[ts - 1]]$w},#support.noise.points,
         weight,
         method,
         caseGLM,
