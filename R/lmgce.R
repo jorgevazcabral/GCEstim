@@ -597,7 +597,7 @@ lmgce <- function(formula,
   }
 
   names(res$results$twosteps) <-
-      sprintf(paste0("ts_%",floor(log10(twosteps.n)) + 2,"d"), 1:twosteps.n)
+    sprintf(paste0("ts_%0",floor(log10(twosteps.n)) + 1,"d"), 1:twosteps.n)
 
 
   tochange <- c(
