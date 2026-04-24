@@ -2091,66 +2091,117 @@ plot.lmgce <-
 
         }
 
+        # if (show[7L] && (!is.null(coef))) {
+        #
+        #   ycv <- apply(beta.error.cv.step, 2, mean)
+        #   sderror <- apply(beta.error.cv.step, 2, sd)
+        #
+        #   if (length(object$results$OLS$error) != 0 && isTRUE(OLS))
+        #     error.OLS <-  mean(apply(object$results$OLS$matrix.coef,
+        #                              2,
+        #                              accmeasure,
+        #                              coef,
+        #                              object$error))
+        #
+        #     data.plot.2 <-
+        #       data.frame(
+        #         support = x,
+        #         error = ycv,
+        #         error.LL = ycv - sderror,
+        #         error.UL = ycv + sderror)
+        #
+        #     plots$p7 <-
+        #       ggplot2::ggplot(data.plot.2, ggplot2::aes(y = .data$error,
+        #                                                 x = .data$support)) +
+        #       ggplot2::geom_line(colour = "orange", linetype = "dashed") +
+        #       ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$error.LL,
+        #                                           ymax = .data$error.UL),
+        #                              width = 0,
+        #                              colour = "darkgrey") +
+        #       ggplot2::geom_point(
+        #         size = 1.5,
+        #         colour = c("red",
+        #                    {if (length(object$results$twosteps) > 1) {
+        #                      rep("orange",
+        #                          length(object$results$twosteps) - 1)}},
+        #                    "red4")) +
+        #       ggplot2::xlab("number of reestimations") +
+        #       ggplot2::ylab(paste0("CV-", object$error)) +
+        #       ggplot2::theme_bw() +
+        #       ggplot2::theme(
+        #         panel.background = ggplot2::element_blank(),
+        #         panel.grid.major = ggplot2::element_blank(),
+        #         panel.grid.minor = ggplot2::element_blank(),
+        #         axis.line = ggplot2::element_line(colour = "black"),
+        #         axis.text.y = ggplot2::element_text(size = 12,
+        #                                             colour = "black"),
+        #         axis.text.x.bottom = ggplot2::element_text(size = 12,
+        #                                                    colour = "black"),
+        #         axis.title.x = ggplot2::element_text(size = 12,
+        #                                              colour = "black")) +
+        #       ggplot2::ggtitle(getCaption(7)) +
+        #       ggplot2::scale_x_continuous(breaks = x, labels = x)
+        #
+        #     if (length(object$results$OLS$error) != 0 && isTRUE(OLS)) {
+        #       plots$p7 <- plots$p7 +
+        #         ggplot2::geom_hline(yintercept = error.OLS,
+        #                             linetype = "dotted")}
+        #
+        #     if (type == "plotly")
+        #       plots$p7 <- plotly::ggplotly(plots$p7)
+        #
+        #   }
+
         if (show[7L] && (!is.null(coef))) {
 
-          ycv <- apply(beta.error.cv.step, 2, mean)
-          sderror <- apply(beta.error.cv.step, 2, sd)
+          y <- apply(beta.matrix.step, 2, accmeasure, coef, object$error)
 
           if (length(object$results$OLS$error) != 0 && isTRUE(OLS))
-            error.OLS <-  mean(apply(object$results$OLS$matrix.coef,
-                                     2,
-                                     accmeasure,
+            error.OLS <-  accmeasure(object$results$OLS$matrix.coef,
                                      coef,
-                                     object$error))
+                                     object$error)
 
-            data.plot.2 <-
-              data.frame(
-                support = x,
-                error = ycv,
-                error.LL = ycv - sderror,
-                error.UL = ycv + sderror)
+          data.plot.2 <-
+            data.frame(support = x,
+                       error = y)
 
-            plots$p7 <-
-              ggplot2::ggplot(data.plot.2, ggplot2::aes(y = .data$error,
-                                                        x = .data$support)) +
-              ggplot2::geom_line(colour = "orange", linetype = "dashed") +
-              ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$error.LL,
-                                                  ymax = .data$error.UL),
-                                     width = 0,
-                                     colour = "darkgrey") +
-              ggplot2::geom_point(
-                size = 1.5,
-                colour = c("red",
-                           {if (length(object$results$twosteps) > 1) {
-                             rep("orange",
-                                 length(object$results$twosteps) - 1)}},
-                           "red4")) +
-              ggplot2::xlab("number of reestimations") +
-              ggplot2::ylab(paste0("CV-", object$error)) +
-              ggplot2::theme_bw() +
-              ggplot2::theme(
-                panel.background = ggplot2::element_blank(),
-                panel.grid.major = ggplot2::element_blank(),
-                panel.grid.minor = ggplot2::element_blank(),
-                axis.line = ggplot2::element_line(colour = "black"),
-                axis.text.y = ggplot2::element_text(size = 12,
-                                                    colour = "black"),
-                axis.text.x.bottom = ggplot2::element_text(size = 12,
-                                                           colour = "black"),
-                axis.title.x = ggplot2::element_text(size = 12,
-                                                     colour = "black")) +
-              ggplot2::ggtitle(getCaption(7)) +
-              ggplot2::scale_x_continuous(breaks = x, labels = x)
+          plots$p7 <-
+            ggplot2::ggplot(data.plot.2, ggplot2::aes(y = .data$error,
+                                                      x = .data$support)) +
+            ggplot2::geom_line(colour = "orange", linetype = "dashed") +
+            ggplot2::geom_point(
+              size = 1.5,
+              colour = c("red",
+                         {if (length(object$results$twosteps) > 1) {
+                           rep("orange",
+                               length(object$results$twosteps) - 1)}},
+                         "red4")) +
+            ggplot2::xlab("number of reestimations") +
+            ggplot2::ylab(object$error) +
+            ggplot2::theme_bw() +
+            ggplot2::theme(
+              panel.background = ggplot2::element_blank(),
+              panel.grid.major = ggplot2::element_blank(),
+              panel.grid.minor = ggplot2::element_blank(),
+              axis.line = ggplot2::element_line(colour = "black"),
+              axis.text.y = ggplot2::element_text(size = 12,
+                                                  colour = "black"),
+              axis.text.x.bottom = ggplot2::element_text(size = 12,
+                                                         colour = "black"),
+              axis.title.x = ggplot2::element_text(size = 12,
+                                                   colour = "black")) +
+            ggplot2::ggtitle(getCaption(7)) +
+            ggplot2::scale_x_continuous(breaks = x, labels = x)
 
-            if (length(object$results$OLS$error) != 0 && isTRUE(OLS)) {
-              plots$p7 <- plots$p7 +
-                ggplot2::geom_hline(yintercept = error.OLS,
-                                    linetype = "dotted")}
+          if (length(object$results$OLS$error) != 0 && isTRUE(OLS)) {
+            plots$p7 <- plots$p7 +
+              ggplot2::geom_hline(yintercept = error.OLS,
+                                  linetype = "dotted")}
 
-            if (type == "plotly")
-              plots$p7 <- plotly::ggplotly(plots$p7)
+          if (type == "plotly")
+            plots$p7 <- plotly::ggplotly(plots$p7)
 
-          }
+        }
         } else {
 
         if (show[6L]) {
