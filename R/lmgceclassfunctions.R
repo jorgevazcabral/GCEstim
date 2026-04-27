@@ -560,7 +560,8 @@ confint.lmgce <- function(object,
       rownames(aux.conf.int) <- parm
     return(aux.conf.int)
   } else {
-    if (which == "estimates") {
+    if (!is.null(object$results$bootstrap$coefficients)) {
+      if (which == "estimates") {
       boot_valid <-
         apply(object$results$bootstrap$coefficients,
               2,
@@ -575,7 +576,7 @@ confint.lmgce <- function(object,
               function(x){!any(is.na(x))})
 
       mcf <- object$results$bootstrap$nepk[, boot_valid]
-      }
+      }} else mcf <- NULL
 
     if (is.null(mcf) ||
         boot.B != object$boot.B ||
@@ -583,7 +584,7 @@ confint.lmgce <- function(object,
       object$results$bootstrap <-
         update(
           object,
-          support.signal = object$support.matrix,
+          #support.signal = object$support.matrix,
           boot.B = boot.B,
           boot.method = boot.method,
           verbose = 0
