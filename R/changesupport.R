@@ -96,7 +96,7 @@ changesupport <- function(object, support, verbose = 0)
         aux.object <-
           update(
             object,
-            support.method = "standardized",
+            #support.method = "standardized",
             support.signal = as.matrix(
               object$results$nocv$support.results[[newsupport]]$support.matrix),
             verbose = verbose
