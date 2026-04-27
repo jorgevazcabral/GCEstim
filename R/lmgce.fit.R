@@ -518,6 +518,22 @@ lmgce.fit <-
       solve(t(X_model) %*% X_model)
   }
 
+  if (method %in% c("primal.solnl")){
+
+    lambda_hat <- as.numeric(res.opt$info$lambda$eqlin[1:n])
+
+    mu_zeta <- rowSums(s2 * w)
+
+    sigma2_zeta <- rowSums((s2^2) * w) - mu_zeta^2
+    sigma2_zeta <- pmax(sigma2_zeta, 1e-12)
+
+    sigma2_gamma_hat <- mean(lambda_hat^2)
+    xi_hat <- mean(1 / sigma2_zeta)
+
+    var_beta <- (sigma2_gamma_hat / xi_hat^2) *
+      solve(t(X_model) %*% X_model)
+  }
+
   nep <- sum(p * log(p)) / (- k * log(m))
 
   nepk <- matrix(0, k, 1)
