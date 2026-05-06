@@ -509,7 +509,10 @@ cv.lmgce <- function(formula,
               else
                 res.aux$results$twosteps[[ts - 1]]$p},
             support.noise,
-            support.noise.points = parameter_grid[i, 2],
+            {if (ts == 1)
+              res.aux$w
+              else
+                res.aux$results$twosteps[[ts - 1]]$w}, #parameter_grid[i, 2],
             weight = parameter_grid[i, 3],
             method,
             caseGLM,
@@ -519,7 +522,7 @@ cv.lmgce <- function(formula,
       }
 
       names(res.aux$results$twosteps) <-
-        sprintf(paste0("ts_%0",floor(log10(twosteps.n)) + 2,"d"), 1:twosteps.n)
+        sprintf(paste0("ts_%0",floor(log10(twosteps.n)) + 1,"d"), 1:twosteps.n)
 
 
       tochange <- c(
