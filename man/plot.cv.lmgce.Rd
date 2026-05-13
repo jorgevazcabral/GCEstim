@@ -9,23 +9,24 @@
 \arguments{
 \item{x}{Fitted \code{cv.lmgce} model object.}
 
-\item{which}{A subset of the numbers 1:1.}
+\item{which}{A subset of the numbers 1:2.}
 
 \item{ncol}{Number of columns of the plot (see
-\code{\link[ggplot2]{facet_wrap}}).}
+\code{\link[ggplot2]{facet_wrap}}); to use when \code{which=1}.}
 
 \item{scales}{One of c("free", "fixed") (see
-\code{\link[ggplot2]{facet_wrap}}).}
+\code{\link[ggplot2]{facet_wrap}}); to use when \code{which=1}.}
 
 \item{...}{additional arguments.}
 }
 \value{
-A \code{ggplot} object.
+A list of \code{ggplot} objects.
 }
 \description{
-One plot (selectable by \code{which}) is currently available to
-evaluate a \code{\link{cv.lmgce}} object. The plot depicts the error change
-with the combination of different arguments of \code{\link{cv.lmgce}}.
+Two plots (selectable by \code{which}) are currently available to
+evaluate a \code{\link{cv.lmgce}} object. The plots depicts the error change
+with the combination of different arguments of \code{\link{cv.lmgce}} and
+also the best combination.
 }
 \examples{
 \donttest{

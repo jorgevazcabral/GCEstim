@@ -119,19 +119,20 @@ coefficients.cv.lmgce <- coef.cv.lmgce
 
 #' Plot Diagnostics for a \code{\link{cv.lmgce}} Object
 #'
-#' One plot (selectable by \code{which}) is currently available to
-#' evaluate a \code{\link{cv.lmgce}} object. The plot depicts the error change
-#' with the combination of different arguments of \code{\link{cv.lmgce}}.
+#' Two plots (selectable by \code{which}) are currently available to
+#' evaluate a \code{\link{cv.lmgce}} object. The plots depicts the error change
+#' with the combination of different arguments of \code{\link{cv.lmgce}} and
+#' also the best combination.
 #'
 #' @param x Fitted \code{cv.lmgce} model object.
-#' @param which A subset of the numbers 1:1.
+#' @param which A subset of the numbers 1:2.
 #' @param ncol Number of columns of the plot (see
-#' \code{\link[ggplot2]{facet_wrap}}).
+#' \code{\link[ggplot2]{facet_wrap}}); to use when \code{which=1}.
 #' @param scales One of c("free", "fixed") (see
-#' \code{\link[ggplot2]{facet_wrap}}).
+#' \code{\link[ggplot2]{facet_wrap}}); to use when \code{which=1}.
 #' @param ... additional arguments.
 #'
-#' @return A \code{ggplot} object.
+#' @return A list of \code{ggplot} objects.
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
@@ -162,8 +163,12 @@ plot.cv.lmgce <-
     show <- rep(FALSE, 2)
     show[which] <- TRUE
 
+    plots <- list(p1 = NULL,
+                  p2 = NULL)
+
     if (show[1L]) {
-    ggplot2::ggplot(x$results,
+      plots$p1 <-
+      ggplot2::ggplot(x$results,
                     ggplot2::aes(x = .data$support.signal.points,
                                  y = .data$error.measure.cv.mean,
                                  group = as.factor(.data$support.noise.points),
@@ -182,6 +187,8 @@ plot.cv.lmgce <-
     }
 
     if (show[2L]) {
-      plot(x$best)
+      plots$p2 <- plot(x$best)
     }
+
+    plots[!sapply(plots, is.null)]
   }

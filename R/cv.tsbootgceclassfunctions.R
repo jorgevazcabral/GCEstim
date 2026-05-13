@@ -405,7 +405,7 @@ plot.cv.tsbootgce <-
       col <- c("#DF536B", "#61D04F", "#2297E6", "#28E2E5")
     }
 
-    ci.levels <- sort(ci.levels)
+    ci.levels <- sort(ci.levels, decreasing = TRUE)
     prob <- ci.levels * 100
 
     if (show[1L]) {
@@ -497,16 +497,16 @@ plot.cv.tsbootgce <-
           hd <- list(hdr = matrix(NA,
                                   nrow = length(prob),
                                   ncol = 2,
-                                  dimnames = list(paste0(rev(prob), "%"))),
+                                  dimnames = list(paste0(prob, "%"))),
                      mode = NA,
                      falpha =
                        {falpha <- rep(NA, length(prob))
-                       names(falpha) <- paste0(rev(100-prob), "%")
+                       names(falpha) <- paste0(100-prob, "%")
                        falpha
                        },
                      falphamax =
                        {falphamax <- rep(NA, length(prob))
-                       names(falphamax) <- paste0(rev(100-prob), "%")
+                       names(falphamax) <- paste0(100-prob, "%")
                        falphamax
                        }
           )
@@ -514,7 +514,7 @@ plot.cv.tsbootgce <-
           for (ci.l in 1:length(prob)) {
             hd$hdr[ci.l,] <-
               confint(object,
-                      level = rev(prob/100)[ci.l],
+                      level = prob[ci.l]/100,
                       which = "estimates",
                       method = ci.method,
                       parm = i)
@@ -703,16 +703,16 @@ plot.cv.tsbootgce <-
           hd <- list(hdr = matrix(NA,
                                   nrow = length(prob),
                                   ncol = 2,
-                                  dimnames = list(paste0(rev(prob), "%"))),
+                                  dimnames = list(paste0(prob, "%"))),
                      mode = NA,
                      falpha = {falpha <- rep(NA, length(prob))
-                     names(falpha) <- paste0(rev(100-prob), "%")
+                     names(falpha) <- paste0(100-prob, "%")
                      falpha})
 
           for (ci.l in 1:length(prob)) {
             hd$hdr[ci.l,] <-
               confint(object,
-                      level = rev(prob/100)[ci.l],
+                      level = prob[ci.l]/100,
                       which = "NormEnt",
                       method = ci.method,
                       parm = i)
@@ -900,16 +900,16 @@ plot.cv.tsbootgce <-
           hd <- list(hdr = matrix(NA,
                                   nrow = length(prob),
                                   ncol = 2,
-                                  dimnames = list(paste0(rev(prob), "%"))),
+                                  dimnames = list(paste0(prob, "%"))),
                      mode = NA,
                      falpha =
                        {falpha <- rep(NA, length(prob))
-                       names(falpha) <- paste0(rev(100-prob), "%")
+                       names(falpha) <- paste0(100-prob, "%")
                        falpha
                        },
                      falphamax =
                        {falphamax <- rep(NA, length(prob))
-                       names(falphamax) <- paste0(rev(100-prob), "%")
+                       names(falphamax) <- paste0(100-prob, "%")
                        falphamax
                        }
           )
@@ -917,7 +917,7 @@ plot.cv.tsbootgce <-
           for (ci.l in 1:length(prob)) {
             hd$hdr[ci.l,] <-
               confint(object,
-                      level = rev(prob/100)[ci.l],
+                      level = prob[ci.l]/100,
                       which = "estimates",
                       method = ci.method,
                       parm = i,
