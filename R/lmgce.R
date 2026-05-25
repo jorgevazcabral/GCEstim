@@ -329,10 +329,7 @@
 #'
 #' res_gce_package
 #'
-#' @importFrom stats .checkMFClasses .getXlevels as.formula cycle delete.response frequency
-#' is.empty.model is.ts lag lm median model.frame model.offset model.response na.omit na.pass
-#' napredict naprint naresid optim pchisq pnorm printCoefmat qnorm quantile rbinom relevel
-#' rnorm rt sd symnum terms time update var
+#' @importFrom stats .checkMFClasses .getXlevels as.formula cycle delete.response frequency is.empty.model is.ts lag lm median model.frame model.offset model.response na.omit na.pass napredict naprint naresid optim pchisq pnorm printCoefmat qnorm quantile rbinom relevel rnorm rt sd symnum terms time update var
 #' @export
 
 lmgce <- function(formula,

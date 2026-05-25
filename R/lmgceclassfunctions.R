@@ -1072,8 +1072,7 @@ print.summary.lmgce <-
 #' @method plot lmgce
 #' @importFrom rlang .data
 #' @importFrom grDevices as.graphicsAnnot
-#' @importFrom graphics abline arrows axis legend lines matplot mtext par points
-#'  title
+#' @importFrom graphics abline arrows axis legend lines matplot mtext par points title
 #' @export
 
 plot.lmgce <-
