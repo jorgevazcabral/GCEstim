@@ -12,7 +12,7 @@ A \code{ts} object containing:
   Measurement System, Tier I Database – WDI;}
   \item{EPC}{Electric power consumption (kWh per capita). Data from database:
   Jobs;}
-  \item{EU}{Energy use (kg of oil equivalent per capita). Data from database:
+  \item{EUS}{Energy use (kg of oil equivalent per capita). Data from database:
   World Development Indicators;}
   \item{GDP}{Gross domestic product per capita (current US$); Data from:
   World Development Indicators.}
@@ -22,7 +22,7 @@ A \code{ts} object containing:
 moz_ts
 }
 \description{
-Mozambique's CO2, GDP, EPC e EU time series (1991-2014) from
+Mozambique's CO2, GDP, EPC e EUS time series (1991-2014) from
 \url{https://databank.worldbank.org/} (Downloaded in 2024/12/03).
 }
 \examples{
