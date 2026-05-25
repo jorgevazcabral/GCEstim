@@ -3,7 +3,7 @@
 \name{lmgceAddin}
 \alias{lmgceAddin}
 \title{An add-in to easily generate the code for a \code{\link{lmgce}}
-analysis}
+or \code{\link{cv.lmgce}} analysis}
 \usage{
 lmgceAddin()
 }
@@ -15,7 +15,7 @@ Select data and choose the arguments to be used. The
 execution of the code is also possible within the addin.
 }
 \details{
-An addin for \code{\link{lmgce}}
+An addin for \code{\link{lmgce}} and \code{\link{cv.lmgce}}
 }
 \examples{
 \donttest{

@@ -4,7 +4,7 @@ process_dataset <- function(file_path, file_extension) {
     ext <- tools::file_ext(file_extension)
 
     data <- switch(ext,
-                   csv = fread(file_path, data.table = FALSE),
+                   csv = data.table::fread(file_path, data.table = FALSE),
                    xls = read_excel(file_path, sheet =  1),
                    xlsx = read_excel(file_path, sheet =  1),
                    validate("Invalid file; Please upload a .xls, .xlsx, .csv or .txt file")
@@ -37,6 +37,74 @@ server <- function(input, output, session) {
         options = list(style = "btn-primary"),
         multiple = FALSE,
         width = "100%")
+    }
+  })
+
+  # output$ui.support.signal.points ####
+  output$ui.support.signal.points <- renderUI({
+    req(input$support.signal.points.n, input$support.noise.points.n, input$weight)
+
+    if (!isTRUE(use.cv.lmgce())) {
+      textInput(
+        inputId = "support.signal.points",
+        label = "Prior weights for the signal (comma delimited with sum equal to 1)",
+        value = "0.2,0.2,0.2,0.2,0.2",
+        width = "100%"
+      )
+    }
+  })
+
+  # output$ui.support.noise.points ####
+  output$ui.support.noise.points <- renderUI({
+    req(input$support.signal.points.n, input$support.noise.points.n, input$weight)
+
+    if (!isTRUE(use.cv.lmgce())) {
+      textInput(
+        inputId = "support.noise.points",
+        label = "Prior weights for the noise (comma delimited with sum equal to 1)",
+        value = "1/3,1/3,1/3",
+        width = "100%"
+      )
+    }
+  })
+
+  # output$ui.support.signal.pre ####
+  output$ui.support.signal.pre <- renderUI({
+    if (input$support.method == "ridge") {
+      pickerInput(
+        inputId = "support.signal.pre",
+        label = "",
+        choices = list("Two or more supports" = 2),
+        selected = 2,
+        options = list(
+          `actions-box` = TRUE,
+          `deselect-all-text` = "None",
+          `select-all-text` = "All",
+          `none-selected-text` = "None",
+          style = "btn-primary"
+        ),
+        multiple = FALSE,
+        width = "100%"
+      )
+    } else {
+      pickerInput(
+        inputId = "support.signal.pre",
+        label = "",
+        choices = list(
+          "Two or more supports" = 2,
+          "One support" = 1
+        ),
+        selected = 2,
+        options = list(
+          `actions-box` = TRUE,
+          `deselect-all-text` = "None",
+          `select-all-text` = "All",
+          `none-selected-text` = "None",
+          style = "btn-primary"
+        ),
+        multiple = FALSE,
+        width = "100%"
+      )
     }
   })
 
@@ -193,7 +261,7 @@ server <- function(input, output, session) {
     if (input$support.signal.pre == 2 && !isTRUE(input$support.signal.vector.given)) {
       numericRangeInput(
         inputId = "support.signal.vector.limits",
-        label = "Range of the upper limits of the symmetric support spaces (standardized data)",
+        label = "Flexibility parameter",
         value = c(0.3, 20),
         separator = " to ",
         min = 0.2,
@@ -213,9 +281,97 @@ server <- function(input, output, session) {
       )
     })
 
+  # output$ui.support.method.ridge ####
+  output$ui.support.method.ridge <- renderUI({
+    if (input$support.method == "ridge") {
+      tagList(
+        numericInput(
+          inputId = "support.method.ridge.lambda.min",
+          label = "Ridge lambda min",
+          value = 0.001,
+          min = 0,
+          step = 0.001,
+          width = "100%"
+        ),
+        numericInput(
+          inputId = "support.method.ridge.lambda.max",
+          label = "Ridge lambda max",
+          value = 1000,
+          min = 0,
+          step = 1,
+          width = "100%"
+        ),
+        numericInput(
+          inputId = "support.method.ridge.lambda.n",
+          label = "Number of ridge lambdas",
+          value = 100,
+          min = 2,
+          max = 10000,
+          step = 1,
+          width = "100%"
+        ),
+        switchInput(
+          inputId = "support.method.ridge.standardize",
+          label = "Standardize ridge regression",
+          value = TRUE,
+          onLabel = "TRUE",
+          offLabel = "FALSE",
+          onStatus = "success",
+          offStatus = "danger",
+          size = "mini",
+          labelWidth = "150px",
+          width = "250px"
+        ),
+        switchInput(
+          inputId = "support.method.ridge.symm",
+          label = "Symmetric ridge supports",
+          value = TRUE,
+          onLabel = "TRUE",
+          offLabel = "FALSE",
+          onStatus = "success",
+          offStatus = "danger",
+          size = "mini",
+          labelWidth = "150px",
+          width = "250px"
+        )
+      )
+    }
+  })
+
+  # output$ui.support.noise.choice ####
+  output$ui.support.noise.choice <- renderUI({
+    if (input$support.method == "ridge") {
+      switchInput(
+        inputId = "support.method.ridge.maxresid",
+        label = "Maximum ridge residuals",
+        value = TRUE,
+        onLabel = "TRUE",
+        offLabel = "FALSE",
+        onStatus = "success",
+        offStatus = "danger",
+        size = "mini",
+        labelWidth = "150px",
+        width = "250px"
+      )
+    } else {
+      switchInput(
+        inputId = "support.noise.3sig",
+        label = "3 sigma rule",
+        value = TRUE,
+        onLabel = "TRUE",
+        offLabel = "FALSE",
+        onStatus = "success",
+        offStatus = "danger",
+        size = "mini",
+        labelWidth = "150px",
+        width = "250px"
+      )
+    }
+  })
+
   # output$ui.support.noise.limits ####
   output$ui.support.noise.limits <- renderUI({
-    if (!isTRUE(input$support.noise.3sig)){
+    if (input$support.method == "standardized" && !isTRUE(input$support.noise.3sig)){
       if (input$support.signal.pre == 2 || (input$support.signal.pre == 1 && isTRUE(input$support.signal.equalrange) && isTRUE(input$support.signal.equalrange.std))) {
         numericRangeInput(
           inputId = "support.noise.limits",
@@ -296,7 +452,14 @@ server <- function(input, output, session) {
     reactiveValues(data = NULL,
                    lmgce = NULL,
                    summary = NULL,
-                   expression = NULL)
+                   expression = NULL,
+                   model = NULL)
+
+  use.cv.lmgce <- reactive({
+    length(unlist(strsplit(input$support.signal.points.n, ","))) > 1 ||
+      length(unlist(strsplit(input$support.noise.points.n, ","))) > 1 ||
+      length(unlist(strsplit(input$weight, ","))) > 1
+  })
 
   observeEvent(input$data, {
     withProgress(message = 'Loading dataset...', {
@@ -357,31 +520,31 @@ server <- function(input, output, session) {
   })
 
   # output$viewdata ####
-  output$viewdata <- renderDataTable({
+  output$viewdata <- DT::renderDataTable({
     req(res$data)
-    datatable(res$data,
-              options = list(
-                lengthChange = FALSE,
-                scrollX = TRUE,
-                pageLength = 20,
-                #lengthMenu = c(5, 10, 15, 20),
-                searching = FALSE,
-                info = FALSE,
-                keys = TRUE,
-                select = list(style = 'os', items = 'row'),
-                dom = 'Blfrtip',
-                rowId = 0,
-                initComplete = JS(
-                  "function(settings, json) {",
-                  "$(this.api().table().header()).css({'background-color': '#FFA84C', 'color': 'black'});",
-                  "}")
-              ),
-              autoHideNavigation = FALSE,
-              filter = "none",
-              rownames = TRUE) %>%
-      formatStyle(2,
-                  target='row',
-                  backgroundColor = "#FFE68C")
+    DT::datatable(res$data,
+                  options = list(
+                    lengthChange = FALSE,
+                    scrollX = TRUE,
+                    pageLength = 20,
+                    #lengthMenu = c(5, 10, 15, 20),
+                    searching = FALSE,
+                    info = FALSE,
+                    keys = TRUE,
+                    select = list(style = 'os', items = 'row'),
+                    dom = 'Blfrtip',
+                    rowId = 0,
+                    initComplete = DT::JS(
+                      "function(settings, json) {",
+                      "$(this.api().table().header()).css({'background-color': '#FFA84C', 'color': 'black'});",
+                      "}")
+                  ),
+                  autoHideNavigation = FALSE,
+                  filter = "none",
+                  rownames = TRUE) %>%
+      DT::formatStyle(2,
+                      target='row',
+                      backgroundColor = "#FFE68C")
   }, serve = TRUE)
 
   form_expr <- reactive(paste0("`",
@@ -406,198 +569,248 @@ server <- function(input, output, session) {
 
   # input$run_model ####
   observeEvent(input$run_model, {
-    withProgress(message = 'Obtaining lmgce model...', {
-      tryCatch({
-        session$sendCustomMessage('timer', list(id = "scenarioRuntime", event = "start"))
-        on.exit(session$sendCustomMessage('timer', list(id = "scenarioRuntime", event = "end")))
-        res$lmgce <-
-          lmgce(
-            formula = as.formula(form_expr()),
-            data = res$data,
-            cv = input$cv,
-            cv.nfolds =
-              {if (is.null(input$cv.nfolds)) 5 else input$cv.nfolds},
-            support.signal = {if (input$support.signal.pre == 1) {
-              if (isTRUE(input$support.signal.equalrange)) {
-                if (isTRUE(input$support.signal.equalrange.std))
-                  input$support.signal.limits.std else
-                    input$support.signal.limits} else
-                      matrix(
-                        {aux.support.signal.limits <- NULL
-                        for (i in seq_len(
-                          ncol(
-                            model.matrix(as.formula(form_expr()),
-                                         data = res$data)
-                          )
-                        )) {
-                          aux.support.signal.limits <-
-                            c(aux.support.signal.limits, input[[paste0("support.signal.limits",
-                                                                       ifelse(isTRUE(input$intercept),
-                                                                              i-1,
-                                                                              i))]])
-                        }
-                        aux.support.signal.limits
-                        },
-                        ncol = 2,
-                        byrow = TRUE)
-            } else {NULL}},
-            support.signal.vector =
-              {if (input$support.signal.pre == 2 && isTRUE(input$support.signal.vector.given)) {
-                sort(as.numeric(unlist(strsplit(input$support.signal.vector.given.which, ","))),
-                     decreasing = TRUE)
-              }
-                else
-                  NULL},
-            support.signal.vector.min =
-              {if (is.null(input$support.signal.vector.limits)) 0.5 else
-                input$support.signal.vector.limits[1]},
-            support.signal.vector.max =
-              {if (is.null(input$support.signal.vector.limits)) 20 else
-                input$support.signal.vector.limits[2]},
-            support.signal.vector.n =
-              {if (is.null(input$support.signal.vector.limits)) 20 else
-                input$support.signal.vector.n},
-            errormeasure = input$errormeasure,
-            errormeasure.which =
-              {if (input$support.signal.pre == 1)
-                "min"
-                else
-                  input$errormeasure.which},
-            support.signal.points =
-              {unlistq1 <- unlist(strsplit(input$support.signal.points, ","))
-              q1.vect <- NULL
-              for (i in 1:length(unlistq1)){
-                q1.vect <- c(q1.vect,
-                             eval(parse(text = unlistq1[i])))
-              }
-              q1.vect
-              },
-            twosteps.n = input$twosteps.n,
-            support.noise =
-              {if (isTRUE(input$support.noise.3sig)) NULL
-                else
-                  input$support.noise.limits
-              },
-            support.noise.points =
-              {unlistq2 <- unlist(strsplit(input$support.noise.points, ","))
-              q2.vect <- NULL
-              for (i in 1:length(unlistq2)){
-                q2.vect <- c(q2.vect,
-                             eval(parse(text = unlistq2[i])))
-              }
-              q2.vect
-              },
-            weight = input$weight,
-            method = input$method,
-            caseGLM = input$caseGLM,
-            boot.B =
-              {if (isTRUE(input$boot)) input$boot.B else 0},
-            boot.method =
-              {if (isTRUE(input$boot)) input$boot.method else "residuals"},
-            seed =
-              {if (is.null(input$seed)) 230676 else input$seed},
-            OLS = input$OLS)
+    withProgress(message = ifelse(isTRUE(use.cv.lmgce()),
+                                  'Obtaining cv.lmgce model...',
+                                  'Obtaining lmgce model...'), {
+                                    tryCatch({
+                                      session$sendCustomMessage('timer', list(id = "scenarioRuntime", event = "start"))
+                                      on.exit(session$sendCustomMessage('timer', list(id = "scenarioRuntime", event = "end")))
+                                      res$lmgce <-
+                                        {
+                                          fun_lmgce <- if (isTRUE(use.cv.lmgce())) cv.lmgce else lmgce
 
-        res$summary <- summary(res$lmgce,
-                               call = FALSE,
-                               ci.level = 0.95)
+                                          fun_lmgce(
+                                            formula = as.formula(form_expr()),
+                                            data = res$data,
+                                            cv = input$cv,
+                                            cv.nfolds =
+                                              {if (is.null(input$cv.nfolds)) 5 else input$cv.nfolds},
+                                            support.method = input$support.method,
+                                            support.method.ridge.lambda.min =
+                                              {if (input$support.method == "ridge") input$support.method.ridge.lambda.min else NULL},
+                                            support.method.ridge.lambda.max =
+                                              {if (input$support.method == "ridge") input$support.method.ridge.lambda.max else NULL},
+                                            support.method.ridge.lambda.n =
+                                              {if (input$support.method == "ridge") input$support.method.ridge.lambda.n else NULL},
+                                            support.method.ridge.standardize =
+                                              {if (input$support.method == "ridge") input$support.method.ridge.standardize else NULL},
+                                            support.method.ridge.symm =
+                                              {if (input$support.method == "ridge") input$support.method.ridge.symm else NULL},
+                                            support.method.ridge.maxresid =
+                                              {if (input$support.method == "ridge") input$support.method.ridge.maxresid else NULL},
+                                            support.signal = {if (input$support.signal.pre == 1) {
+                                              if (isTRUE(input$support.signal.equalrange)) {
+                                                if (isTRUE(input$support.signal.equalrange.std))
+                                                  input$support.signal.limits.std else
+                                                    input$support.signal.limits} else
+                                                      matrix(
+                                                        {aux.support.signal.limits <- NULL
+                                                        for (i in seq_len(
+                                                          ncol(
+                                                            model.matrix(as.formula(form_expr()),
+                                                                         data = res$data)
+                                                          )
+                                                        )) {
+                                                          aux.support.signal.limits <-
+                                                            c(aux.support.signal.limits, input[[paste0("support.signal.limits",
+                                                                                                       ifelse(isTRUE(input$intercept),
+                                                                                                              i-1,
+                                                                                                              i))]])
+                                                        }
+                                                        aux.support.signal.limits
+                                                        },
+                                                        ncol = 2,
+                                                        byrow = TRUE)
+                                            } else {NULL}},
+                                            support.signal.vector =
+                                              {if (input$support.signal.pre == 2 && isTRUE(input$support.signal.vector.given)) {
+                                                sort(as.numeric(unlist(strsplit(input$support.signal.vector.given.which, ","))),
+                                                     decreasing = TRUE)
+                                              }
+                                                else
+                                                  NULL},
+                                            support.signal.vector.min =
+                                              {if (is.null(input$support.signal.vector.limits)) 0.5 else
+                                                input$support.signal.vector.limits[1]},
+                                            support.signal.vector.max =
+                                              {if (is.null(input$support.signal.vector.limits)) 20 else
+                                                input$support.signal.vector.limits[2]},
+                                            support.signal.vector.n =
+                                              {if (is.null(input$support.signal.vector.limits)) 20 else
+                                                input$support.signal.vector.n},
+                                            errormeasure = input$errormeasure,
+                                            errormeasure.which =
+                                              {if (input$support.signal.pre == 1)
+                                                "min"
+                                                else
+                                                  input$errormeasure.which},
+                                            support.signal.points =
+                                              {unlistM <- unlist(strsplit(input$support.signal.points.n, ","))
+                                              q1.vect <- NULL
 
-        if (input$support.signal.pre == 1) {
-          updateActionButton(
-            session,
-            inputId = "min",
-            label = "min",
-            icon("circle-question",
-                 class = "fa-solid",
-                 style = "color: rgb(255,255,0)"))
-          updateActionButton(
-            session,
-            inputId = "1se",
-            label = "1se",
-            icon("circle-question",
-                 class = "fa-solid",
-                 style = "color: rgb(255,255,0)"))
-        }
-        else {
-          updateActionButton(
-            session,
-            inputId = "min",
-            label = paste0("min = ",
-                           round(res$lmgce$support.signal.min, 2)),
-            icon = {if (res$lmgce$support.signal.min == max(res$lmgce$support.ok)) {
-              icon("thumbs-down",
-                   class = "fa-solid",
-                   style = "color: rgb(255,0,0)")} else {
-                     icon("thumbs-up",
-                          class = "fa-solid",
-                          style = "color: rgb(0,255,0)")}}
-          )
-          updateActionButton(
-            session,
-            inputId = "1se",
-            label = "1se",
-            icon("circle-question",
-                 class = "fa-solid",
-                 style = "color: rgb(255,255,0)"))
+                                              if (isTRUE(use.cv.lmgce())) {
+                                                for (i in 1:length(unlistM)){
+                                                  q1.vect <- c(q1.vect,
+                                                               eval(parse(text = unlistM[i])))
+                                                }
+                                              } else {
+                                                unlistq1 <- unlist(strsplit(input$support.signal.points, ","))
+                                                for (i in 1:length(unlistq1)){
+                                                  q1.vect <- c(q1.vect,
+                                                               eval(parse(text = unlistq1[i])))
+                                                }
+                                              }
+                                              q1.vect
+                                              },
+                                            twosteps.n = input$twosteps.n,
+                                            support.noise =
+                                              {if (input$support.method == "ridge") NULL
+                                                else if (isTRUE(input$support.noise.3sig)) NULL
+                                                else
+                                                  input$support.noise.limits
+                                              },
+                                            support.noise.points =
+                                              {unlistJ <- unlist(strsplit(input$support.noise.points.n, ","))
+                                              q2.vect <- NULL
 
-          if (isTRUE(input$cv))
-            updateActionButton(
-              session,
-              inputId = "1se",
-              label = paste0("1se = ",
-                             round(res$lmgce$support.signal.1se, 2)),
-              icon = {if (res$lmgce$support.signal.1se == min(res$lmgce$support.ok)) {
-                icon("thumbs-down", class = "fa-solid", style = "color: rgb(255,0,0)")} else {
-                  icon("thumbs-up", class = "fa-solid", style = "color: rgb(0,255,0)")}}
-            )}
+                                              if (isTRUE(use.cv.lmgce())) {
+                                                for (i in 1:length(unlistJ)){
+                                                  q2.vect <- c(q2.vect,
+                                                               eval(parse(text = unlistJ[i])))
+                                                }
+                                              } else {
+                                                unlistq2 <- unlist(strsplit(input$support.noise.points, ","))
+                                                for (i in 1:length(unlistq2)){
+                                                  q2.vect <- c(q2.vect,
+                                                               eval(parse(text = unlistq2[i])))
+                                                }
+                                              }
+                                              q2.vect
+                                              },
+                                            weight =
+                                              {unlist.weight <- unlist(strsplit(input$weight, ","))
+                                              weight.vect <- NULL
+                                              for (i in 1:length(unlist.weight)){
+                                                weight.vect <- c(weight.vect,
+                                                                 eval(parse(text = unlist.weight[i])))
+                                              }
+                                              weight.vect
+                                              },
+                                            method = input$method,
+                                            caseGLM = input$caseGLM,
+                                            boot.B =
+                                              {if (isTRUE(input$boot)) input$boot.B else 0},
+                                            boot.method =
+                                              {if (isTRUE(input$boot)) input$boot.method else "residuals"},
+                                            seed =
+                                              {if (is.null(input$seed)) 230676 else input$seed},
+                                            OLS = input$OLS)
+                                        }
 
-        updateActionButton(
-          session,
-          inputId = "NormEnt",
-          label = paste0("NormEnt = ",
-                         round(res$lmgce$nep,3),
-                         " (",
-                         ifelse(input$cv,
-                                round(res$lmgce$nep.cv.mean,3),
-                                "-"),
-                         ")"),
-          icon = {if (res$lmgce$convergence == 1) {
-            icon("thumbs-down", class = "fa-solid", style = "color: rgb(255,0,0)")} else {
-              icon("thumbs-up", class = "fa-solid", style = "color: rgb(0,255,0)")}}
-        )
+                                      if (isTRUE(use.cv.lmgce())) {res$model <- res$lmgce$best}
+                                      else {res$model <- res$lmgce}
 
-        updateActionButton(
-          session,
-          inputId = "R2",
-          label = paste0("R2 = ",
-                         round(res$summary$r.squared,3)),
-          icon = {if (res$lmgce$convergence == 1) {
-            icon("thumbs-down", class = "fa-solid", style = "color: rgb(255,0,0)")} else {
-              icon("thumbs-up", class = "fa-solid", style = "color: rgb(0,255,0)")}}
-        )
+                                      res$summary <-
+                                        summary(res$model,
+                                                call = FALSE,
+                                                ci.level = 0.95)
 
-        updateActionButton(
-          session,
-          inputId = "Error",
-          label = paste0(res$lmgce$error,
-                         " = ",
-                         round(res$lmgce$error.measure,3),
-                         " (",
-                         ifelse(input$cv,
-                                round(res$lmgce$error.measure.cv.mean,3),
-                                "-"),
-                         ")"),
-          icon = {if (res$lmgce$convergence == 1) {
-            icon("thumbs-down", class = "fa-solid", style = "color: rgb(255,0,0)")} else {
-              icon("thumbs-up", class = "fa-solid", style = "color: rgb(0,255,0)")}}
-        )
+                                      if (input$support.signal.pre == 1) {
+                                        updateActionButton(
+                                          session,
+                                          inputId = "min",
+                                          label = "min",
+                                          icon("circle-question",
+                                               class = "fa-solid",
+                                               style = "color: rgb(255,255,0)"))
+                                        updateActionButton(
+                                          session,
+                                          inputId = "1se",
+                                          label = "1se",
+                                          icon("circle-question",
+                                               class = "fa-solid",
+                                               style = "color: rgb(255,255,0)"))
+                                      }
+                                      else {
+                                        updateActionButton(
+                                          session,
+                                          inputId = "min",
+                                          label = paste0("min = ",
+                                                         round(res$model$support.signal.min, 2)),
+                                          icon = {if (res$model$support.signal.min == max(res$model$support.ok)) {
+                                            icon("thumbs-down",
+                                                 class = "fa-solid",
+                                                 style = "color: rgb(255,0,0)")} else {
+                                                   icon("thumbs-up",
+                                                        class = "fa-solid",
+                                                        style = "color: rgb(0,255,0)")}}
+                                        )
+                                        updateActionButton(
+                                          session,
+                                          inputId = "1se",
+                                          label = "1se",
+                                          icon("circle-question",
+                                               class = "fa-solid",
+                                               style = "color: rgb(255,255,0)"))
 
-      }, error = function(e) {
-        showNotification(paste("Error:", e$message),
-                         duration = NULL,
-                         type = "error")
-      })
-    })
+                                        if (isTRUE(input$cv))
+                                          updateActionButton(
+                                            session,
+                                            inputId = "1se",
+                                            label = paste0("1se = ",
+                                                           round(res$model$support.signal.1se, 2)),
+                                            icon = {if (res$model$support.signal.1se == min(res$model$support.ok)) {
+                                              icon("thumbs-down", class = "fa-solid", style = "color: rgb(255,0,0)")} else {
+                                                icon("thumbs-up", class = "fa-solid", style = "color: rgb(0,255,0)")}}
+                                          )}
+
+                                      updateActionButton(
+                                        session,
+                                        inputId = "NormEnt",
+                                        label = paste0("NormEnt = ",
+                                                       round(res$model$nep,3),
+                                                       " (",
+                                                       ifelse(input$cv,
+                                                              round(res$model$nep.cv.mean,3),
+                                                              "-"),
+                                                       ")"),
+                                        icon = {if (res$model$convergence == 1) {
+                                          icon("thumbs-down", class = "fa-solid", style = "color: rgb(255,0,0)")} else {
+                                            icon("thumbs-up", class = "fa-solid", style = "color: rgb(0,255,0)")}}
+                                      )
+
+                                      updateActionButton(
+                                        session,
+                                        inputId = "R2",
+                                        label = paste0("R2 = ",
+                                                       round(res$summary$r.squared,3)),
+                                        icon = {if (res$model$convergence == 1) {
+                                          icon("thumbs-down", class = "fa-solid", style = "color: rgb(255,0,0)")} else {
+                                            icon("thumbs-up", class = "fa-solid", style = "color: rgb(0,255,0)")}}
+                                      )
+
+                                      updateActionButton(
+                                        session,
+                                        inputId = "Error",
+                                        label = paste0(res$model$error,
+                                                       " = ",
+                                                       round(res$model$error.measure,3),
+                                                       " (",
+                                                       ifelse(input$cv,
+                                                              round(res$model$error.measure.cv.mean,3),
+                                                              "-"),
+                                                       ")"),
+                                        icon = {if (res$model$convergence == 1) {
+                                          icon("thumbs-down", class = "fa-solid", style = "color: rgb(255,0,0)")} else {
+                                            icon("thumbs-up", class = "fa-solid", style = "color: rgb(0,255,0)")}}
+                                      )
+
+                                    }, error = function(e) {
+                                      showNotification(paste("Error:", e$message),
+                                                       duration = NULL,
+                                                       type = "error")
+                                    })
+                                  })
   })
 
   # output$plot ####
@@ -607,8 +820,8 @@ server <- function(input, output, session) {
                  input$OLS.plot), {
 
                    output$plot1 <- renderPlot({
-                     req(res$lmgce)
-                     plot(res$lmgce,type = "ggplot2",
+                     req(res$model)
+                     plot(res$model,type = "ggplot2",
                           which = 1,
                           ci.level = {if (isTRUE(input$boot)) input$ci.level else 0.95},
                           ci.method = {if (isTRUE(input$boot)) input$ci.method else "z"},
@@ -620,8 +833,8 @@ server <- function(input, output, session) {
                  input$NormEnt.plot,
                  input$OLS.plot), {
                    output$plot2 <- renderPlot({
-                     req(res$lmgce)
-                     plot(res$lmgce,type = "ggplot2",
+                     req(res$model)
+                     plot(res$model,type = "ggplot2",
                           which = 2,
                           OLS = input$OLS.plot,
                           NormEnt = input$NormEnt.plot)
@@ -631,23 +844,23 @@ server <- function(input, output, session) {
   observeEvent(c(input$run_model,
                  input$OLS.plot), {
                    output$plot3 <- renderPlot({
-                     req(res$lmgce)
-                     plot(res$lmgce,type = "ggplot2",
+                     req(res$model)
+                     plot(res$model,type = "ggplot2",
                           which = 3,
                           OLS = input$OLS.plot)
                    })
 
                    output$plot6 <- renderPlot({
-                     req(res$lmgce)
-                     plot(res$lmgce,type = "ggplot2",
+                     req(res$model)
+                     plot(res$model,type = "ggplot2",
                           which = 6,
                           OLS = input$OLS.plot)
                    })
                  })
 
   output$plot4 <- renderPlot({
-    req(res$lmgce)
-    plot(res$lmgce,type = "ggplot2",
+    req(res$model)
+    plot(res$model,type = "ggplot2",
          which = 4)
   })
 
@@ -659,122 +872,153 @@ server <- function(input, output, session) {
   })
 
   res$expression <- reactive(
-    paste0("GCEstim::lmgce(formula = ",
-           form_expr(),
-           ",\n data = ",
-           {if (!isTRUE(input$datafile)) input$data
-             else
-               input$data$name},
-           ", cv = ",
-           input$cv,
-           {if (!is.null(input$cv.nfolds) && isTRUE(input$cv))
-             paste0(
-               ", cv.nfolds = ",
-               input$cv.nfolds)},
-           ", errormeasure = \"",
-           input$errormeasure,
-           {if (input$support.signal.pre == 2) {
-             if (is.null(input$errormeasure.which))
-               paste0("\", errormeasure.which = \"1se")
-             else
-               paste0(
-                 "\", errormeasure.which = \"",
-                 input$errormeasure.which)}},
-           "\"",
-           {if (input$support.signal.pre == 1) {
-             if (isTRUE(input$support.signal.equalrange)) {
-               if (isTRUE(input$support.signal.equalrange)) {
-                 paste0(", support.signal = ",
-                        input$support.signal.limits.std)
-               } else {
-                 paste0(
-                   ", support.signal = c(",
-                   paste0(input$support.signal.limits[1],
-                          ", ",
-                          input$support.signal.limits[2]),
-                   ")")}} else {
-                     paste0(
-                       ", support.signal = matrix(c(",
-                       {aux.support.signal.limits <- NULL
-                       for (i in seq_len(
-                         ncol(
-                           model.matrix(as.formula(form_expr()),
-                                        data = res$data)
-                         )
-                       )) {
-                         aux.support.signal.limits <-
-                           c(aux.support.signal.limits, input[[paste0("support.signal.limits",
-                                                                      ifelse(isTRUE(input$intercept),
-                                                                             i-1,
-                                                                             i))]])
-                       }
-                       paste(aux.support.signal.limits, collapse = ", ")
-                       },
-                       "), ncol = 2, byrow = TRUE)")
-                   }
-           } else {
-             paste0(", support.signal = NULL")
-           }
-           },
-           {if (!is.null(input$support.signal.vector.limits) && input$support.signal.pre == 2) {
-             if (!isTRUE(input$support.signal.vector.given)) {
-               paste0(
-                 ", support.signal.vector.min = ",
-                 input$support.signal.vector.limits[1],
-                 ", support.signal.vector.max = ",
-                 input$support.signal.vector.limits[2],
-                 ", support.signal.vector.n = ",
-                 input$support.signal.vector.n)}
-           }},
-           {if (input$support.signal.pre == 2 && isTRUE(input$support.signal.vector.given))
-           {paste0(", support.signal.vector = c(",
-                   input$support.signal.vector.given.which,
-                   ")"
-           )
-           }
-           },
-           ", support.signal.points = c(",
-           input$support.signal.points,
-           ")",
-           ", support.noise = ",
-           {if (isTRUE(input$support.noise.3sig)) paste0("NULL")
-             else
-               paste0("c(",
-                      input$support.noise.limits[1],
-                      ", ",
-                      input$support.noise.limits[2],
-                      ")")
-           },
-           ", support.noise.points = c(",
-           input$support.noise.points,
-           "), weight = ",
-           input$weight,
-           ", twosteps.n = ",
-           input$twosteps.n,
-           ", caseGLM = \"",
-           input$caseGLM,
-           "\", method = \"",
-           input$method,
-           "\"",
-           {if (isTRUE(input$boot)) paste0(", boot.B = ",
-                                           input$boot.B,
-                                           ", boot.method = \"",
-                                           input$boot.method,
-                                           "\"")},
-           {if (!is.null(input$seed) && isTRUE(input$cv))
-             paste0(
-               ", seed = ",
-               input$seed)},
-           ", OLS = ",
-           input$OLS,
-           ")"))
+    paste0(
+      if (isTRUE(use.cv.lmgce()))
+        "GCEstim::cv.lmgce(formula = "
+      else
+        "GCEstim::lmgce(formula = ",
+      form_expr(),
+      ",\n data = ",
+      {if (!isTRUE(input$datafile)) input$data
+        else
+          input$data$name},
+      ", cv = ",
+      input$cv,
+      {if (!is.null(input$cv.nfolds) && isTRUE(input$cv))
+        paste0(
+          ", cv.nfolds = ",
+          input$cv.nfolds)},
+      ", support.method = \"",
+      input$support.method,
+      "\"",
+      ", errormeasure = \"",
+      input$errormeasure,
+      {if (input$support.signal.pre == 2) {
+        if (is.null(input$errormeasure.which))
+          paste0("\", errormeasure.which = \"1se")
+        else
+          paste0(
+            "\", errormeasure.which = \"",
+            input$errormeasure.which)}},
+      "\"",
+      {if (input$support.signal.pre == 1) {
+        if (isTRUE(input$support.signal.equalrange)) {
+          if (isTRUE(input$support.signal.equalrange)) {
+            paste0(", support.signal = ",
+                   input$support.signal.limits.std)
+          } else {
+            paste0(
+              ", support.signal = c(",
+              paste0(input$support.signal.limits[1],
+                     ", ",
+                     input$support.signal.limits[2]),
+              ")")}} else {
+                paste0(
+                  ", support.signal = matrix(c(",
+                  {aux.support.signal.limits <- NULL
+                  for (i in seq_len(
+                    ncol(
+                      model.matrix(as.formula(form_expr()),
+                                   data = res$data)
+                    )
+                  )) {
+                    aux.support.signal.limits <-
+                      c(aux.support.signal.limits, input[[paste0("support.signal.limits",
+                                                                 ifelse(isTRUE(input$intercept),
+                                                                        i-1,
+                                                                        i))]])
+                  }
+                  paste(aux.support.signal.limits, collapse = ", ")
+                  },
+                  "), ncol = 2, byrow = TRUE)")
+              }
+      } else {
+        paste0(", support.signal = NULL")
+      }
+      },
+      {if (!is.null(input$support.signal.vector.limits) && input$support.signal.pre == 2) {
+        if (!isTRUE(input$support.signal.vector.given)) {
+          paste0(
+            ", support.signal.vector.min = ",
+            input$support.signal.vector.limits[1],
+            ", support.signal.vector.max = ",
+            input$support.signal.vector.limits[2],
+            ", support.signal.vector.n = ",
+            input$support.signal.vector.n)}
+      }},
+      {if (input$support.signal.pre == 2 && isTRUE(input$support.signal.vector.given))
+      {paste0(", support.signal.vector = c(",
+              input$support.signal.vector.given.which,
+              ")"
+      )
+      }
+      },
+      ", support.signal.points = c(",
+      {if (isTRUE(use.cv.lmgce()))
+        input$support.signal.points.n
+        else
+          input$support.signal.points},
+      ")",
+      ", support.noise = ",
+      {if (input$support.method == "ridge") paste0("NULL")
+        else if (isTRUE(input$support.noise.3sig)) paste0("NULL")
+        else
+          paste0("c(",
+                 input$support.noise.limits[1],
+                 ", ",
+                 input$support.noise.limits[2],
+                 ")")
+      },
+      ", support.noise.points = c(",
+      {if (isTRUE(use.cv.lmgce()))
+        input$support.noise.points.n
+        else
+          input$support.noise.points},
+      "), weight = c(",
+      input$weight,
+      ")",
+      ", twosteps.n = ",
+      input$twosteps.n,
+      ", caseGLM = \"",
+      input$caseGLM,
+      "\", method = \"",
+      input$method,
+      "\"",
+      {if (input$support.method == "ridge")
+        paste0(
+          ", support.method.ridge.lambda.min = ",
+          input$support.method.ridge.lambda.min,
+          ", support.method.ridge.lambda.max = ",
+          input$support.method.ridge.lambda.max,
+          ", support.method.ridge.lambda.n = ",
+          input$support.method.ridge.lambda.n,
+          ", support.method.ridge.standardize = ",
+          input$support.method.ridge.standardize,
+          ", support.method.ridge.symm = ",
+          input$support.method.ridge.symm,
+          ", support.method.ridge.maxresid = ",
+          input$support.method.ridge.maxresid
+        )
+      },
+      {if (isTRUE(input$boot)) paste0(", boot.B = ",
+                                      input$boot.B,
+                                      ", boot.method = \"",
+                                      input$boot.method,
+                                      "\"")},
+      {if (!is.null(input$seed) && isTRUE(input$cv))
+        paste0(
+          ", seed = ",
+          input$seed)},
+      ", OLS = ",
+      input$OLS,
+      ")"))
 
   # output$code ####
   output$code <- renderUI({
     req(res$expression())
     HTML(highlight(res$expression(),
-                            code = TRUE,
-                            classes = classes_pandoc()))
+                   code = TRUE,
+                   classes = classes_pandoc()))
   })
 
   observeEvent(input$done, {
