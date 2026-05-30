@@ -15,6 +15,9 @@ lmgce.assign.ci <- function(y,
                             X,
                             offset,
                             errormeasure = "RMSE",
+                            min.coef = NULL, # New
+                            max.coef = NULL, # New
+                            max.abs.residual = NULL, #New
                             support.signal = NULL,
                             support.signal.points =
                               c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
@@ -86,9 +89,9 @@ lmgce.assign.ci <- function(y,
           1,
           errormeasure,
           "min",
-          NULL,
-          NULL,
-          NULL,
+          min.coef, #NULL, # changed
+          max.coef, #NULL, # changed
+          max.abs.residual, #NULL, # changed
           support.signal,
           NULL,
           0.5,

@@ -1319,7 +1319,7 @@ plot.lmgce <-
 
         plots$p2 <-
           plots$p2 +
-          ggplot2::xlab("Upper limit of the support spaces") +
+          ggplot2::xlab("Flexibility parameter") +
           ggplot2::ylab(paste0("CV-", object$error)) +
           ggplot2::geom_vline(
             xintercept = c(stdULmin, stdUL1se, elbow, manual),
@@ -1430,7 +1430,7 @@ plot.lmgce <-
 
         plots$p2 <-
           plots$p2 +
-          ggplot2::xlab("Upper limit of the support spaces") +
+          ggplot2::xlab("Flexibility parameter") +
           ggplot2::ylab(paste0("CV-", object$error))+
           ggplot2::geom_vline(
             xintercept = c(stdULmin, stdUL1se, elbow, manual),
@@ -1553,7 +1553,7 @@ plot.lmgce <-
                 3
             })
           ) +
-          ggplot2::xlab("Upper limit of the support spaces") +
+          ggplot2::xlab("Flexibility parameter") +
           ggplot2::ylab("Estimates") +
           ggplot2::theme_bw() +
           ggplot2::theme(
@@ -1630,7 +1630,7 @@ plot.lmgce <-
               3
           })
         ) +
-        ggplot2::xlab("Upper limit of the support spaces") +
+        ggplot2::xlab("Flexibility parameter") +
         ggplot2::ylab("Normalized Entropy") +
         ggplot2::theme_bw() +
         ggplot2::theme(
@@ -1829,7 +1829,7 @@ plot.lmgce <-
     #
     #     plots$p5 <-
     #       plots$p5 +
-    #       ggplot2::xlab("Upper limit of the support spaces") +
+    #       ggplot2::xlab("Flexibility parameter") +
     #       ggplot2::ylab(paste0("CV-", object$error)) +
     #       ggplot2::geom_vline(
     #         xintercept = c(stdULmin, stdUL1se, elbow, manual),
@@ -1960,7 +1960,7 @@ plot.lmgce <-
         }
         plots$p5 <-
           plots$p5 +
-          ggplot2::xlab("Upper limit of the support spaces") +
+          ggplot2::xlab("Flexibility parameter") +
           ggplot2::ylab(paste0("CV-", object$error)) +
           ggplot2::geom_vline(
             xintercept = c(stdULmin, stdUL1se, elbow, manual),

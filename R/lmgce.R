@@ -637,10 +637,13 @@ lmgce <- function(formula,
         X = X,
         offset = offset,
         errormeasure = errormeasure,
+        min.coef = min.coef, # New
+        max.coef = max.coef, # New
+        max.abs.residual = max.abs.residual,
         support.signal = res$support.matrix,
         support.signal.points = res$p0,
         support.noise = support.noise,
-        support.noise.points = support.noise.points,
+        support.noise.points = res$w0,#support.noise.points, # Changed
         weight = weight,
         method = method,
         caseGLM = caseGLM,
