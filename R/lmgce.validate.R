@@ -154,10 +154,11 @@ lmgce.validate <- function(formula,
          call. = FALSE)
     } else {
       if (is.matrix(support.signal.points) &&
-          !all(apply(matrix(apply(support.signal.points, 1, sum), ncol = 1),
-                     1,
-                     all.equal,
-                     1))
+          all(abs(rowSums(support.signal.points) - 1) < 1e-5)
+          # !all(apply(matrix(apply(support.signal.points, 1, sum), ncol = 1),
+          #            1,
+          #            all.equal,
+          #            1))
       ) {
         stop("the sum of the elements by row of argument `support.signal.points`
               must be equal to 1.",
@@ -177,10 +178,11 @@ lmgce.validate <- function(formula,
            call. = FALSE)
     } else {
       if (is.matrix(support.noise.points) &&
-          !all(apply(matrix(apply(support.noise.points, 1, sum), ncol = 1),
-                     1,
-                     all.equal,
-                     1))
+          all(abs(rowSums(support.noise.points) - 1) < 1e-5)
+          # !all(apply(matrix(apply(support.noise.points, 1, sum), ncol = 1),
+          #            1,
+          #            all.equal,
+          #            1))
           ) {
         stop("the sum of the elements by row of argument `support.noise.points`
              must be equal to 1.",
