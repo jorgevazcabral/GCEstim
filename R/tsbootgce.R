@@ -523,7 +523,7 @@ tsbootgce <- function(formula,
           model = TRUE,
           x = TRUE,
           y = TRUE,
-          cv = cv,
+          cv = FALSE, #cv, # changed
           cv.nfolds = cv.nfolds,
           errormeasure = errormeasure,
           errormeasure.which =
@@ -531,26 +531,30 @@ tsbootgce <- function(formula,
                 "min"
               } else {errormeasure.which}
             },
-          support.method = "standardized",
-          support.signal =
-            #{if (is.null(support.signal)) {
-            #  res$lmgce$support.matrix
-            #  } else {
-            #    support.signal}},
-            res$lmgce$support.matrix,
+          support.method = support.method,#"standardized", # Changed
+          support.method.ridge.lambda = support.method.ridge.lambda, # Added
+          support.method.ridge.lambda.min = support.method.ridge.lambda.min, # Added
+          support.method.ridge.lambda.max = support.method.ridge.lambda.max, # Added
+          support.method.ridge.lambda.n = support.method.ridge.lambda.n, # Added
+          support.method.ridge.standardize = support.method.ridge.standardize, # Added
+          support.method.ridge.penalize.intercept =
+            support.method.ridge.penalize.intercept, # Added
+          support.method.ridge.symm = support.method.ridge.symm, # Added
+          support.method.ridge.maxresid = support.method.ridge.maxresid, # Added
+          support.signal = res$lmgce$support.matrix,
           support.signal.vector = support.signal.vector,
           support.signal.vector.min = support.signal.vector.min,
           support.signal.vector.max = support.signal.vector.max,
           support.signal.vector.n = support.signal.vector.n,
-          support.signal.points = support.signal.points,
+          support.signal.points = res$lmgce$p0, #support.signal.points, # changed
           support.noise = support.noise,
-          support.noise.points = support.noise.points,
+          support.noise.points = res$lmgce$w0,#support.noise.points, # changed
           weight = weight,
-          twosteps.n =
-            {if (is.null(support.signal)) {
-              0
-            } else {
-              twosteps.n}},
+          twosteps.n = 0,
+            # {if (is.null(support.signal)) {
+            #   0
+            # } else {
+            #   twosteps.n}}, # changed
           method = method,
           caseGLM = caseGLM,
           boot.B = 0,
