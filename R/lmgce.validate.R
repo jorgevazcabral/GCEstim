@@ -143,53 +143,53 @@ lmgce.validate <- function(formula,
     stop("argument `cv.repeats` must be a positive integer.",
          call. = FALSE)
 
-  if (!is.numeric(support.signal.points)) {
-    stop("argument `support.signal.points` must be a numeric vector.",
-         call. = FALSE)
-  } else if (length(support.signal.points) != 1) {
-    if (is.vector(support.signal.points) && !all.equal(
-      sum(support.signal.points), 1)) {
-    stop("the sum of the elements of argument `support.signal.points` must be
-         equal to 1.",
-         call. = FALSE)
-    } else {
-      if (is.matrix(support.signal.points) &&
-          all(abs(rowSums(support.signal.points) - 1) < 1e-5)
-          # !all(apply(matrix(apply(support.signal.points, 1, sum), ncol = 1),
-          #            1,
-          #            all.equal,
-          #            1))
-      ) {
-        stop("the sum of the elements by row of argument `support.signal.points`
-              must be equal to 1.",
-             call. = FALSE)
-    }
-    }
-  }
-
-  if (!is.numeric(support.noise.points)) {
-    stop("argument `support.noise.points` must be a numeric vector.",
-         call. = FALSE)
-  } else if (length(support.noise.points) != 1) {
-    if (is.vector(support.noise.points) && !all.equal(sum(support.noise.points),
-                                                      1)) {
-      stop("the sum of the elements of argument `support.noise.points` must be
-           equal to 1.",
-           call. = FALSE)
-    } else {
-      if (is.matrix(support.noise.points) &&
-          all(abs(rowSums(support.noise.points) - 1) < 1e-5)
-          # !all(apply(matrix(apply(support.noise.points, 1, sum), ncol = 1),
-          #            1,
-          #            all.equal,
-          #            1))
-          ) {
-        stop("the sum of the elements by row of argument `support.noise.points`
-             must be equal to 1.",
-             call. = FALSE)
-      }
-    }
-  }
+  # if (!is.numeric(support.signal.points)) {
+  #   stop("argument `support.signal.points` must be a numeric vector.",
+  #        call. = FALSE)
+  # } else if (length(support.signal.points) != 1) {
+  #   if (is.vector(support.signal.points) && !all.equal(
+  #     sum(support.signal.points), 1)) {
+  #   stop("the sum of the elements of argument `support.signal.points` must be
+  #        equal to 1.",
+  #        call. = FALSE)
+  #   } else {
+  #     if (is.matrix(support.signal.points) &&
+  #         all(abs(rowSums(support.signal.points) - 1) < 1e-5)
+  #         # !all(apply(matrix(apply(support.signal.points, 1, sum), ncol = 1),
+  #         #            1,
+  #         #            all.equal,
+  #         #            1))
+  #     ) {
+  #       stop("the sum of the elements by row of argument `support.signal.points`
+  #             must be equal to 1.",
+  #            call. = FALSE)
+  #   }
+  #   }
+  # }
+  #
+  # if (!is.numeric(support.noise.points)) {
+  #   stop("argument `support.noise.points` must be a numeric vector.",
+  #        call. = FALSE)
+  # } else if (length(support.noise.points) != 1) {
+  #   if (is.vector(support.noise.points) && !all.equal(sum(support.noise.points),
+  #                                                     1)) {
+  #     stop("the sum of the elements of argument `support.noise.points` must be
+  #          equal to 1.",
+  #          call. = FALSE)
+  #   } else {
+  #     if (is.matrix(support.noise.points) &&
+  #         all(abs(rowSums(support.noise.points) - 1) < 1e-5)
+  #         # !all(apply(matrix(apply(support.noise.points, 1, sum), ncol = 1),
+  #         #            1,
+  #         #            all.equal,
+  #         #            1))
+  #         ) {
+  #       stop("the sum of the elements by row of argument `support.noise.points`
+  #            must be equal to 1.",
+  #            call. = FALSE)
+  #     }
+  #   }
+  # }
 
   if (is.null(caseGLM) ||
       (!caseGLM %in% c("D", "M", "NM")))
