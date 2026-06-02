@@ -507,7 +507,7 @@ tsbootgce <- function(formula,
   nep <- NULL
 
   for (i in 1:reps) {
-    cat(i)
+
     data_me_mf_ts <- data.frame(sapply(me_mf_ts, function(x){x[, i]}))
 
     res.aux.lmgce <-

@@ -504,19 +504,19 @@ cv.tsbootgce <- function(formula,
 
   nepk.df <- coef.OLS.df <- coef.df
 
-  coefnepk.list <- list(coef = vector(mode = "list",
-                                      length = cv.nfolds),
-                        nepk = vector(mode = "list",
-                                      length = cv.nfolds))
-
-  coef.OLS.list <- list(coef = vector(mode = "list",
-                                      length = cv.nfolds))
-
-  for (i in 1:cv.nfolds){
-    coefnepk.list$coef[[i]] <- coef.df
-    coefnepk.list$nepk[[i]] <- nepk.df
-    coef.OLS.list$coef[[i]] <- coef.df
-  }
+  # coefnepk.list <- list(coef = vector(mode = "list",
+  #                                     length = cv.nfolds),
+  #                       nepk = vector(mode = "list",
+  #                                     length = cv.nfolds))
+  #
+  # coef.OLS.list <- list(coef = vector(mode = "list",
+  #                                     length = cv.nfolds))
+  #
+  # for (i in 1:cv.nfolds){
+  #   coefnepk.list$coef[[i]] <- coef.df
+  #   coefnepk.list$nepk[[i]] <- nepk.df
+  #   coef.OLS.list$coef[[i]] <- coef.df
+  # }
 
   nep <- NULL
 
@@ -584,67 +584,68 @@ cv.tsbootgce <- function(formula,
 
     coef.OLS.df[, i] <- coef(res.aux.lmgce$results$OLS$res)
 
-    if (isTRUE(cv)) {
-    for (j in 1:cv.nfolds){
-      coefnepk.list$coef[[j]][, i] <-
-        res.aux.lmgce$results$cv$repeats1[[j]]$coefficients
-      coefnepk.list$nepk[[j]][, i] <-
-        res.aux.lmgce$results$cv$repeats1[[j]]$nepk
-      coef.OLS.list$coef[[j]][, i] <- res.aux.lmgce$results$OLS$matrix.coef[, j]
-    }
-    }
+    # if (isTRUE(cv)) {
+    # for (j in 1:cv.nfolds){
+    #   coefnepk.list$coef[[j]][, i] <-
+    #     res.aux.lmgce$results$cv$repeats1[[j]]$coefficients
+    #   coefnepk.list$nepk[[j]][, i] <-
+    #     res.aux.lmgce$results$cv$repeats1[[j]]$nepk
+    #   coef.OLS.list$coef[[j]][, i] <- res.aux.lmgce$results$OLS$matrix.coef[, j]
+    # }
+    # }
   }
 
-  if (coef.method == "mode") {
-    if (!is.null(seed))
-      set.seed(seed)
-    coef.matrix.cv <-
-      sapply(coefnepk.list$coef,
-             function(x){
-               apply(x,
-                     1,
-                     function(x) {
-                       hdrcde::hdr(x = as.numeric(x), prob = 95)[[2]]} )})
-    coef.OLS.matrix.cv <-
-      sapply(coef.OLS.list$coef,
-             function(x){
-               apply(x,
-                     1,
-                     function(x) {
-                       hdrcde::hdr(x = as.numeric(x), prob = 95)[[2]]} )})
-  } else {
-    coef.matrix.cv <-
-      sapply(coefnepk.list$coef,
-             function(x){apply(x,
-                               1,
-                               median)})
-    coef.OLS.matrix.cv <-
-      sapply(coef.OLS.list$coef,
-             function(x){apply(x,
-                               1,
-                               median)})
-  }
+  # if (coef.method == "mode") {
+  #   if (!is.null(seed))
+  #     set.seed(seed)
+  #   coef.matrix.cv <-
+  #     sapply(coefnepk.list$coef,
+  #            function(x){
+  #              apply(x,
+  #                    1,
+  #                    function(x) {
+  #                      hdrcde::hdr(x = as.numeric(x), prob = 95)[[2]]} )})
+  #   coef.OLS.matrix.cv <-
+  #     sapply(coef.OLS.list$coef,
+  #            function(x){
+  #              apply(x,
+  #                    1,
+  #                    function(x) {
+  #                      hdrcde::hdr(x = as.numeric(x), prob = 95)[[2]]} )})
+  # } else {
+  #   coef.matrix.cv <-
+  #     sapply(coefnepk.list$coef,
+  #            function(x){apply(x,
+  #                              1,
+  #                              median)})
+  #   coef.OLS.matrix.cv <-
+  #     sapply(coef.OLS.list$coef,
+  #            function(x){apply(x,
+  #                              1,
+  #                              median)})
+  # }
+  #
+  # if (!is.null(seed))
+  #   set.seed(seed)
+  #
+  # auxfolds = cut(seq(1, nrow(x)),
+  #                breaks = cv.nfolds,
+  #                labels = FALSE)
+  # change_order <- sample(nrow(x))
+  #
+  # error.cv <- error.OLS.cv <- NULL
+  #
+  # for (cv.n in 1:cv.nfolds) {
+  #   y.cv = y[change_order][auxfolds != cv.n]
+  #   X.cv = x[change_order, ][auxfolds != cv.n,]
+  #   error.cv[cv.n] <- accmeasure(y.cv,
+  #                                X.cv %*% coef.matrix.cv[, cv.n],
+  #                                errormeasure)
+  #   error.OLS.cv[cv.n] <- accmeasure(y.cv,
+  #                                    X.cv %*% coef.OLS.matrix.cv[, cv.n],
+  #                                    errormeasure)
+  # }
 
-  if (!is.null(seed))
-    set.seed(seed)
-
-  auxfolds = cut(seq(1, nrow(x)),
-                 breaks = cv.nfolds,
-                 labels = FALSE)
-  change_order <- sample(nrow(x))
-
-  error.cv <- error.OLS.cv <- NULL
-
-  for (cv.n in 1:cv.nfolds) {
-    y.cv = y[change_order][auxfolds != cv.n]
-    X.cv = x[change_order, ][auxfolds != cv.n,]
-    error.cv[cv.n] <- accmeasure(y.cv,
-                                 X.cv %*% coef.matrix.cv[, cv.n],
-                                 errormeasure)
-    error.OLS.cv[cv.n] <- accmeasure(y.cv,
-                                     X.cv %*% coef.OLS.matrix.cv[, cv.n],
-                                     errormeasure)
-  }
   res$na.action <- attr(mf, "na.action")
   res$offset <- offset
   res$contrasts <- attr(x, "contrasts")
@@ -688,9 +689,9 @@ cv.tsbootgce <- function(formula,
     res$coefficients.OLS <-
       apply(res$results$bootstrap$coef.matrix.OLS, 1, median)
   }
-  res$coefficients.cv <- coef.matrix.cv
-  res$coefficients.OLS.cv <- coef.OLS.matrix.cv
-  #res$res.aux.lmgce <- res.aux.lmgce
+  # res$coefficients.cv <- coef.matrix.cv
+  # res$coefficients.OLS.cv <- coef.OLS.matrix.cv
+  # res$res.aux.lmgce <- res.aux.lmgce
   res$fitted.values <- model.matrix(mt, mf, contrasts) %*% res$coefficients
   res$residuals <- model.response(mf, "numeric") - res$fitted.values
   res$fitted.values.OLS <-
@@ -710,10 +711,10 @@ cv.tsbootgce <- function(formula,
     accmeasure(model.response(mf, "numeric"),
                         res$fitted.values.OLS,
                         errormeasure)
-  res$error.measure.cv.mean <- mean(error.cv)
-  res$error.measure.cv.sd <- sd(error.cv)
-  res$error.measure.OLS.cv.mean <- mean(error.OLS.cv)
-  res$error.measure.OLS.cv.sd <- sd(error.OLS.cv)
+  # res$error.measure.cv.mean <- mean(error.cv)
+  # res$error.measure.cv.sd <- sd(error.cv)
+  # res$error.measure.OLS.cv.mean <- mean(error.OLS.cv)
+  # res$error.measure.OLS.cv.sd <- sd(error.OLS.cv)
   res$seed <- seed
   }
   class(res) <- "cv.tsbootgce"
