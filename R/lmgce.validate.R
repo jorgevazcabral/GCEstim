@@ -55,7 +55,7 @@ lmgce.validate <- function(formula,
          call. = FALSE)
 
   if (is.null(method) ||
-      !(method %in% c("primal.solnl", "primal.solnp", "dual",
+      !(method %in% c("primal.solnl", "primal.solnp",
                       "dual.BFGS", "dual.CG", "dual.L-BFGS-B",
                       "dual.Rcgmin", "dual.bobyqa", "dual.newuoa",
                       "dual.nlminb", "dual.nlm",
@@ -64,7 +64,6 @@ lmgce.validate <- function(formula,
                       "dual.optimParallel"))) {
     stop(
       'argument `method` must be one of c("primal.solnl", "primal.solnp",
-      "dual",
       "dual.BFGS", "dual.CG", "dual.L-BFGS-B", "dual.Rcgmin", "dual.bobyqa",
       "dual.newuoa", "dual.nlminb", "dual.nlm",
       "dual.lbfgs",
@@ -72,17 +71,6 @@ lmgce.validate <- function(formula,
       "dual.optimParallel")',
       call. = FALSE
     )
-  }
-
-  if (method == "dual" & length(unique(support.signal.points)) != 1) {
-    stop('`method` = "dual" supports only GME.',
-         call. = FALSE)
-  }
-
-  if (method == "dual" & weight != 0.5) {
-    stop('`method` = "dual" supports only equal weights for the signal and
-         noise.',
-         call. = FALSE)
   }
 
   if (is.null(support.signal)) {

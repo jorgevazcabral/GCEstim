@@ -145,7 +145,7 @@
 #' Programming (SQP) method; see \code{\link[NlcOptim]{solnl}}) or
 #' \code{"primal.solnp"} (GCE using the augmented Lagrange multiplier method
 #' with an SQP interior algorithm; see \code{\link[Rsolnp]{solnp}}) for primal
-#' form of the optimization problem and \code{"dual"} (GME), \code{"dual.CG"}
+#' form of the optimization problem and \code{"dual.CG"}
 #' (GCE using a conjugate gradients method; see \code{\link[stats]{optim}}),
 #' \code{"dual.BFGS"} (GCE using Broyden-Fletcher-Goldfarb-Shanno quasi-Newton
 #' method; see \code{\link[stats]{optim}}), \code{"dual.L-BFGS-B"} (GCE using a
@@ -299,7 +299,6 @@ cv.lmgce <- function(formula,
                      method = c(
                        "dual.BFGS",
                        "dual.lbfgsb3c",
-                       "dual",
                        "primal.solnl",
                        "primal.solnp",
                        "dual.CG",
