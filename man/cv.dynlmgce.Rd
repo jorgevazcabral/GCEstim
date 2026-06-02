@@ -42,9 +42,9 @@ cv.dynlmgce(
   support.noise.points = c(3, 5, 7, 9),
   weight = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
   twosteps.n = 1,
-  method = c("dual.BFGS", "dual.lbfgsb3c", "dual", "primal.solnl", "primal.solnp",
-    "dual.CG", "dual.L-BFGS-B", "dual.Rcgmin", "dual.bobyqa", "dual.newuoa",
-    "dual.nlminb", "dual.nlm", "dual.lbfgs", "dual.optimParallel"),
+  method = c("dual.BFGS", "dual.lbfgsb3c", "primal.solnl", "primal.solnp", "dual.CG",
+    "dual.L-BFGS-B", "dual.Rcgmin", "dual.bobyqa", "dual.newuoa", "dual.nlminb",
+    "dual.nlm", "dual.lbfgs", "dual.optimParallel"),
   caseGLM = c("D", "M", "NM"),
   boot.B = 0,
   boot.method = c("residuals", "cases", "wild"),
@@ -228,7 +228,7 @@ vector of signal probabilities.}
 Programming (SQP) method; see \code{\link[NlcOptim]{solnl}}) or
 \code{"primal.solnp"} (GCE using the augmented Lagrange multiplier method
 with an SQP interior algorithm; see \code{\link[Rsolnp]{solnp}}) for primal
-form of the optimization problem and \code{"dual"} (GME), \code{"dual.CG"}
+form of the optimization problem and \code{"dual.CG"}
 (GCE using a conjugate gradients method; see \code{\link[stats]{optim}}),
 \code{"dual.BFGS"} (GCE using Broyden-Fletcher-Goldfarb-Shanno quasi-Newton
 method; see \code{\link[stats]{optim}}), \code{"dual.L-BFGS-B"} (GCE using a
