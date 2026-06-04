@@ -16,8 +16,9 @@
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #' res_gce_package
@@ -59,9 +60,9 @@ print.lmgce <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         x = TRUE,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #'
 #' model.matrix(res_gce_package)
@@ -98,8 +99,9 @@ model.matrix.lmgce <- function(object, ...)
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #'
 #' formula(res_gce_package)
@@ -129,8 +131,9 @@ formula.lmgce <- function(x, ...)
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #' coef(res_gce_package)
@@ -160,7 +163,9 @@ coef.lmgce <- function(object, ...)
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #' coefficients(res_gce_package)
@@ -189,8 +194,9 @@ coefficients.lmgce <- coef.lmgce
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #' residuals(res_gce_package)
@@ -223,8 +229,9 @@ residuals.lmgce <- function(object, ...)
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #' resid(res_gce_package)
@@ -252,8 +259,9 @@ resid.lmgce <- residuals.lmgce
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #' vcov(res_gce_package)
@@ -283,8 +291,9 @@ vcov.lmgce <- function(object, ...)
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #'
@@ -314,8 +323,9 @@ variable.names.lmgce <- function(object, ...) {
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #'
@@ -345,8 +355,9 @@ nobs.lmgce <- function(object, ...) {
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #' case.names(res_gce_package)
@@ -376,8 +387,9 @@ case.names.lmgce <- function(object, ...) {
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #' fitted(res_gce_package)
@@ -409,8 +421,9 @@ fitted.lmgce <- function(object, ...)
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #' fitted.values(res_gce_package)
@@ -438,8 +451,9 @@ fitted.values.lmgce <- fitted.lmgce
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #' df.residual(res_gce_package)
@@ -493,8 +507,9 @@ df.residual.lmgce <- function(object, ...) {
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #'
@@ -502,7 +517,7 @@ df.residual.lmgce <- function(object, ...) {
 #'
 #' confint(res_gce_package, which = "NormEnt", level = 0.99)
 #'
-#' confint(res_gce_package, parm = c("X005"), level = 0.99)
+#' confint(res_gce_package, parm = c("X004"), level = 0.99)
 #'
 #' @method confint lmgce
 #' @importFrom stats confint
@@ -703,8 +718,9 @@ confint.lmgce <- function(object,
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #'
@@ -864,8 +880,9 @@ summary.lmgce <- function(object,
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #'
@@ -1063,8 +1080,9 @@ print.summary.lmgce <-
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #' plot(res_gce_package)
@@ -2343,12 +2361,13 @@ plot.lmgce <-
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #' }
 #'
-#' predict(res_gce_package, dataGCE.test)
+#' predict(res_gce_package, dataThesis)
 #'
 #' @method predict lmgce
 #' @importFrom stats predict
@@ -2419,7 +2438,6 @@ predict.lmgce <-
           drop(X[,
                  piv,
                  drop = FALSE] %*% object$results$bootstrap$coefficients[, b])
-        #X %*% object$results$bootstrap$coefficients[, b]
         if (!is.null(offset))
           predictor.ci[, b] <- predictor.ci[, b] + offset
       }

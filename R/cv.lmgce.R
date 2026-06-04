@@ -138,7 +138,7 @@
 #' \code{support.noise.points = c(3, 5, 7, 9)}.
 #' @param weight a vector of values between zero and one representing the
 #' prediction-precision loss trade-off. The default is
-#' \code{weight = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)}.
+#' \code{weight = c(0.1, 0.3, 0.5, 0.7, 0.9)}.
 #' @param twosteps.n Number of GCE reestimations using a previously estimated
 #' vector of signal probabilities.
 #' @param method  Use \code{"primal.solnl"} (GCE using Sequential Quadratic
@@ -249,7 +249,7 @@
 #' \donttest{
 #' res.cv.lmgce <-
 #'   cv.lmgce(y ~ .,
-#'            data = dataGCE)
+#'            data = dataThesis)
 #'
 #' res.cv.lmgce
 #' }
@@ -294,7 +294,7 @@ cv.lmgce <- function(formula,
                      support.signal.points = c(3, 5, 7, 9),
                      support.noise = NULL,
                      support.noise.points = c(3, 5, 7, 9),
-                     weight = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+                     weight = c(0.1, 0.3, 0.5, 0.7, 0.9),
                      twosteps.n = 1,
                      method = c(
                        "dual.BFGS",

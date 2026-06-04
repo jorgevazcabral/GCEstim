@@ -15,9 +15,9 @@ lmgce.assign.ci <- function(y,
                             X,
                             offset,
                             errormeasure = "RMSE",
-                            min.coef = NULL, # New
-                            max.coef = NULL, # New
-                            max.abs.residual = NULL, #New
+                            min.coef = NULL,
+                            max.coef = NULL,
+                            max.abs.residual = NULL,
                             support.signal = NULL,
                             support.signal.points =
                               c(1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5),
@@ -62,8 +62,6 @@ lmgce.assign.ci <- function(y,
       b <- b - 1L}}
 
     tryCatch({
-      #ci_seed <- ifelse(is.null(seed), 0L, seed) + attempts_b
-      #set.seed(ci_seed)
       ci_ind <- sample(nrow(X), nrow(X), replace = TRUE)
       if (boot.method == "cases") {
         y.aux <- y[ci_ind]
@@ -89,9 +87,9 @@ lmgce.assign.ci <- function(y,
           1,
           errormeasure,
           "min",
-          min.coef, #NULL, # changed
-          max.coef, #NULL, # changed
-          max.abs.residual, #NULL, # changed
+          min.coef,
+          max.coef,
+          max.abs.residual,
           support.signal,
           NULL,
           0.5,

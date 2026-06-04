@@ -17,8 +17,9 @@
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #'
 #' res_neagging <- neagging(res_gce_package)
@@ -53,8 +54,9 @@ coef.neagging <- function(object, which = which.min(object$error)[[1]], ...)
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #'
 #' res_neagging <- neagging(res_gce_package)
@@ -89,8 +91,9 @@ coefficients.neagging <- coef.neagging
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #'
 #' res_neagging <- neagging(res_gce_package)

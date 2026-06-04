@@ -17,8 +17,9 @@
 #' \donttest{
 #' res_gce_package <-
 #'   lmgce(y ~ .,
-#'         data = dataGCE,
-#'         boot.B = 50,
+#'         data = dataThesis,
+#'         twosteps.n = 1,
+#'         boot.B = 100,
 #'         seed = 230676)
 #'
 #' res_gce_package_change <- changesupport(res_gce_package, "min")

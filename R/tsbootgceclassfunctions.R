@@ -16,7 +16,7 @@
 #' \donttest{
 #' res.tsbootgce <-
 #'   tsbootgce(
-#'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
 #'     data = moz_ts)
 #'
 #' res.tsbootgce
@@ -77,7 +77,7 @@ print.tsbootgce <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 #' \donttest{
 #' res.tsbootgce <-
 #'   tsbootgce(
-#'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
 #'     data = moz_ts)
 #'
 #' coef(res.tsbootgce)
@@ -144,7 +144,7 @@ coef.tsbootgce <- function(object,
 #' \donttest{
 #' res.tsbootgce <-
 #'   tsbootgce(
-#'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
 #'     data = moz_ts)
 #'
 #' coefficients(res.tsbootgce)
@@ -189,14 +189,14 @@ coefficients.tsbootgce <- coef.tsbootgce
 #' \donttest{
 #' res.tsbootgce <-
 #'   tsbootgce(
-#'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
 #'     data = moz_ts)
 #'
 #' confint(res.tsbootgce, method = "percentile")
 #'
 #' confint(res.tsbootgce, which = "NormEnt", level = 0.99)
 #'
-#' confint(res.tsbootgce, parm = c("L(GDP, 1)"), level = 0.99)
+#' confint(res.tsbootgce, parm = c("L(GDP, 0)"), level = 0.99)
 #' }
 #'
 #' @method confint tsbootgce
@@ -341,7 +341,7 @@ confint.tsbootgce <- function(object,
 #' \donttest{
 #' res.tsbootgce <-
 #'   tsbootgce(
-#'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
 #'     data = moz_ts)
 #'
 #' plot(res.tsbootgce, which = 2, group = TRUE)

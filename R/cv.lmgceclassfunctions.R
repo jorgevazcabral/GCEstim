@@ -16,7 +16,7 @@
 #' \donttest{
 #' res.cv.lmgce <-
 #'   cv.lmgce(y ~ .,
-#'            data = dataGCE)
+#'            data = dataThesis)
 #'
 #' res.cv.lmgce
 #' }
@@ -73,7 +73,7 @@ print.cv.lmgce <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 #' \donttest{
 #' res.cv.lmgce <-
 #'   cv.lmgce(y ~ .,
-#'            data = dataGCE)
+#'            data = dataThesis)
 #'
 #' coef(res.cv.lmgce)
 #' }
@@ -106,7 +106,7 @@ coef.cv.lmgce <- function(object, ...)
 #' \donttest{
 #' res.cv.lmgce <-
 #'   cv.lmgce(y ~ .,
-#'            data = dataGCE)
+#'            data = dataThesis)
 #'
 #' coefficients(res.cv.lmgce)
 #' }
@@ -142,7 +142,7 @@ coefficients.cv.lmgce <- coef.cv.lmgce
 #' \donttest{
 #' res.cv.lmgce <-
 #'   cv.lmgce(y ~ .,
-#'            data = dataGCE)
+#'            data = dataThesis)
 #'
 #' plot(res.cv.lmgce)
 #' }

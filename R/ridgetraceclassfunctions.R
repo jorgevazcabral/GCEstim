@@ -15,8 +15,8 @@
 #' @examples
 #' res.ridgetrace <-
 #'   ridgetrace(
-#'     formula = y ~ X001 + X002 + X003 + X004 + X005,
-#'     data = dataGCE)
+#'     formula = y ~ X001 + X002 + X003 + X004,
+#'     data = dataThesis)
 #'
 #' res.ridgetrace
 #'
@@ -60,8 +60,8 @@ print.ridgetrace <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 #' @examples
 #' res.ridgetrace <-
 #'   ridgetrace(
-#'     formula = y ~ X001 + X002 + X003 + X004 + X005,
-#'     data = dataGCE)
+#'     formula = y ~ X001 + X002 + X003 + X004,
+#'     data = dataThesis)
 #'
 #' coef(res.ridgetrace)
 #'
@@ -102,8 +102,8 @@ coef.ridgetrace <- function(object, which = "min.error",...)
 #' @examples
 #' res.ridgetrace <-
 #'   ridgetrace(
-#'     formula = y ~ X001 + X002 + X003 + X004 + X005,
-#'     data = dataGCE)
+#'     formula = y ~ X001 + X002 + X003 + X004,
+#'     data = dataThesis)
 #'
 #' coefficients(res.ridgetrace)
 #'
@@ -129,8 +129,8 @@ coefficients.ridgetrace <- coef.ridgetrace
 #'
 #' res.ridgetrace <-
 #'   ridgetrace(
-#'     formula = y ~ X001 + X002 + X003 + X004 + X005,
-#'     data = dataGCE)
+#'     formula = y ~ X001 + X002 + X003 + X004,
+#'     data = dataThesis)
 #'
 #' plot(res.ridgetrace)
 #'

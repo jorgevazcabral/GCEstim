@@ -81,8 +81,8 @@
 #' @examples
 #' res.ridgetrace <-
 #'   ridgetrace(
-#'     formula = y ~ X001 + X002 + X003 + X004 + X005,
-#'     data = dataGCE)
+#'     formula = y ~ X001 + X002 + X003 + X004,
+#'     data = dataThesis)
 #'
 #' res.ridgetrace
 #'

@@ -16,7 +16,7 @@
 #' \donttest{
 #' res.cvtsbootgce <-
 #'   cv.tsbootgce(
-#'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
 #'     data = moz_ts)
 #'
 #' res.cvtsbootgce
@@ -93,7 +93,7 @@ print.cv.tsbootgce <- function(x,
 #' \donttest{
 #' res.cv.tsbootgce <-
 #'   cv.tsbootgce(
-#'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
 #'     data = moz_ts)
 #'
 #' coef(res.cv.tsbootgce)
@@ -160,7 +160,7 @@ coef.cv.tsbootgce <- function(object,
 #' \donttest{
 #' res.cv.tsbootgce <-
 #'   cv.tsbootgce(
-#'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
 #'     data = moz_ts)
 #'
 #' coefficients(res.cv.tsbootgce)
@@ -205,7 +205,7 @@ coefficients.cv.tsbootgce <- coef.cv.tsbootgce
 #' \donttest{
 #' res.cv.tsbootgce <-
 #'   cv.tsbootgce(
-#'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
 #'     data = moz_ts)
 #'
 #' confint(res.cv.tsbootgce, method = "percentile")
@@ -357,7 +357,7 @@ confint.cv.tsbootgce <- function(object,
 #' \donttest{
 #' res.cv.tsbootgce <-
 #'   cv.tsbootgce(
-#'     formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
 #'     data = moz_ts)
 #'
 #' plot(res.cv.tsbootgce, which = 2, group = TRUE)

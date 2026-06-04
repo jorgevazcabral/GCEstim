@@ -135,9 +135,6 @@ lmgce.sscv <- function(y,
           verbose
         )
 
-      #aux.mean.measure.ss <- NULL
-      #aux.mean.nep.ss <- NULL
-
       for (amm.ss in 1:nsupports) {
         mean.measure.ss[(r - 1) * cv.nfolds + cv, amm.ss] <-
           res_k$support.results[[amm.ss]]$error.measure[[1]]

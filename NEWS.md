@@ -9,3 +9,7 @@
 * Changed geom_errorbarh() to geom_errorbar(orientation= y, ...) in plot.lmgce();
 
 * Minor corrections in documentation;
+
+# GCEstim 1.1.0
+
+* Major corrections;
