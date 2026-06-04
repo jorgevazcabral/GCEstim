@@ -24,7 +24,7 @@ Extract coefficients from a \code{\link{cv.lmgce}} object
 \donttest{
 res.cv.lmgce <-
   cv.lmgce(y ~ .,
-           data = dataGCE)
+           data = dataThesis)
 
 coefficients(res.cv.lmgce)
 }

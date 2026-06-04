@@ -65,7 +65,7 @@ evaluate a \code{\link{cv.tsbootgce}} object.
 \donttest{
 res.cv.tsbootgce <-
   cv.tsbootgce(
-    formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+    formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
     data = moz_ts)
 
 plot(res.cv.tsbootgce, which = 2, group = TRUE)

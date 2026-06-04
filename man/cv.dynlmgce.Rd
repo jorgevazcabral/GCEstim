@@ -40,7 +40,7 @@ cv.dynlmgce(
   support.signal.points = c(3, 5, 7, 9),
   support.noise = NULL,
   support.noise.points = c(3, 5, 7, 9),
-  weight = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+  weight = c(0.1, 0.3, 0.5, 0.7, 0.9),
   twosteps.n = 1,
   method = c("dual.BFGS", "dual.lbfgsb3c", "primal.solnl", "primal.solnp", "dual.CG",
     "dual.L-BFGS-B", "dual.Rcgmin", "dual.bobyqa", "dual.newuoa", "dual.nlminb",
@@ -219,7 +219,7 @@ Pukelsheim (1994).}
 
 \item{weight}{a vector of values between zero and one representing the
 prediction-precision loss trade-off. The default is
-\code{weight = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)}.}
+\code{weight = c(0.1, 0.3, 0.5, 0.7, 0.9)}.}
 
 \item{twosteps.n}{Number of GCE reestimations using a previously estimated
 vector of signal probabilities.}
@@ -325,7 +325,7 @@ In particular, \code{support.signal.points}, \code{support.noise.points} and
 \donttest{
 res.cv.dynlmgce <-
   cv.dynlmgce(
-    formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+    formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
     data = moz_ts)
 
 res.cv.dynlmgce

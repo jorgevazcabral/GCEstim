@@ -23,8 +23,9 @@ Returns the residual degrees-of-freedom extracted from a fitted model
 \donttest{
 res_gce_package <-
   lmgce(y ~ .,
-        data = dataGCE,
-        boot.B = 50,
+        data = dataThesis,
+        twosteps.n = 1,
+        boot.B = 100,
         seed = 230676)
 }
 df.residual(res_gce_package)

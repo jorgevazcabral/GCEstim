@@ -32,7 +32,7 @@ also the best combination.
 \donttest{
 res.cv.lmgce <-
   cv.lmgce(y ~ .,
-           data = dataGCE)
+           data = dataThesis)
 
 plot(res.cv.lmgce)
 }

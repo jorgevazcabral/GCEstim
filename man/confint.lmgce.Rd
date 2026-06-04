@@ -70,8 +70,9 @@ Entropy in a \code{\link{lmgce}} fitted model.
 \donttest{
 res_gce_package <-
   lmgce(y ~ .,
-        data = dataGCE,
-        boot.B = 50,
+        data = dataThesis,
+        twosteps.n = 1,
+        boot.B = 100,
         seed = 230676)
 }
 
@@ -79,7 +80,7 @@ confint(res_gce_package, method = "percentile")
 
 confint(res_gce_package, which = "NormEnt", level = 0.99)
 
-confint(res_gce_package, parm = c("X005"), level = 0.99)
+confint(res_gce_package, parm = c("X004"), level = 0.99)
 
 }
 \author{

@@ -27,11 +27,12 @@ Changes the number of GCE reestimations of a \code{\link{lmgce}} object
 \donttest{
 res_gce_package <-
   lmgce(y ~ .,
-        data = dataGCE,
-        twosteps.n = 10,
+        data = dataThesis,
+        twosteps.n = 1,
+        boot.B = 100,
         seed = 230676)
 
-res_gce_package_change_step <- changestep(res_gce_package, 5)
+res_gce_package_change_step <- changestep(res_gce_package,0)
 
 summary(res_gce_package)
 

@@ -47,12 +47,13 @@ Predicted values based on a fitted model \code{\link{lmgce}} object.
 \donttest{
 res_gce_package <-
   lmgce(y ~ .,
-        data = dataGCE,
-        boot.B = 50,
+        data = dataThesis,
+        twosteps.n = 1,
+        boot.B = 100,
         seed = 230676)
 }
 
-predict(res_gce_package, dataGCE.test)
+predict(res_gce_package, dataThesis)
 
 }
 \author{

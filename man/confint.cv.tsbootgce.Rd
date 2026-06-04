@@ -54,7 +54,7 @@ Entropy in a \code{\link{cv.tsbootgce}} fitted model.
 \donttest{
 res.cv.tsbootgce <-
   cv.tsbootgce(
-    formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+    formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
     data = moz_ts)
 
 confint(res.cv.tsbootgce, method = "percentile")

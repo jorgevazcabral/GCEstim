@@ -22,9 +22,9 @@ Returns the design matrix used to fit \code{\link{lmgce}} object.
 \donttest{
 res_gce_package <-
   lmgce(y ~ .,
-        x = TRUE,
-        data = dataGCE,
-        boot.B = 50,
+        data = dataThesis,
+        twosteps.n = 1,
+        boot.B = 100,
         seed = 230676)
 
 model.matrix(res_gce_package)

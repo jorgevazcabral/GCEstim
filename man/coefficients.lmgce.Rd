@@ -21,7 +21,9 @@ Extract coefficients from a \code{\link{lmgce}} object
 \donttest{
 res_gce_package <-
   lmgce(y ~ .,
-        data = dataGCE,
+        data = dataThesis,
+        twosteps.n = 1,
+        boot.B = 100,
         seed = 230676)
 }
 coefficients(res_gce_package)

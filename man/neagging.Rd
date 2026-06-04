@@ -55,15 +55,18 @@ Computes the estimates for the Normalized Entropy Aggregation
 \donttest{
 res_gce_package <-
   lmgce(y ~ .,
-        data = dataGCE,
-        boot.B = 50,
+        data = dataThesis,
+        twosteps.n = 1,
+        boot.B = 100,
         seed = 230676)
 
-neagging(res_gce_package, boot.method = "cases")
+res_neagging <- neagging(res_gce_package, boot.method = "cases")
+
+res_neagging
 
 res.tsbootgce <-
   tsbootgce(
-    formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+    formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
     data = moz_ts)
 
 neagging(res.tsbootgce)

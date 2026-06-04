@@ -23,7 +23,7 @@ Print \code{\link{cv.lmgce}} object
 \donttest{
 res.cv.lmgce <-
   cv.lmgce(y ~ .,
-           data = dataGCE)
+           data = dataThesis)
 
 res.cv.lmgce
 }

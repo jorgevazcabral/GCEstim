@@ -23,8 +23,9 @@ The abbreviated form \code{resid} is an alias for \code{residuals}.
 \donttest{
 res_gce_package <-
   lmgce(y ~ .,
-        data = dataGCE,
-        boot.B = 50,
+        data = dataThesis,
+        twosteps.n = 1,
+        boot.B = 100,
         seed = 230676)
 }
 residuals(res_gce_package)

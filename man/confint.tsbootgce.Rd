@@ -54,14 +54,14 @@ Entropy in a \code{\link{tsbootgce}} fitted model.
 \donttest{
 res.tsbootgce <-
   tsbootgce(
-    formula = CO2 ~ 1 + L(GDP, 1) + L(EPC, 1) + L(EU, 1),
+    formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
     data = moz_ts)
 
 confint(res.tsbootgce, method = "percentile")
 
 confint(res.tsbootgce, which = "NormEnt", level = 0.99)
 
-confint(res.tsbootgce, parm = c("L(GDP, 1)"), level = 0.99)
+confint(res.tsbootgce, parm = c("L(GDP, 0)"), level = 0.99)
 }
 
 }

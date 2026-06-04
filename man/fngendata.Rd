@@ -135,16 +135,18 @@ Generates data
 }
 \examples{
 
-dataGCEstim <- fngendata(
-  n = 100, cont.k = 2,
-  y.gen.cont.beta = c(3, 6, 9),
-  intercept.beta = 1,
-  Xgenerator.method = "svd", condnumber = 50,
-  mu = 0, sd = 1,
-  error.dist = "normal", error.dist.mean = 0, error.dist.snr = 5,
-  dataframe = TRUE, seed = 230676)
+dataThesis <-
+  fngendata(
+    n = 75,
+    cont.k = 1,
+    y.gen.cont.beta = c(-16, -12, -5),
+    intercept.beta = -4,
+    Xgenerator.method = "svd", condnumber = 200,
+    mu = 0, sd = 1,
+    error.dist = "normal", error.dist.mean = 0, error.dist.snr = 5,
+    dataframe = TRUE, seed = 230687)
 
-summary(dataGCEstim)
+summary(dataThesis)
 
 }
 \author{

@@ -37,12 +37,14 @@ predictions:
 \donttest{
 res_gce_package <-
   lmgce(y ~ .,
-        data = dataGCE,
-        boot.B = 50,
+        data = dataThesis,
+        twosteps.n = 1,
+        boot.B = 100,
         seed = 230676)
 }
 
-accmeasure(fitted(res_gce_package), dataGCE$y, which = "MSE")
+accmeasure(fitted(res_gce_package), dataThesis$y, which = "MSE")
+accmeasure(coef(res_gce_package), coef.dataThesis, which = "MSE")
 
 }
 \references{
