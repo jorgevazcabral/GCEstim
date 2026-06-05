@@ -114,7 +114,7 @@ Since that in our example the true parameters are known, we can add them to the
 ridge trace using the argument `coef = coef.dataThesis` from the `plot` function
 
 ```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
-#plot(res.rt.01, coef = coef.dataThesis)
+plot(res.rt.01, coef = coef.dataThesis)
 ```
 
 The Ridge estimated coefficients that produce the lowest 5-fold cross-validation
@@ -251,7 +251,7 @@ The true coefficints used to generate `dataincRidGME` are
 ```
 
 ```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
-#plot(res.rt.02, coef = coef.dataincRidGME)
+plot(res.rt.02, coef = coef.dataincRidGME)
 ```
 
 ```{r,echo=TRUE,eval=TRUE}
@@ -351,13 +351,7 @@ summary(res.lmgce.RidGME.02)
 Note that the prediction errors are worst than the ones obtained when the factor
 was $2$ because we chose `1se` error. In this case, the precision error is also
 not the best one.
-
-```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
-#plot(res.lmgce.RidGME.02, which = 5, NormEnt = FALSE, coef = coef.dataincRidGME)$p5
-```
-
-From the above plot it seems that we should have chosen 
-`errormeasure.which = "min"`. That can be done using
+We should have chosen `errormeasure.which = "min"`. That can be done using
 
 ```{r,echo=TRUE,eval=TRUE}
 res.lmgce.RidGME.02.min <-
