@@ -38,17 +38,40 @@ of several `GCEstim` functions are given.
 Consider `dataThesis` (see ["Generalized Maximum Entropy
 framework"](V2_GME_framework.html#Examples)).
 
-```{r,echo=FALSE,eval=TRUE}
+```{r,echo=FALSE,eval=TRUE,message=FALSE}
 library(GCEstim)
-#load("GCEstim_Quick_start.RData")
+load("GCEstim_Quick_start.RData")
 ```
 
 ```{r,echo=FALSE,eval=TRUE}
 summary(dataThesis)
 ```
 
-```{r,echo=FALSE,eval=TRUE, fig.width=6,fig.height=6,fig.align='center'}
-plot(dataThesis)
+```{r,echo=FALSE,eval=TRUE, fig.width=5,fig.height=5,fig.align='center'}
+
+panel.hist <- function(x, ...) {
+  usr <- par("usr")
+  on.exit(par(usr = usr))
+
+  par(usr = c(usr[1:2], 0, 1.5))
+
+  h <- hist(x, plot = FALSE)
+  y <- h$counts / max(h$counts)
+
+  rect(
+    h$breaks[-length(h$breaks)], 0,
+    h$breaks[-1], y,
+    col = "lightgray",
+    border = "white"
+  )
+}
+
+pairs(
+  dataThesis,
+  upper.panel = NULL,
+  diag.panel = panel.hist,
+  lower.panel = panel.smooth
+)
 ```
 
 Suppose we want to obtain the estimates for the model
@@ -342,7 +365,7 @@ criterion, selects one of them. But GCE estimation is also sensitive to the numb
 points of the signal and noise support spaces and to the weight that each of the spaces 
 has in the loss function. `cv.lmgce()` tests the combination of these parameters. 
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=FALSE}
 res.cv.lmgce <-
   cv.lmgce(
     y ~ X001 + X002 + X003 + X004,
@@ -371,7 +394,7 @@ summary(res.cv.lmgce$best)
 
 Using `plot` we obtain
 
-```{r,echo=TRUE,eval=TRUE,fig.width=9,fig.height=6,fig.align='center'}
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
 plot(res.cv.lmgce, which = 1, ncol = 3)$p1 + ggplot2::ylim(0.96, 1.08) 
 ```
 
