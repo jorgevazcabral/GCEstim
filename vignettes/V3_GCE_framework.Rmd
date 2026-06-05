@@ -34,9 +34,9 @@ knitr::opts_chunk$set(
 ## Introduction
 
 Although the common situation is the absence of prior information on 
-$\mathbf{p} = (\mathbf{p_0},\mathbf{p_1},\dots,\mathbf{p_K})$, in some particular
+$\mathbf{p} = (\mathbf{p_0}',\mathbf{p_1}',\dots,\mathbf{p_K}')'$, in some particular
 cases pre-sample information exists in the form of 
-$\mathbf{q} = (\mathbf{q_0},\mathbf{q_1},\dots,\mathbf{q_K})$. This $\mathbf{q}$ 
+$\mathbf{q} = (\mathbf{q_0}',\mathbf{q_1}',\dots,\mathbf{q_K}')'$. This $\mathbf{q}$ 
 distribution can be used as an initial hypothesis to be incorporated in the 
 consistency relations of maximum entropy formalism.
 Kullback and Leibler @Kullback1951 defined cross-entropy (CE) between $\mathbf{p}$ and $\mathbf{q}$ as
@@ -60,7 +60,7 @@ Given the previous, and for the reparameterized linear regression model,
 the Generalized Cross Entropy (GCE) estimator is given by  
 
 \begin{equation}
-   \hat{\boldsymbol{\beta}}^{GCE}(\mathbf{Z},\mathbf{V}) = \underset{\mathbf{p},\mathbf{q},\mathbf{w},\mathbf{u}}{\operatorname{argmin}}
+   \hat{\boldsymbol{\beta}}^{GCE(\mathbf{Z},\mathbf{V})} = \underset{\mathbf{p},\mathbf{q},\mathbf{w},\mathbf{u}}{\operatorname{argmin}}
    \left\{\mathbf{p}' \ln \left(\mathbf{p/q}\right) + \mathbf{w}' \ln \left(\mathbf{w/u}\right) \right\},
 \end{equation}  
 subject to the same model constraints as the GME estimator (see ["Generalized Maximum Entropy framework"](V2_GME_framework.html#GMEestimator)).  
@@ -97,20 +97,16 @@ entropy produce the same results.
 
 ## Examples {#Examples}
 
-Consider `dataGCE` 
+Consider `dataThesis` 
 (see ["Generalized Maximum Entropy framework"](V2_GME_framework.html#Examples)).  
 Again under a "no *a priori* information" scenario for the parameters, one can 
-assume that $z_k^{upper}=100$, $k\in\left\lbrace 0,\dots,6\right\rbrace$ is a 
+assume that $z_k^{upper}=100$, $k\in\left\lbrace 0,\dots,4\right\rbrace$ is a 
 "wide upper bound" for the signal support space. Using `lmgce` a model can be 
 fitted under the GME or GCE framework. If `support.signal.points` is an integer,
 a constant vector or a constant matrix one is assuming a uniform distribution on
 $\mathbf{q}$ and therefore considering the GME framework. 
 
-```{r,echo=FALSE,eval=TRUE}
-coef.dataGCE <- c(1, 0, 0, 3, 6, 9)
-```
-
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=TRUE,message=FALSE}
 library(GCEstim)
 ```
 
@@ -118,33 +114,30 @@ library(GCEstim)
 res.lmgce.100.GME <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
-    cv = TRUE,
-    cv.nfolds = 5,
+    data = dataThesis,
     support.signal = c(-100, 100),
     support.signal.points = 5,
     twosteps.n = 0,
-    seed = 230676
+    method = "dual.BFGS" # default
   )
 ```
 
-The estimated GME coefficients are $\widehat{\boldsymbol{\beta}}^{GME_{(100)}}=$ `r paste0("(", paste(round(coef(res.lmgce.100.GME), 3), collapse = ", "), ")")`.  
+The estimated GME coefficients are $\widehat{\boldsymbol{\beta}}^{GME_{(100)}}=$ `r paste0("(", paste(round(coef(res.lmgce.100.GME), 3), collapse = ", "), ")")`. Note that now we have used the dual optimization problem (see ["Optimization"](V4_Optimization.html)).  
 
 ```{r,echo=TRUE,eval=TRUE}
 (coef.res.lmgce.100.GME <- coef(res.lmgce.100.GME))
 ```
 
-But if there is some information, for instance, on $\beta_1$ and $\beta_2$, that
+But if there is some information, for instance, on $\beta_1$, that
 can be reflected on `support.signal.points`. Lets suppose that one suspects that
-$\beta_1=\beta_2=0$. Since the support spaces are centered in zero one can assign
+$\beta_1=0$. Since the support spaces are centered in zero one can assign
 a higher probability to the support point in or around the center. One can set 
-$\mathbf{q_1}=\mathbf{q_2}=(0.1, 0.1, 0.6, 0.1, 0.1)'$, for instance. `support.signal.points` accepts information on the distribution of probabilities in the form of a $(K+1)\times M$ matrix. The first line corresponds to $\mathbf{q_0}$, the second to $\mathbf{q_1}$, and so on.
+$\mathbf{q_1}=(0.1, 0.1, 0.6, 0.1, 0.1)'$, for instance. `support.signal.points` accepts information on the distribution of probabilities in the form of a $(K+1)\times M$ matrix. The first line corresponds to $\mathbf{q_0}$, the second to $\mathbf{q_1}$, and so on.
 
 ```{r,echo=TRUE,eval=TRUE}
 (support.signal.points.matrix <- 
   matrix(
     c(rep(1/5, 5),
-      c(0.1, 0.1, 0.6, 0.1, 0.1),
       c(0.1, 0.1, 0.6, 0.1, 0.1),
       rep(1/5, 5),
       rep(1/5, 5),
@@ -158,13 +151,11 @@ $\mathbf{q_1}=\mathbf{q_2}=(0.1, 0.1, 0.6, 0.1, 0.1)'$, for instance. `support.s
 res.lmgce.100.GCE <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
-    cv = TRUE,
-    cv.nfolds = 5,
+    data = dataThesis,
     support.signal = c(-100, 100),
     support.signal.points = support.signal.points.matrix,
     twosteps.n = 0,
-    seed = 230676
+    method = "dual.BFGS" # default
   )
 ```
 
@@ -175,26 +166,26 @@ The estimated GCE coefficients are $\widehat{\boldsymbol{\beta}}^{GCE_{(100)}}=$
 ```
 
 The prediction errors are approximately equal (
-$RMSE_{\mathbf{\hat y}}^{GME_{(100)}} \approx$
-`r round(GCEstim::accmeasure(fitted(res.lmgce.100.GME), dataGCE$y, which = "RMSE"), 3)`
-and $RMSE_{\mathbf{\hat y}}^{GCE_{{100}}} \approx$
-`r round(GCEstim::accmeasure(fitted(res.lmgce.100.GCE), dataGCE$y, which = "RMSE"), 3)`) 
+$RMSE^{y,GME_{(100)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.100.GME), dataThesis$y, which = "RMSE"), 3)`
+and $RMSE^{y,GCE_{{100}}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.100.GCE), dataThesis$y, which = "RMSE"), 3)`) 
 as well as the prediction cross-validation errors (
-$CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(100)}} \approx$
+$CV\text{-}RMSE_5^{y,GME_{(100)}} \approx$
 `r round(res.lmgce.100.GME$error.measure.cv.mean, 3)`
-and $CV\text{-}RMSE_{\mathbf{\hat y}}^{GCE_{{100}}} \approx$
+and $CV\text{-}RMSE_5^{y,GCE_{{100}}} \approx$
 `r round(res.lmgce.100.GCE$error.measure.cv.mean, 3)`).  
-The precision errors is lower for the GCE approach: $RMSE_{\boldsymbol{\hat\beta}}^{GME_{(100)}} \approx$
-`r round(GCEstim::accmeasure(coef.res.lmgce.100.GME, coef.dataGCE, which = "RMSE"), 3)`
-and $RMSE_{\boldsymbol{\hat\beta}}^{GCE_{(100)}} \approx$
-`r round(GCEstim::accmeasure(coef.res.lmgce.100.GCE, coef.dataGCE, which = "RMSE"), 3)`.
+The precision error is slightly lower for the GCE approach: $RMSE^{\beta,GME_{(100)}} \approx$
+`r round(GCEstim::accmeasure(coef.res.lmgce.100.GME, coef.dataThesis, which = "RMSE"), 3)`
+and $RMSE^{\beta,GCE_{(100)}} \approx$
+`r round(GCEstim::accmeasure(coef.res.lmgce.100.GCE, coef.dataThesis, which = "RMSE"), 3)`.
 
 ```{r,echo=TRUE,eval=TRUE}
 (RMSE_beta.lmgce.100.GME <-
-   GCEstim::accmeasure(coef.res.lmgce.100.GME, coef.dataGCE, which = "RMSE"))
+   GCEstim::accmeasure(coef.res.lmgce.100.GME, coef.dataThesis, which = "RMSE"))
 
 (RMSE_beta.lmgce.100.GCE <-
-    GCEstim::accmeasure(coef.res.lmgce.100.GCE, coef.dataGCE, which = "RMSE"))
+    GCEstim::accmeasure(coef.res.lmgce.100.GCE, coef.dataThesis, which = "RMSE"))
 ```
 
 If there was some information on the distribution of $\mathbf{w}$, a similar 
