@@ -13,3 +13,11 @@
 # GCEstim 1.1.0
 
 * Major corrections;
+
+* Correction of the `1se` rule;
+
+* Updated vignettes and examples with new data sets;
+
+* TASW-GCE and TARW-GCE parameters improved.
+
+* Objective function adapted for faster computation.
