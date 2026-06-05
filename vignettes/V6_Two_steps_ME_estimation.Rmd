@@ -1,5 +1,5 @@
 ---
-title: "Two steps ME estimation"
+title: "Two-stage ME estimation"
 author: "Jorge Cabral"
 output: 
   rmarkdown::html_vignette:
@@ -35,11 +35,11 @@ knitr::opts_chunk$set(
 
 As stated in ["Generalized Cross Entropy framework"](V3_GCE_framework.html#Introduction), 
 the common situation is the absence of prior information on 
-$\mathbf{p} = (\mathbf{p_0},\mathbf{p_1},\dots,\mathbf{p_K})$. Yet, it is possible
+$\mathbf{p} = (\mathbf{p_0}',\mathbf{p_1}',\dots,\mathbf{p_K}')'$. Yet, it is possible
 to include some pre-sample information in the form of 
-$\mathbf{q} = (\mathbf{q_0},\mathbf{q_1},\dots,\mathbf{q_K})$.
+$\mathbf{q} = (\mathbf{q_0}',\mathbf{q_1}',\dots,\mathbf{q_K}')'$.
 
-## Two steps
+## Two-stage
 
 If we assume that generally there is no information on $\mathbf{p}$ we are 
 defining a uniform distribution for $\mathbf{p}$ and ME estimation is done in
@@ -52,17 +52,13 @@ estimation in the GCE framework (see
 This procedures can be repeated as many times as required.
 
 
-```{r,echo=FALSE,eval=TRUE}
+```{r,echo=FALSE,eval=TRUE, message=FALSE}
 library(GCEstim)
 load("GCEstim_Two_Steps.RData")
 ```
 
-Consider `dataGCE` (see ["Generalized Maximum Entropy
+Consider `dataThesis` (see ["Generalized Maximum Entropy
 framework"](V2_GME_framework.html#Examples) and ["Choosing the supports spaces"](V5_Choosing_Supports.html#Examples)). 
-
-```{r,echo=TRUE,eval=TRUE}
-coef.dataGCE <- c(1, 0, 0, 3, 6, 9)
-```
 
 The two steps GCE estimation can be done by assigning to the argument 
 `twosteps.n` a value different from $0$. Let us consider $10$ GCE estimations 
@@ -73,7 +69,7 @@ after a first GME estimation (by default
 res.lmgce.1se.twosteps <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
     twosteps.n = 10
   )
 ```
@@ -81,23 +77,22 @@ res.lmgce.1se.twosteps <-
 The trace of the prediction CV-error can be obtained with `plot` and `which = 6`
 
 ```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
-plot(res.lmgce.1se.twosteps, which = 6)[[1]]
+plot(res.lmgce.1se.twosteps, which = 6)$p6
 ```
 
 The pre reestimation CV-error is depicted by the red dot, intermediate CV-errors
 are represented by orange dots and final/reestimated CV-error corresponds to the
 dark red dot. The horizontal dotted line represents the OLS CV-error. Note that 
-with the increase of reestimation the CV-error decreases.\
+with 1 reestimation the CV-error decreases and the stays stable.\
 Since we are working with simulated data, the true coefficients are known and 
 the precision error can be determined. The arguments `which = 7` and 
-`coef = coef.dataGCE` of `plot` allows to obtain the trace 
+`coef = coef.dataThesis` of `plot` allows to obtain the trace 
  
 ```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
-plot(res.lmgce.1se.twosteps, which = 7, coef = coef.dataGCE)[[1]]
+plot(res.lmgce.1se.twosteps, which = 7, coef = coef.dataThesis)$p7
 ```
 
-We can see that, with the first two reestimations, we get a lower precision error 
-but from that point forward the model tends to overfit data.
+We can see that the precision error remains stable.
 Generally it is recommended to perform only $1$ GCE reestimation. That can be 
 done by setting `twosteps.n = 1`, the default of `lmgce`
 
@@ -105,7 +100,7 @@ done by setting `twosteps.n = 1`, the default of `lmgce`
 res.lmgce.1se.twosteps.1 <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE
+    data = dataThesis
   )
 ```
 
@@ -125,13 +120,13 @@ res.lmgce.1se.twosteps.1 <- changestep(res.lmgce.1se.twosteps, 1)
 `plot` with `which = 2` gives us the "Prediction Error vs supports" plot
 
 ```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
-plot(res.lmgce.1se.twosteps.1, which = 2)[[1]]
+plot(res.lmgce.1se.twosteps.1, which = 2)$p2
 ```
 
 and with `which = 3` we get the "Estimates vs supports" plot.
 
 ```{r,echo=TRUE,eval=TRUE, fig.width=6,fig.height=4,fig.align='center'}
-plot(res.lmgce.1se.twosteps.1, which = 3)[[1]]
+plot(res.lmgce.1se.twosteps.1, which = 3)$p3
 ```
 
 In the last two plots are depicted the final solutions. That is to say
@@ -164,11 +159,11 @@ kableExtra::kable(
   cbind(all.data.2,
         c(
     round(GCEstim::accmeasure(
-      fitted(res.lmgce.1se.twosteps.1), dataGCE$y, which = "RMSE"
+      fitted(res.lmgce.1se.twosteps.1), dataThesis$y, which = "RMSE"
     ), 3),
     round(res.lmgce.1se.twosteps.1$error.measure.cv.mean, 3),
     round(GCEstim::accmeasure(
-      coef(res.lmgce.1se.twosteps.1), coef.dataGCE, which = "RMSE"
+      coef(res.lmgce.1se.twosteps.1), coef.dataThesis, which = "RMSE"
     ), 3)
   )),
   digits = 3,
