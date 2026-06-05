@@ -74,18 +74,18 @@ necessary, and a global measure of fit is available.
 Consider the general linear model given by
 
 \begin{align}
-    \qquad \qquad \qquad \qquad \qquad \mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}, \qquad \qquad \qquad \qquad \qquad (1)
+    \qquad \qquad \qquad \qquad \qquad \mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{e}, \qquad \qquad \qquad \qquad \qquad (1)
 \end{align} 
 
 where $\mathbf{y}$ denotes a $(N \times 1)$ vector
 of noisy observations, $N \in \mathbb{N}$, $\boldsymbol{\beta}$ is a
 $((K+1) \times 1)$ vector of unknown parameters or coefficients,
 $K \in \mathbb{N}$, $\mathbf{X}$ is a known $(N \times (K+1))$ design
-matrix and $\boldsymbol{\epsilon}$ is a $(N \times 1)$ vector of random
+matrix and $\mathbf{e}$ is a $(N \times 1)$ vector of random
 disturbances (errors), usually assumed to have a conditional expected
 value of zero and representing spherical disturbances, i.e,
-$E\left[ \boldsymbol{\epsilon} | \mathbf{X}\right]=\mathbf{0}$ and
-$E[\boldsymbol{\epsilon \epsilon}'|\mathbf{X}]=\sigma^2\mathbf{I}$,
+$E\left[ \mathbf{e} | \mathbf{X}\right]=\mathbf{0}$ and
+$E[\mathbf{ee}'|\mathbf{X}]=\sigma^2\mathbf{I}$,
 where $\mathbf{I}$ is a ($N \times N$) identity matrix and $\sigma^2$ is
 the error variance.\
 
@@ -96,7 +96,7 @@ linear inverse problems with noise, expressed in model (1). The idea is
 to treat each $\beta_k,\space k\in\left\lbrace 0,\dots,K\right\rbrace$,
 as a discrete random variable with a compact support and
 $2 \leq M < \infty$ possible outcomes, and each
-$\epsilon_n, \space n\in\left\lbrace 1,\dots,N\right\rbrace$, as a
+$e_n, \space n\in\left\lbrace 1,\dots,N\right\rbrace$, as a
 finite and discrete random variable with $2 \leq J < \infty$ possible
 outcomes. Assuming that both the unknown parameters and the unknown
 error terms may be bounded *a priori*, the linear model (1) can be
@@ -142,7 +142,7 @@ with $\mathbf{V}$ a $(N \times NJ)$ matrix of support values and $\mathbf{w}$ a
 $(NJ \times 1)$ vector of unknown probabilities. For the linear regression model
 specified in (1), the Generalized Maximum Entropy (GME) estimator is given by  
 \begin{equation}
-   \hat{\boldsymbol{\beta}}^{GME}(\mathbf{Z},\mathbf{V}) = \underset{\mathbf{p},\mathbf{w}}{\operatorname{argmax}}
+   \hat{\boldsymbol{\beta}}^{GME(\mathbf{Z},\mathbf{V})} = \underset{\mathbf{p},\mathbf{w}}{\operatorname{argmax}}
    \left\{-\mathbf{p}' \ln \mathbf{p} - \mathbf{w}' \ln \mathbf{w} \right\},
 \end{equation}  
 subject to the model constraint  
@@ -258,39 +258,82 @@ will also be referred to as the noise.
 ##### Without *a priori* information
 
 Using `fngendata` a data set under certain conditions will be generated.
-To define an ill-conditioned design matrix, $\mathbf{X}$, with a
-specific condition number value, namely $cn=50$, the traditional
+To define an ill-conditioned design matrix of predictors (remove the column of ones corresponding to the intercept), $\mathbf{X}_{pred}$, with a
+specific condition number value, namely $cn=200$, the traditional
 singular value decomposition will be obtained and the singular values in
-$\mathbf{S}$, a diagonal matrix with the same dimension of $\mathbf{X}$,
+$\mathbf{S}$, a diagonal matrix with the same dimension of $\mathbf{X}_{pred}$,
 will be modified such that
-$cond(\mathbf{X})=cond(\mathbf{USV}')=cn$, where $\mathbf{U}$ and
-$\mathbf{V}$ are square unitary matrices, and $cond(\mathbf{X'X})=cn^2$.
+$cond(\mathbf{X}_{pred})=cond(\mathbf{USV}')=cn$, where $\mathbf{U}$ and
+$\mathbf{V}$ are square unitary matrices, and $cond(\mathbf{X_{pred}'X_{pred}})=cn^2$.
 Errors will be defined by a normal distribution $e_i \sim N(0,\sigma^2)$
 were $\sigma = \sqrt{var(\mathbf{X}\boldsymbol{\beta}) / snr}$ and $snr$
 is the signal to noise ratio.
 
-```{r,echo=FALSE,eval=TRUE}
-load("GCEstim_GME.RData")
-```
-
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=TRUE, message = FALSE}
 library(GCEstim)
 ```
 
-```{r,echo=TRUE,eval=FALSE}
-coef.dataGCE <- c(1, 0, 0, 3, 6, 9)
+```{recho=TRUE,eval=FALSE}
+coef.dataThesis <- c(-4, 0, -16, -12, -5)
+
+dataThesis <- 
+  fngendata(
+    n = 75,
+    cont.k = 1,
+    y.gen.cont.beta = coef.dataThesis[3:5],
+    intercept.beta = coef.dataThesis[1],
+    Xgenerator.method = "svd",
+    condnumber = 200,
+    error.dist.snr = 5,
+    seed = 2306876
+  )
 ```
 
-The following matrix shows the Pearson coefficients of correlation between
-the variables generated.  
+The following matrix shows the distribution of variables generated and the Pearson coefficients of correlation between them.  
 
-```{r,echo=FALSE,eval=TRUE}
-cor(dataGCE)
+```{r,echo=FALSE,eval=TRUE, fig.width=5,fig.height=5,fig.align='center'}
+
+panel.hist <- function(x, ...) {
+  usr <- par("usr")
+  on.exit(par(usr = usr))
+
+  par(usr = c(usr[1:2], 0, 1.5))
+
+  h <- hist(x, plot = FALSE)
+  y <- h$counts / max(h$counts)
+
+  rect(
+    h$breaks[-length(h$breaks)], 0,
+    h$breaks[-1], y,
+    col = "lightgray",
+    border = "white"
+  )
+}
+
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor = 1.2, ...) {
+  usr <- par("usr")
+  on.exit(par(usr = usr))
+
+  par(usr = c(0, 1, 0, 1))
+
+  r <- cor(x, y, use = "complete.obs")
+  txt <- paste0(prefix, formatC(r, format = "f", digits = digits))
+
+  text(0.5, 0.5, txt, cex = cex.cor)
+}
+
+pairs(
+  dataThesis,
+  upper.panel = panel.cor,
+  diag.panel = panel.hist,
+  lower.panel = panel.smooth
+)
 ```
+
 <br>
 Although obviously questionable, under a "no *a priori* information"
 scenario, one can assume that $z_k^{upper}=100000$,
-$k\in\left\lbrace 0,\dots,6\right\rbrace$ is a "wide upper bound" for
+$k\in\left\lbrace 0,\dots,4\right\rbrace$ is a "wide upper bound" for
 the signal support space. Using `lmgce` a model can be fitted using the
 GME framework. The `formula` is defined as in `stats::lm`, for instance.
 `support.signal` is used to define $\mathbf{Z}$. If the same lower limit (LL)
@@ -306,15 +349,15 @@ interior algorithm (see
 [Rsolnp](https://cran.r-project.org/package=Rsolnp)) and tries to solve
 the primal version of the optimization problem previously defined.
 
-```{r,echo=TRUE,eval=FALSE}
+```{r,echo=TRUE,eval=TRUE}
 res.lmgce.100000 <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
     support.signal = c(-100000, 100000),
-    support.signal.points = 5,
-    support.noise = NULL,
-    support.noise.points = 3,
+    support.signal.points = 5, # default
+    support.noise = NULL, # default
+    support.noise.points = 3, # default
     twosteps.n = 0,
     method = "primal.solnp"
   )
@@ -328,11 +371,11 @@ The estimated GME coefficients are $\widehat{\boldsymbol{\beta}}^{GME_{(100000)}
 
 They can be compared with the OLS estimation given by
 $\widehat{\boldsymbol{\beta}}^{OLS}=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y}$.
-The estimated OLS coefficients are $\widehat{\boldsymbol{\beta}}^{OLS}=$ `r paste0("(", paste(round(coef(lm(y ~ ., data = dataGCE)), 3), collapse = ", "), ")")`.  
+The estimated OLS coefficients are $\widehat{\boldsymbol{\beta}}^{OLS}=$ `r paste0("(", paste(round(coef(lm(y ~ ., data = dataThesis)), 3), collapse = ", "), ")")`.  
 Those results can be obtained using `stats::lm`
 
 ```{r,echo=TRUE,eval=TRUE}
-res.lm <- lm(y ~ ., data = dataGCE)
+res.lm <- lm(y ~ ., data = dataThesis)
 (coef.res.lm <- coef(res.lm))
 ```
 
@@ -342,14 +385,14 @@ or setting `OLS = TRUE` in `lmgce`, which is the default.
 res.lmgce.100000 <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
     support.signal = c(-100000, 100000),
-    support.signal.points = 5,
-    support.noise = NULL,
-    support.noise.points = 3,
+    support.signal.points = 5, # default
+    support.noise = NULL, # default
+    support.noise.points = 3, # default
     twosteps.n = 0,
     method = "primal.solnp",
-    OLS = TRUE
+    OLS = TRUE # default
   )
 ```
 
@@ -357,28 +400,27 @@ res.lmgce.100000 <-
 coef(res.lmgce.100000$results$OLS$res)
 ```
 
-Consider the root mean squared error as a measure of fit of prediction
-($RMSE_{\mathbf{\hat y}}$) defined as
+Consider the root mean squared error as a measure of fit of prediction of an estimator $\mathcal{E}$ ($RMSE^{y,\mathcal{E}}$) defined as
 
 \begin{equation}
-  RMSE_{\mathbf{\hat y}} = \sqrt{\frac{\sum_{n=1}^N {\left( y_n - \hat y_n \right)^2}}{N}},
-\end{equation} where $\mathbf{\hat y}=\mathbf{X}\boldsymbol{\hat\beta}$.
+  RMSE^{y,\mathcal{E}} = \sqrt{\frac{\sum_{n=1}^N {\left( y_n - \hat y_n^\mathcal{E} \right)^2}}{N}},
+\end{equation} where $\hat y_n^\mathcal{E}=X_{n,.}~\boldsymbol{\hat\beta^\mathcal{E}}$.
 
 The prediction errors are approximately equal:
-$RMSE_{\mathbf{\hat y}}^{GME_{(100000)}} \approx$
-`r round(GCEstim::accmeasure(fitted(res.lmgce.100000), dataGCE$y, which = "RMSE"), 3)`
+$RMSE^{y,GME_{(100000)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.100000), dataThesis$y, which = "RMSE"), 3)`
 and $RMSE_{\mathbf{\hat y}}^{OLS} \approx$
-`r round(GCEstim::accmeasure(fitted(res.lm), dataGCE$y, which = "RMSE"), 3)`.
+`r round(GCEstim::accmeasure(fitted(res.lm), dataThesis$y, which = "RMSE"), 3)`.
 
 ```{r,echo=TRUE,eval=TRUE}
 (RMSE_y.lmgce.100000 <- 
-  GCEstim::accmeasure(fitted(res.lmgce.100000), dataGCE$y, which = "RMSE"))
+  GCEstim::accmeasure(fitted(res.lmgce.100000), dataThesis$y, which = "RMSE"))
 
 # or
 # res.lmgce.100000$error.measure
 
 (RMSE_y.lm <-
-    GCEstim::accmeasure(fitted(res.lm), dataGCE$y, which = "RMSE"))
+    GCEstim::accmeasure(fitted(res.lm), dataThesis$y, which = "RMSE"))
 ```
 
 In order to provide an estimate of how well the model generalizes to an
@@ -402,10 +444,10 @@ The prediction $\kappa$-fold cross-validation root mean squared error can be
 defined as  
 
 \begin{equation}
-  CV\text{-}RMSE_{\mathbf{\hat y}}=\frac{\sum_{cv=1}^\kappa RMSE_{\mathbf{\hat y_{cv}}}}{\kappa},
+  CV\text{-}RMSE_\kappa^{y,\mathcal{E}}=\frac{\sum_{cv=1}^\kappa RMSE^{y_{cv},\mathcal{E}}}{\kappa},
 \end{equation} 
-where $\mathbf{\hat y_{cv}}=X_{(cv)}\boldsymbol{\hat\beta_{(cv)}}$ and
-$\boldsymbol{\hat\beta_{(cv)}}$ was estimated in 
+where $\hat y_{n,(cv)}^\mathcal{E}=X_{(cv)_{n,.}}\boldsymbol{\hat\beta}_{(cv)}^\mathcal{E}$ and
+$\boldsymbol{\hat\beta}_{(cv)}^\mathcal{E}$ was estimated in 
 \begin{eqnarray}
   \mathbf{X_{(cv)}} = \left[ \begin{array}{c}
         \mathbf{X_{(1)}} \\
@@ -426,24 +468,24 @@ reproducibility a `seed` should also be defined: the default is `seed = 230676`.
 res.lmgce.100000 <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
-    cv = TRUE,
-    cv.nfolds = 5,
+    data = dataThesis,
+    cv = TRUE, # default
+    cv.nfolds = 5, # default
     support.signal = c(-100000, 100000),
-    support.signal.points = 5,
-    support.noise = NULL,
-    support.noise.points = 3,
+    support.signal.points = 5, # default
+    support.noise = NULL, # default
+    support.noise.points = 3, # default
     twosteps.n = 0,
     method = "primal.solnp",
-    OLS = TRUE,
-    seed = 230676
+    OLS = TRUE, # default
+    seed = 230676 # default
   )
 ```
 
 The prediction cross-validation errors are again approximately equal:
-$CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(100000)}} \approx$
+$CV\text{-}RMSE_5^{y,GME_{(100000)}} \approx$
 `r round(res.lmgce.100000$error.measure.cv.mean, 3)`
-and $CV\text{-}RMSE_{\mathbf{\hat y}}^{OLS} \approx$
+and $CV\text{-}RMSE_5^{y,OLS} \approx$
 `r round(mean(res.lmgce.100000$results$OLS$error), 3)`.  
 
 ```{r,echo=TRUE,eval=TRUE}
@@ -454,24 +496,24 @@ and $CV\text{-}RMSE_{\mathbf{\hat y}}^{OLS} \approx$
 In the example given, the "true" value of $\boldsymbol{\beta}$ is known
 so the root mean squared error can be used as a measure of fit of
 precision.  
-Let $RMSE_{\boldsymbol{\hat\beta}}$ be
+Let $RMSE^{\beta,\mathcal{E}}$ be
 
 \begin{equation}
-  RMSE_{\boldsymbol{\hat\beta}} = \sqrt{\frac{\sum_{k=0}^K {\left( \beta_k - \hat\beta_k \right)^2}}{K+1}}.
+  RMSE^{\beta,\mathcal{E}} = \sqrt{\frac{\sum_{k=0}^K {\left( \beta_k - \hat\beta_k^\mathcal{E} \right)^2}}{K+1}}.
 \end{equation}
 
 The precision errors are similar in magnitude with a slight advantage for the 
-GME approach: $RMSE_{\boldsymbol{\hat\beta}}^{GME_{(100000)}} \approx$
-`r round(GCEstim::accmeasure(coef.res.lmgce.100000, coef.dataGCE, which = "RMSE"), 3)`
-and $RMSE_{\boldsymbol{\hat\beta}}^{OLS} \approx$
-`r round(GCEstim::accmeasure(coef.res.lm, coef.dataGCE, which = "RMSE"), 3)`.
+GME approach: $RMSE^{\beta, GME_{(100000)}} \approx$
+`r round(GCEstim::accmeasure(coef.res.lmgce.100000, coef.dataThesis, which = "RMSE"), 3)`
+and $RMSE^{\beta,OLS} \approx$
+`r round(GCEstim::accmeasure(coef.res.lm, coef.dataThesis, which = "RMSE"), 3)`.
 
 ```{r,echo=TRUE,eval=TRUE}
 (RMSE_beta.lmgce.100000 <-
-   GCEstim::accmeasure(coef.res.lmgce.100000, coef.dataGCE, which = "RMSE"))
+   GCEstim::accmeasure(coef.res.lmgce.100000, coef.dataThesis, which = "RMSE"))
 
 (RMSE_beta.lm <-
-    GCEstim::accmeasure(coef.res.lm, coef.dataGCE, which = "RMSE"))
+    GCEstim::accmeasure(coef.res.lm, coef.dataThesis, which = "RMSE"))
 ```
 
 From the given example it seems that OLS and GME have similar performance. But 
@@ -480,24 +522,24 @@ coefficient estimates to the choice of their support intervals
 [@Leon1999; @Paris1998; @Caputo2008]. Some state that estimates are not
 invariant to the design of the support intervals @Leon1999.\
 Suppose that one had assumed that $z_k^{upper}=100$,
-$k\in\left\lbrace 0,\dots,6\right\rbrace$ was a "wide upper bound" for
+$k\in\left\lbrace 0,\dots,4\right\rbrace$ was a "wide upper bound" for
 the signal support space. 
 
-```{r,echo=TRUE,eval=FALSE}
+```{r,echo=TRUE,eval=TRUE}
 res.lmgce.100 <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
-    cv = TRUE,
-    cv.nfolds = 5,
+    data = dataThesis,
+    cv = TRUE, # default
+    cv.nfolds = 5, # default
     support.signal = c(-100, 100),
-    support.signal.points = 5,
-    support.noise = NULL,
-    support.noise.points = 3,
+    support.signal.points = 5, # default
+    support.noise = NULL, # default
+    support.noise.points = 3, # default
     twosteps.n = 0,
     method = "primal.solnp",
-    OLS = TRUE,
-    seed = 230676
+    OLS = TRUE, # default
+    seed = 230676 # default
   )
 ```
 
@@ -508,40 +550,40 @@ coef.res.lmgce.100 <- coef(res.lmgce.100)
 ```
 
 The prediction errors are still approximately the same,
-$RMSE_{\mathbf{\hat y}}^{GME_{(100)}} \approx$
-`r round(GCEstim::accmeasure(fitted(res.lmgce.100), dataGCE$y, which = "RMSE"), 3)` 
-and $CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(100)}} \approx$
+$RMSE^{y,GME_{(100)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.100), dataThesis$y, which = "RMSE"), 3)` 
+and $CV\text{-}RMSE_\kappa^{y,GME_{(100)}} \approx$
 `r round(res.lmgce.100$error.measure.cv.mean, 3)`,
 but a significant decrease was found for the precision error,
-$RMSE_{\boldsymbol{\hat\beta}}^{GME_{(100)}} \approx$
-`r round(GCEstim::accmeasure(coef.res.lmgce.100, coef.dataGCE, which = "RMSE"), 3)`.
+$RMSE^{\beta,GME_{(100)}} \approx$
+`r round(GCEstim::accmeasure(coef.res.lmgce.100, coef.dataThesis, which = "RMSE"), 3)`.
 
 ```{r,echo=FALSE,eval=TRUE}
 RMSE_y.lmgce.100 <-
-   GCEstim::accmeasure(fitted(res.lmgce.100), dataGCE$y, which = "RMSE")
+   GCEstim::accmeasure(fitted(res.lmgce.100), dataThesis$y, which = "RMSE")
 
 RMSE_beta.lmgce.100 <-
-    GCEstim::accmeasure(coef.res.lmgce.100, coef.dataGCE, which = "RMSE")
+    GCEstim::accmeasure(coef.res.lmgce.100, coef.dataThesis, which = "RMSE")
 
 CV_RMSE_y.lmgce.100 <- 
     res.lmgce.100$error.measure.cv.mean
 ```
 
-```{r,echo=FALSE,eval=FALSE}
+```{r,echo=FALSE,eval=TRUE}
 res.lmgce.50 <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
-    cv = TRUE,
-    cv.nfolds = 5,
+    data = dataThesis,
+    cv = TRUE, # default
+    cv.nfolds = 5, # default
     support.signal = c(-50, 50),
-    support.signal.points = 5,
-    support.noise = NULL,
-    support.noise.points = 3,
+    support.signal.points = 5, # default
+    support.noise = NULL, # default
+    support.noise.points = 3, # default
     twosteps.n = 0,
     method = "primal.solnp",
-    OLS = TRUE,
-    seed = 230676
+    OLS = TRUE, # default
+    seed = 230676 # default
   )
 ```
 
@@ -549,19 +591,19 @@ res.lmgce.50 <-
 coef.res.lmgce.50 <- coef(res.lmgce.50)
 
 RMSE_y.lmgce.50 <-
-   GCEstim::accmeasure(fitted(res.lmgce.50), dataGCE$y, which = "RMSE")
+   GCEstim::accmeasure(fitted(res.lmgce.50), dataThesis$y, which = "RMSE")
 
 RMSE_beta.lmgce.50 <-
-    GCEstim::accmeasure(coef.res.lmgce.50, coef.dataGCE, which = "RMSE")
+    GCEstim::accmeasure(coef.res.lmgce.50, coef.dataThesis, which = "RMSE")
 
 CV_RMSE_y.lmgce.50 <- 
     res.lmgce.50$error.measure.cv.mean
 ```
 
-If $z_k^{upper}=50$ then $\widehat{\boldsymbol{\beta}}^{GME_{(50)}}=$ `r paste0("(", paste(round(coef(res.lmgce.50), 3), collapse = ", "), ")")`, $RMSE_{\mathbf{\hat y}}^{GME_{(50)}} \approx$
-`r round(GCEstim::accmeasure(fitted(res.lmgce.50), dataGCE$y, which = "RMSE"), 3)`, $CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(50)}} \approx$
-`r round(res.lmgce.50$error.measure.cv.mean, 3)` and $RMSE_{\boldsymbol{\hat\beta}}^{GME_{(50)}} \approx$
-`r round(GCEstim::accmeasure(coef.res.lmgce.50, coef.dataGCE, which = "RMSE"), 3)`.  
+If $z_k^{upper}=50$ then $\widehat{\beta}^{GME_{(50)}}=$ `r paste0("(", paste(round(coef(res.lmgce.50), 3), collapse = ", "), ")")`, $RMSE^{y,GME_{(50)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.50), dataThesis$y, which = "RMSE"), 3)`, $CV\text{-}RMSE_5^{y,GME_{(50)}} \approx$
+`r round(res.lmgce.50$error.measure.cv.mean, 3)` and $RMSE^{\beta,GME_{(50)}} \approx$
+`r round(GCEstim::accmeasure(coef.res.lmgce.50, coef.dataThesis, which = "RMSE"), 3)`.  
 
 ##### With *a priori* information
 
@@ -569,32 +611,33 @@ As stated before, the "true" value of $\boldsymbol{\beta}$ was
 predefined so there is *a prior* information. That information can be
 incorporated in the GME estimations. If one wants to have symmetrically
 centered supports it is possible to define, for instance, the following:
-$\mathbf{z}_0'= \left[ -5, -2.5, 0, 2.5, 5\right]$,
-$\mathbf{z}_1' = \mathbf{z}_2'= \left[ -2, -1, 0, 1, 2\right]$,
-$\mathbf{z}_3'= \left[ -6, -3, 0, 3, 6\right]$,
-$\mathbf{z}_4'= \left[ -10, -5, 0, 5, 10\right]$ and
-$\mathbf{z}_5'= \left[ -15, -7.5, 0, 7.5, 15\right]$.
+$\mathbf{z}_0'= \left[ -12, -6, 0, 6, 12\right]$,
+$\mathbf{z}_1' = \left[ -5, -2.5, 0, 2.5, 5\right]$,
+$\mathbf{z}_2'= \left[ -30, -15, 0, 15, 30\right]$,
+$\mathbf{z}_3'= \left[ -26, -13, 0, 13, 26\right]$, and
+$\mathbf{z}_4'= \left[ -16, -8, 0, 8, 16\right]$.
 
-```{r,echo=TRUE,eval=FALSE}
+```{r,echo=TRUE,eval=TRUE}
 res.lmgce.apriori.centered.zero <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
-    support.signal = matrix(c(-5, 5,
-                       -2, 2,
-                       -2, 2,
-                       -6, 6,
-                       -10, 10,
-                       -10, 15),
-                     ncol = 2,
-                     byrow = TRUE), 
-    support.signal.points = 5,
-    support.noise = NULL,
-    support.noise.points = 3,
+    data = dataThesis,
+    support.signal = 
+      matrix(
+        c(-12, 12,
+          -5, 5,
+          -30, 30,
+          -26, 26,
+          -16, 16),
+        ncol = 2,
+        byrow = TRUE), 
+    support.signal.points = 5, # default
+    support.noise = NULL, # default
+    support.noise.points = 3, # default
     twosteps.n = 0,
     method = "primal.solnp",
-    OLS = TRUE,
-    seed = 230676
+    OLS = TRUE, # default
+    seed = 230676 # default
   )
 ```
 
@@ -606,19 +649,19 @@ coef.lmgce.apriori.centered.zero <- coef(res.lmgce.apriori.centered.zero)
 ```
 
 The prediction error is slightly higher,
-$RMSE_{\mathbf{\hat y}}^{GME_{(apriori.centered.zero)}} \approx$
-`r round(GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.zero), dataGCE$y, which = "RMSE"), 3)`, as well as the cross-validation prediction error, $CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(apriori.centered.zero)}} \approx$
+$RMSE^{y,GME_{(apriori.centered.zero)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.zero), dataThesis$y, which = "RMSE"), 3)`, as well as the cross-validation prediction error, $CV\text{-}RMSE_5^{y,GME_{(apriori.centered.zero)}} \approx$
 `r round(res.lmgce.apriori.centered.zero$error.measure.cv.mean, 3)`,
 but again a significant decrease was found for the precision error,
-$RMSE_{\boldsymbol{\hat\beta}}^{GME_{(apriori.centered.zero)}} \approx$
-`r round(GCEstim::accmeasure(coef.lmgce.apriori.centered.zero, coef.dataGCE, which = "RMSE"), 3)`.  
+$RMSE^{\beta,GME_{(apriori.centered.zero)}} \approx$
+`r round(GCEstim::accmeasure(coef.lmgce.apriori.centered.zero, coef.dataThesis, which = "RMSE"), 3)`.  
 
 ```{r,echo=FALSE,eval=TRUE}
 RMSE_y.lmgce.apriori.centered.zero <-
-   GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.zero), dataGCE$y, which = "RMSE")
+   GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.zero), dataThesis$y, which = "RMSE")
 
 RMSE_beta.lmgce.apriori.centered.zero <-
-    GCEstim::accmeasure(coef.lmgce.apriori.centered.zero, coef.dataGCE, which = "RMSE")
+    GCEstim::accmeasure(coef.lmgce.apriori.centered.zero, coef.dataThesis, which = "RMSE")
 
 CV_RMSE_y.lmgce.apriori.centered.zero <- 
     res.lmgce.apriori.centered.zero$error.measure.cv.mean
@@ -629,25 +672,26 @@ provide a far better fit than its OLS counterpart, particularly in small sample
 sizes @Mittelhammer2013. So, a different approach could be centering the signal 
 support spaces at the "true" values of $\boldsymbol{\beta}$ and setting, for 
 instance, a range equal to $4$ for each support space:
-$\mathbf{z}_0'= \left[ -1, 0, 1, 2, 3\right]$,
-$\mathbf{z}_1' = \mathbf{z}_2'= \left[ -2, -1, 0, 1, 2\right]$,
-$\mathbf{z}_3'= \left[ 1, 2, 3, 4, 5\right]$,
-$\mathbf{z}_4'= \left[ 4, 5, 6, 7, 8\right]$ and
-$\mathbf{z}_5'= \left[ 7, 8, 9, 10, 11\right]$.
+$\mathbf{z}_0'= \left[ -6, -5, -4, -3, -2\right]$,
+$\mathbf{z}_1' = \left[ -2, -1, 0, 1, 2\right]$,
+$\mathbf{z}_2'= \left[ -18, -17, -16, -15, -14\right]$,
+$\mathbf{z}_3'= \left[ -14, -13, -12, -11, -10\right]$, and
+$\mathbf{z}_4'= \left[ -7, -6, -5, -4, -3\right]$.
 
-```{r,echo=TRUE,eval=FALSE}
+```{r,echo=TRUE,eval=TRUE}
 res.lmgce.apriori.centered.beta <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
-    support.signal = matrix(c(-1, 3,
-                       -2, 2,
-                       -2, 2,
-                        1, 5,
-                        4, 8,
-                        7, 11),
-                     ncol = 2,
-                     byrow = TRUE), 
+    data = dataThesis,
+    support.signal = 
+      matrix(
+        c(-6, -2,
+          -2, 2,
+          -18, -14,
+          -14, -10,
+          -7, -3),
+        ncol = 2,
+        byrow = TRUE), 
     support.signal.points = 5,
     support.noise = NULL,
     support.noise.points = 3,
@@ -665,17 +709,17 @@ are $\widehat{\boldsymbol{\beta}}^{GME_{(apriori.centered.beta)}}=$ `r paste0("(
 coef.lmgce.apriori.centered.beta <- coef(res.lmgce.apriori.centered.beta)
 ```
 
-The prediction error ($RMSE_{\mathbf{\hat y}}^{GME_{(apriori.centered.beta)}} \approx$
-`r round(GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.beta), dataGCE$y, which = "RMSE"), 3)`), the cross-validation prediction error ($CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(apriori.centered.beta)}} \approx$
-`r round(res.lmgce.apriori.centered.beta$error.measure.cv.mean, 3)`) and precision error ($RMSE_{\boldsymbol{\hat\beta}}^{GME_{(apriori.centered.beta)}} \approx$
-`r round(GCEstim::accmeasure(coef.lmgce.apriori.centered.beta, coef.dataGCE, which = "RMSE"), 3)`) improved when compared with the centered at zero approach.
+The prediction error ($RMSE^{y,GME_{(apriori.centered.beta)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.beta), dataThesis$y, which = "RMSE"), 3)`), the cross-validation prediction error ($CV\text{-}RMSE_5^{y,GME_{(apriori.centered.beta)}} \approx$
+`r round(res.lmgce.apriori.centered.beta$error.measure.cv.mean, 3)`) and precision error ($RMSE^{\beta,GME_{(apriori.centered.beta)}} \approx$
+`r round(GCEstim::accmeasure(coef.lmgce.apriori.centered.beta, coef.dataThesis, which = "RMSE"), 3)`) improved when compared with the centered at zero approach.
 
 ```{r,echo=FALSE,eval=TRUE}
 RMSE_y.lmgce.apriori.centered.beta <-
-   GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.beta), dataGCE$y, which = "RMSE")
+   GCEstim::accmeasure(fitted(res.lmgce.apriori.centered.beta), dataThesis$y, which = "RMSE")
 
 RMSE_beta.lmgce.apriori.centered.beta <-
-    GCEstim::accmeasure(coef.lmgce.apriori.centered.beta, coef.dataGCE, which = "RMSE")
+    GCEstim::accmeasure(coef.lmgce.apriori.centered.beta, coef.dataThesis, which = "RMSE")
 
 CV_RMSE_y.lmgce.apriori.centered.beta <- 
     res.lmgce.apriori.centered.beta$error.measure.cv.mean
