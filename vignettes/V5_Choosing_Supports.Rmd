@@ -34,7 +34,7 @@ knitr::opts_chunk$set(
 ## Introduction
 
 It becomes evident from the analysis performed in ["Generalized Maximum Entropy framework"](V2_GME_framework.html#Examples) that the estimates obtained via the
-Generalized Cross Entropy framework depend on the choice of the support spaces.
+GME/GCE framework depend on the choice of the support spaces.
 In fact, the restrictions imposed on the parameters space through $Z$ should 
 reflect prior knowledge about the unknown parameters. However, such knowledge is 
 not always available and there is no clear answer for how to define those support
@@ -74,25 +74,20 @@ support spaces @Cabral2024.
 Macedo et al [@Macedo2022;@Macedo2025] suggest to define $Z$ uniformly and symmetrically around
 zero with limits established by the absolute maximum values of the ridge estimates.
 The absolute maximum values are defined by the ridge trace when setting a vector 
-of penalization parameters, usually between $0$ and $1$. This procedure is called
-the RidGME.
+of penalization parameters. This procedure is called the RidGME.
 
-```{r,echo=FALSE,eval=TRUE}
+```{r,echo=FALSE,eval=TRUE,message=FALSE}
 library(GCEstim)
 load("GCEstim_Choosing_Supports.RData")
 ```
 
-Consider `dataGCE` (see ["Generalized Maximum Entropy
+Consider `dataThesis` (see ["Generalized Maximum Entropy
 framework"](V2_GME_framework.html#Examples)). 
 
-```{r,echo=TRUE,eval=TRUE}
-coef.dataGCE <- c(1, 0, 0, 3, 6, 9)
-```
-
-Suppose we want to obtain the estimated model
+Suppose we want to obtain the estimates for the model
 
 \begin{equation}
-    \widehat{\mathbf{y}}=\widehat{\beta_0} + \widehat{\beta_1}\mathbf{X001} + \widehat{\beta_2}\mathbf{X002} + \widehat{\beta_3}\mathbf{X003} + \widehat{\beta_4}\mathbf{X004} + \widehat{\beta_5}\mathbf{X005}.
+    \mathbf{y}=\beta_0\mathbf{1}_N + \beta_1\mathbf{X001} + \beta_2\mathbf{X002} + \beta_3\mathbf{X003} + \beta_4\mathbf{X004} + \mathbf{e}.
 \end{equation}
 
 In order to define the support spaces let us obtain the ridge trace. Using the 
@@ -100,22 +95,26 @@ function `ridgetrace()` and setting:
 
 -   `formula = y ~ X001 + X002 + X003 + X004 + X005`
 
--   `data = dataGCE`
+-   `data = dataThesis`
 
 the ridge trace is computed.
 
 ```{r,echo=TRUE,eval=TRUE}
 res.rt.01 <- 
   ridgetrace(
-    formula = y ~ X001 + X002 + X003 + X004 + X005,
-    data = dataGCE)
+    formula = y ~ X001 + X002 + X003 + X004,
+    data = dataThesis,
+    lambda.min = 10^-3, # default
+    lambda.max = 10^3, # default
+    lambda.n = 100 # default
+  )
 ```
 
 Since that in our example the true parameters are known, we can add them to the 
-ridge trace using the argument `coef = coef.dataGCE` from the `plot` function
+ridge trace using the argument `coef = coef.dataThesis` from the `plot` function
 
 ```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
-plot(res.rt.01, coef = coef.dataGCE)
+#plot(res.rt.01, coef = coef.dataThesis)
 ```
 
 The Ridge estimated coefficients that produce the lowest 5-fold cross-validation
@@ -137,18 +136,17 @@ absolute value of the parameter (represented by the horizontal dashed horizontal
 lines).
 
 ```{r,echo=TRUE,eval=TRUE}
-coef(res.rt.01, which = "max.abs") > abs(c(1, 0, 0, 3, 6, 9))
+coef(res.rt.01, which = "max.abs") > abs(coef.dataThesis)
 ```
 
 Given this information and if one wants to have symmetrically
 centered supports it is possible to define, for instance, the following:\
 
-$\mathbf{z}_0'= \left[ -1.029594, -1.029594/2, 0, 1.029594/2, 1.029594\right]$,
-$\mathbf{z}_1'= \left[ -1.083863, -1.083863/2, 0, 1.083863/2, 1.083863\right]$
-$\mathbf{z}_2'= \left[ -4.203592, -4.203592/2, 0, 4.203592/2, 4.203592\right]$,
-$\mathbf{z}_3'= \left[ -3.574235, -3.574235/2, 0, 3.574235/2, 3.574235\right]$,
-$\mathbf{z}_4'= \left[ -8.981052, -8.981052/2, 0, 8.981052/2, 8.981052\right]$ and
-$\mathbf{z}_5'= \left[ -12.021861, -12.021861/2, 0, 12.021861/2, 12.021861\right]$.
+$\mathbf{z}_0'= \left[ -4.060082, -4.060082/2, 0, 4.060082/2, 4.060082\right]$,
+$\mathbf{z}_1'= \left[ -6.963381, -6.963381/2, 0, 6.963381/2, 6.963381\right]$
+$\mathbf{z}_2'= \left[ -23.524831, -23.524831/2, 0, 23.524831/2, 23.524831\right]$,
+$\mathbf{z}_3'= \left[ -41.116805, -41.116805/2, 0, 41.116805/2, 41.116805\right]$, and
+$\mathbf{z}_4'= \left[ -34.008698, -34.008698/2, 0, 34.008698/2, 34.008698\right]$.
 
 ```{r,echo=TRUE,eval=TRUE}
 
@@ -166,10 +164,11 @@ obtain the desired model
 res.lmgce.RidGME <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
     support.signal = RidGME.support,
     twosteps.n = 0
   )
+coef(res.lmgce.RidGME)
 ```
 
 Alternatively, it is possible to use directly the `lmgce` function setting 
@@ -180,23 +179,29 @@ spaces will be internally calculated.
 res.lmgce.RidGME <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
     support.method = "ridge",
+    support.method.ridge.symm = TRUE, # default
+    support.method.ridge.maxresid = FALSE,
     support.signal = 1,
     twosteps.n = 0
   )
 ```
 
+```{r,echo=TRUE,eval=TRUE}
+coef(res.lmgce.RidGME)
+```
+
 The estimated GME coefficients with *a prior* Ridge information are $\widehat{\boldsymbol{\beta}}^{GME_{(RidGME)}}=$ `r paste0("(", paste(round(coef(res.lmgce.RidGME), 3), collapse = ", "), ")")`. 
 
 The prediction error is
-$RMSE_{\mathbf{\hat y}}^{GME_{(RidGME)}} \approx$
-`r round(GCEstim::accmeasure(fitted(res.lmgce.RidGME), dataGCE$y, which = "RMSE"), 3)`, 
+$RMSE^{y,GME_{(RidGME)}} \approx$
+`r round(GCEstim::accmeasure(fitted(res.lmgce.RidGME), dataThesis$y, which = "RMSE"), 3)`, 
 the cross-validation prediction error is 
-$CV\text{-}RMSE_{\mathbf{\hat y}}^{GME_{(RidGME)}} \approx$
+$CV\text{-}RMSE_{r}^{y,GME_{(RidGME)}} \approx$
 `r round(res.lmgce.RidGME$error.measure.cv.mean, 3)`, and the precision error is
-$RMSE_{\boldsymbol{\hat\beta}}^{GME_{(RidGME)}} \approx$
-`r round(GCEstim::accmeasure(coef(res.lmgce.RidGME), coef.dataGCE, which = "RMSE"), 3)`. 
+$RMSE^{\beta,GME_{(RidGME)}} \approx$
+`r round(GCEstim::accmeasure(coef(res.lmgce.RidGME), coef.dataThesis, which = "RMSE"), 3)`. 
 
 We can compare these results with the ones from the
 ["Generalized Maximum Entropy
@@ -206,9 +211,9 @@ framework"](V2_GME_framework.html#Examples) vignette.
 
 kableExtra::kable(
   cbind(res.all[, -c(5,6)],
-        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME), dataGCE$y, which = "RMSE"), 3),
+        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME), dataThesis$y, which = "RMSE"), 3),
           round(res.lmgce.RidGME$error.measure.cv.mean, 3),
-          round(GCEstim::accmeasure(coef(res.lmgce.RidGME), coef.dataGCE, which = "RMSE"), 3))),
+          round(GCEstim::accmeasure(coef(res.lmgce.RidGME), coef.dataThesis, which = "RMSE"), 3))),
   digits = 3,
   align = c(rep('c', times = 5)),
   col.names = c("$OLS$",
@@ -226,7 +231,7 @@ not very reassuring and a different strategy should be pursued. Furthermore, if
 we consider the data set `dataincRidGME` and want to obtain the estimated model
 
 \begin{equation}
-    \widehat{\mathbf{y}}=\widehat{\beta_0} + \widehat{\beta_1}\mathbf{X001} + \widehat{\beta_2}\mathbf{X002} + \widehat{\beta_3}\mathbf{X003} + \widehat{\beta_4}\mathbf{X004} + \widehat{\beta_5}\mathbf{X005} + \widehat{\beta_6}\mathbf{X006}.
+    \mathbf{y}=\beta_0\mathbf{1}_N + \beta_1\mathbf{X001} + \beta_2\mathbf{X002} + \beta_3\mathbf{X003} + \beta_4\mathbf{X004} + \beta_5\mathbf{X005} + \beta_6\mathbf{X006} + \mathbf{e}.
 \end{equation}
 
 we can note that now not all the maximum absolute values of the estimates are greater 
@@ -239,9 +244,14 @@ res.rt.02 <-
     data = dataincRidGME)
 ```
 
+The true coefficints used to generate `dataincRidGME` are
+
 ```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
-coef.dataincRidGME <- c(2.5, rep(0, 3), c(-8, 19, -13))
-plot(res.rt.02, coef = coef.dataincRidGME)
+(coef.dataincRidGME <- c(2.5, rep(0, 3), c(-8, 19, -13)))
+```
+
+```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
+#plot(res.rt.02, coef = coef.dataincRidGME)
 ```
 
 ```{r,echo=TRUE,eval=TRUE}
@@ -250,7 +260,7 @@ coef(res.rt.02, which = "max.abs") > abs(coef.dataincRidGME)
 
 If we use the maximum absolute values to define the support spaces we are 
 excluding the true value of the parameter in two of them. 
-To avoid that, we can broaden the support spaces by a given greater than $1$ factor,
+To avoid that, we can broaden the support spaces by a given factor greater than $1$,
 for instance $2$. That can be done by setting `support.signal = 2` in `lmgce`.
 
 ```{r,echo=TRUE,eval=TRUE}
@@ -260,6 +270,8 @@ res.lmgce.RidGME.02.alpha1 <-
     y ~ .,
     data = dataincRidGME,
     support.method = "ridge",
+    support.method.ridge.symm = TRUE, # default
+    support.method.ridge.maxresid = FALSE,
     support.signal = 1,
     twosteps.n = 0
   )
@@ -269,6 +281,8 @@ res.lmgce.RidGME.02.alpha2 <-
     y ~ .,
     data = dataincRidGME,
     support.method = "ridge",
+    support.method.ridge.symm = TRUE, # default
+    support.method.ridge.maxresid = FALSE,
     support.signal = 2,
     twosteps.n = 0
   )
@@ -321,7 +335,7 @@ different factors used to multiply the maximum absolute value given by the
 Ridge trace.
 
 ```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
-plot(res.lmgce.RidGME.02, which = 2, NormEnt = FALSE)[[1]]
+plot(res.lmgce.RidGME.02, which = 2, NormEnt = FALSE)$p2
 ```
 
 Red dots represent the CV-error and whiskers have the length of two standard 
@@ -339,13 +353,13 @@ was $2$ because we chose `1se` error. In this case, the precision error is also
 not the best one.
 
 ```{r,echo=TRUE,eval=TRUE,fig.width=6,fig.height=4,fig.align='center'}
-plot(res.lmgce.RidGME.02, which = 5, NormEnt = FALSE, coef = coef.dataincRidGME)[[1]]
+#plot(res.lmgce.RidGME.02, which = 5, NormEnt = FALSE, coef = coef.dataincRidGME)$p5
 ```
 
 From the above plot it seems that we should have chosen 
-`errormeasure.which = "min"`. That can obviously be done using
+`errormeasure.which = "min"`. That can be done using
 
-```{r,echo=TRUE,eval=FALSE}
+```{r,echo=TRUE,eval=TRUE}
 res.lmgce.RidGME.02.min <-
   GCEstim::lmgce(
     y ~ .,
@@ -354,15 +368,6 @@ res.lmgce.RidGME.02.min <-
     errormeasure.which = "min",
     twosteps.n = 0
   )
-```
-
-but that implies a complete reestimation and can be very time-costly.
-Since the results of all the evaluated support spaces are stored, choosing a 
-different support should be done with `changesupport`
-
-```{r,echo=TRUE,eval=TRUE}
-res.lmgce.RidGME.02.min <- 
-  changesupport(res.lmgce.RidGME.02, "min")
 ```
 
 From the summary we can conclude that the lowest prediction errors were obtained.
@@ -378,21 +383,27 @@ round(GCEstim::accmeasure(coef(res.lmgce.RidGME.02), coef.dataincRidGME, which =
 round(GCEstim::accmeasure(coef(res.lmgce.RidGME.02.min), coef.dataincRidGME, which = "RMSE"), 3) 
 ```
 
-
 If we go back to our first example and use this last approach, called incRidGME,
 
 ```{r,echo=TRUE,eval=TRUE}
 res.lmgce.RidGME.01.1se <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
     support.method = "ridge",
     twosteps.n = 0
   )
 ```
 
 ```{r,echo=TRUE,eval=TRUE}
-res.lmgce.RidGME.01.min <- changesupport(res.lmgce.RidGME.01.1se, "min")
+res.lmgce.RidGME.01.min <- 
+  GCEstim::lmgce(
+    y ~ .,
+    data = dataThesis,
+    support.method = "ridge",
+    errormeasure.which = "min",
+    twosteps.n = 0
+  )
 ```
 
 we can see an improvement from the RidGME. In particular, when the `1se` error is 
@@ -403,15 +414,15 @@ selected, the Bias-Variance tradeoff seems more appropriate than when the
 
 kableExtra::kable(
   cbind(res.all[, -c(5,6)],
-        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME), dataGCE$y, which = "RMSE"), 3),
+        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME), dataThesis$y, which = "RMSE"), 3),
           round(res.lmgce.RidGME$error.measure.cv.mean, 3),
-          round(GCEstim::accmeasure(coef(res.lmgce.RidGME), coef.dataGCE, which = "RMSE"), 3)),
-        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME.01.1se), dataGCE$y, which = "RMSE"), 3),
+          round(GCEstim::accmeasure(coef(res.lmgce.RidGME), coef.dataThesis, which = "RMSE"), 3)),
+        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME.01.1se), dataThesis$y, which = "RMSE"), 3),
           round(res.lmgce.RidGME.01.1se$error.measure.cv.mean, 3),
-          round(GCEstim::accmeasure(coef(res.lmgce.RidGME.01.1se), coef.dataGCE, which = "RMSE"), 3)),
-        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME.01.min), dataGCE$y, which = "RMSE"), 3),
+          round(GCEstim::accmeasure(coef(res.lmgce.RidGME.01.1se), coef.dataThesis, which = "RMSE"), 3)),
+        c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME.01.min), dataThesis$y, which = "RMSE"), 3),
           round(res.lmgce.RidGME.01.min$error.measure.cv.mean, 3),
-          round(GCEstim::accmeasure(coef(res.lmgce.RidGME.01.min), coef.dataGCE, which = "RMSE"), 3))),
+          round(GCEstim::accmeasure(coef(res.lmgce.RidGME.01.min), coef.dataThesis, which = "RMSE"), 3))),
   digits = 3,
   align = c(rep('c', times = 5)),
   col.names = c("$OLS$",
@@ -433,19 +444,19 @@ doing a pre estimation to define the support space.
 Consider model in (1) (see ["Generalized Maximum Entropy
 framework"](V2_GME_framework.html)). It can be written as\
 \begin{align} 
-    \qquad \qquad \mathbf{y} &= \beta_0 + \beta_1 \mathbf{x_{1}} + \beta_2 \mathbf{x_{2}} + \dots + \beta_K \mathbf{x_{K}} + \boldsymbol{\epsilon}, \qquad \qquad (2)
+    \qquad \qquad \mathbf{y} &= \beta_0\mathbf{1}_N + \beta_1 \mathbf{x_{1}} + \beta_2 \mathbf{x_{2}} + \dots + \beta_K \mathbf{x_{K}} + \mathbf{\e}, \qquad \qquad (2)
 \end{align}
 
 \indent Standardizing $y$ and $x_j$, the model in (2) is rewritten as  
 \begin{align}
-	y^* &= X^*b + \epsilon^*,\\
-	y^* &= b_1x_1^* + b_2x_2^* + \dots + b_Kx_K^* + \epsilon^*,  
+	y^* &= X^*b + e^*,\\
+	y^* &= b_1x_1^* + b_2x_2^* + \dots + b_Kx_K^* + e^*,  
 \end{align}
 \noindent where
 \begin{align}
-y_i^*&=\frac{y_i-\frac{\sum_{i=1}^{N}y_i}{N}}{\sqrt{\frac{1}{N}\sum_{i=1}^{N}\left( y_i-\frac{\sum_{i=1}^{N}y_i}{N}\right)^2}},\\
-x_{ji}^*&=\frac{x_{ji}-\frac{\sum_{i=1}^{N}x_{ji}}{N}}{\sqrt{\frac{1}{N}\sum_{i=1}^{N}\left( x_{ji}-\frac{\sum_{i=1}^{N}x_{ji}}{N}\right)^2}},\\
-b_j&=\frac{\sqrt{\frac{1}{N}\sum_{i=1}^{N}\left( x_{ji}-\frac{\sum_{i=1}^{N}x_{ji}}{N}\right)^2}}{\sqrt{\frac{1}{N}\sum_{i=1}^{N}\left( y_i-\frac{\sum_{i=1}^{N}y_i}{N}\right)^2}}\beta_j,
+y_i^*&=\frac{y_i-\frac{\sum_{i=1}^{N}y_i}{N}}{\sqrt{\frac{1}{N-1}\sum_{i=1}^{N}\left( y_i-\frac{\sum_{i=1}^{N}y_i}{N}\right)^2}},\\
+x_{ji}^*&=\frac{x_{ji}-\frac{\sum_{i=1}^{N}x_{ji}}{N}}{\sqrt{\frac{1}{N-1}\sum_{i=1}^{N}\left( x_{ji}-\frac{\sum_{i=1}^{N}x_{ji}}{N}\right)^2}},\\
+b_j&=\frac{\sqrt{\frac{1}{N-1}\sum_{i=1}^{N}\left( x_{ji}-\frac{\sum_{i=1}^{N}x_{ji}}{N}\right)^2}}{\sqrt{\frac{1}{N-1}\sum_{i=1}^{N}\left( y_i-\frac{\sum_{i=1}^{N}y_i}{N}\right)^2}}\beta_j,
 \end{align}
 \noindent with $j\in \left\lbrace 1,\dots,K\right\rbrace$, and 
 $i \in \left\lbrace 1,\dots,N\right\rbrace$. In this formulation, $b_j$ are 
@@ -463,7 +474,9 @@ no pre estimation is performed. `lmgce` uses this approach by default
 res.lmgce.1se <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
+    support.method = "standardize", # default 
+    errormeasure.which = "1se", # default
     twosteps.n = 0
   )
 ```
@@ -488,43 +501,43 @@ all.data.2 <- cbind(
   res.all[, -c(3, 4, 5, 6)],
   c(
     round(GCEstim::accmeasure(
-      fitted(res.lmgce.RidGME), dataGCE$y, which = "RMSE"
+      fitted(res.lmgce.RidGME), dataThesis$y, which = "RMSE"
     ), 3),
     round(res.lmgce.RidGME$error.measure.cv.mean, 3),
     round(GCEstim::accmeasure(
-      coef(res.lmgce.RidGME), coef.dataGCE, which = "RMSE"
+      coef(res.lmgce.RidGME), coef.dataThesis, which = "RMSE"
     ), 3)
   ),
   c(
     round(GCEstim::accmeasure(
-      fitted(res.lmgce.RidGME.01.1se), dataGCE$y, which = "RMSE"
+      fitted(res.lmgce.RidGME.01.1se), dataThesis$y, which = "RMSE"
     ), 3),
     round(res.lmgce.RidGME.01.1se$error.measure.cv.mean, 3),
     round(GCEstim::accmeasure(
-      coef(res.lmgce.RidGME.01.1se), coef.dataGCE, which = "RMSE"
+      coef(res.lmgce.RidGME.01.1se), coef.dataThesis, which = "RMSE"
     ), 3)
   ),
   c(
     round(GCEstim::accmeasure(
-      fitted(res.lmgce.RidGME.01.min), dataGCE$y, which = "RMSE"
+      fitted(res.lmgce.RidGME.01.min), dataThesis$y, which = "RMSE"
     ), 3),
     round(res.lmgce.RidGME.01.min$error.measure.cv.mean, 3),
     round(GCEstim::accmeasure(
-      coef(res.lmgce.RidGME.01.min), coef.dataGCE, which = "RMSE"
+      coef(res.lmgce.RidGME.01.min), coef.dataThesis, which = "RMSE"
     ), 3)
   ),
   c(
-    round(GCEstim::accmeasure(fitted(res.lmgce.1se), dataGCE$y, which = "RMSE"), 3),
+    round(GCEstim::accmeasure(fitted(res.lmgce.1se), dataThesis$y, which = "RMSE"), 3),
     round(res.lmgce.1se$error.measure.cv.mean, 3),
     round(GCEstim::accmeasure(
-      coef(res.lmgce.1se), coef.dataGCE, which = "RMSE"
+      coef(res.lmgce.1se), coef.dataThesis, which = "RMSE"
     ), 3)
   ),
   c(
-    round(GCEstim::accmeasure(fitted(res.lmgce.min), dataGCE$y, which = "RMSE"), 3),
+    round(GCEstim::accmeasure(fitted(res.lmgce.min), dataThesis$y, which = "RMSE"), 3),
     round(res.lmgce.min$error.measure.cv.mean, 3),
     round(GCEstim::accmeasure(
-      coef(res.lmgce.min), coef.dataGCE, which = "RMSE"
+      coef(res.lmgce.min), coef.dataThesis, which = "RMSE"
     ), 3)
   )
 )[, -1]
