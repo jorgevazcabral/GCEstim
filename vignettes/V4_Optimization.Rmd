@@ -87,22 +87,18 @@ and
 ## Examples
 
 Different numerical optimization options will be explained using
-`dataGCE` (see ["Generalized Maximum Entropy
+`dataThesis` (see ["Generalized Maximum Entropy
 framework"](V2_GME_framework.html#Examples)).
 
 ```{r,echo=FALSE,eval=TRUE}
 load("GCEstim_Optim.RData")
 ```
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=TRUE,message=FALSE}
 library(GCEstim)
 ```
 
-```{r,echo=FALSE,eval=TRUE}
-coef.dataGCE <- c(1, 0, 0, 3, 6, 9)
-```
-
-Assume that $z_k^{upper}=50$, $k\in\left\lbrace 0,\dots,6\right\rbrace$
+Assume that $z_k^{upper}=50$, $k\in\left\lbrace 0,\dots,4\right\rbrace$
 is a "wide upper bound" for the signal support space and set $M=5$ and
 $J=3$.\
 The primal version of the optimization problem previously defined can be
@@ -117,11 +113,11 @@ solved by the optimization methods:
     -   `primal.solnl`, using the augmented Lagrange multiplier
         method with an SQP interior algorithm.
 
-```{r,echo=TRUE,eval=FALSE}
+```{r,echo=TRUE,eval=TRUE}
 res.lmgce.50.primal.solnp <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
     support.signal = c(-50, 50),
     twosteps.n = 0,
     method = "primal.solnp"
@@ -130,7 +126,7 @@ res.lmgce.50.primal.solnp <-
 res.lmgce.50.primal.solnl <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
     support.signal = c(-50, 50),
     twosteps.n = 0,
     method = "primal.solnl"
@@ -174,11 +170,11 @@ optimization methods:
     -   `dual.lbfgsb3c`, using L-BFSC-B implemented in Fortran code and
         with an Rcpp interface;  
 
-```{r,echo=TRUE,eval=FALSE}
+```{r,echo=TRUE,eval=TRUE}
 res.lmgce.50.dual.BFGS <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
     support.signal = c(-50, 50),
     twosteps.n = 0,
     method = "dual.BFGS"
@@ -187,7 +183,7 @@ res.lmgce.50.dual.BFGS <-
 res.lmgce.50.dual.CG <-
   GCEstim::lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
     support.signal = c(-50, 50),
     twosteps.n = 0,
     method = "dual.CG"
@@ -195,7 +191,7 @@ res.lmgce.50.dual.CG <-
 ```
 
 Any error or warning produced by the optimization procedure results in
-outputting $1$. Note that `dual.BFGS` converged while `dual.CG` did not. Conjugate gradient methods will generally be more fragile but may be successful in much larger optimization problems.  
+outputting $1$. Note that `dual.BFGS` converged while `dual.CG` did not. Note that the default optimization setting were kept. Conjugate gradient methods will generally be more fragile but may be successful in much larger optimization problems.  
 
 ```{r,echo=TRUE,eval=TRUE}
 res.lmgce.50.dual.BFGS$convergence
@@ -257,7 +253,7 @@ start.time <- Sys.time()
 res.method <- 
   lmgce(
     y ~ .,
-    data = dataGCE,
+    data = dataThesis,
     support.signal = c(-50,50),
     twosteps.n = 0,
     method = method.opt[i]
@@ -269,7 +265,7 @@ compare_methods$time[i] <- difftime(Sys.time(),
 compare_methods$r.squared[i] <- summary(res.method)$r.squared
 compare_methods$error.measure[i] <- res.method$error.measure
 compare_methods$error.measure.cv.mean[i] <- res.method$error.measure.cv.mean
-compare_methods$beta.error[i] <- accmeasure(coef(res.method), coef.dataGCE)
+compare_methods$beta.error[i] <- accmeasure(coef(res.method), coef.dataThesis)
 compare_methods$nep[i] <- res.method$nep
 compare_methods$nep.cv.mean [i] <- res.method$nep.cv.mean
 compare_methods$convergence[i] <- res.method$convergence
