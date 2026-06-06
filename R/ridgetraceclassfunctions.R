@@ -208,7 +208,9 @@ plot.ridgetrace <- function(x, coef = NULL, log = TRUE, range = TRUE, ...){
     p1 <- p1 +
       ggplot2::geom_point(
         data = df_point_limits,
-        ggplot2::aes(x = max_x, y = max_y, color = variable),
+        ggplot2::aes(x = .data$max_x,
+                     y = .data$max_y,
+                     color = .data$variable),
         size = 1,
         shape = 24,
         stroke = 0.8,
@@ -216,7 +218,9 @@ plot.ridgetrace <- function(x, coef = NULL, log = TRUE, range = TRUE, ...){
       ) +
       ggplot2::geom_point(
         data = df_point_limits,
-        ggplot2::aes(x = min_x, y = min_y, color = variable),
+        ggplot2::aes(x = .data$min_x,
+                     y = .data$min_y,
+                     color = .data$variable),
         size = 1,
         shape = 25,
         stroke = 0.8,

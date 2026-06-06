@@ -245,15 +245,6 @@
 #' The American Statistician, 48(2), 88–91.
 #' \doi{10.2307/2684253}
 #'
-#' @examples
-#' \donttest{
-#' res.cv.lmgce <-
-#'   cv.lmgce(y ~ .,
-#'            data = dataThesis)
-#'
-#' res.cv.lmgce
-#' }
-#'
 #' @export
 
 cv.lmgce <- function(formula,
@@ -278,7 +269,6 @@ cv.lmgce <- function(formula,
                        },
                      support.method = c("standardized", "ridge"),
                      support.method.ridge.lambda = NULL,
-                     support.method.ridge.base = 10,
                      support.method.ridge.lambda.min = 10^-3,
                      support.method.ridge.lambda.max = 10^3,
                      support.method.ridge.lambda.n = 100,

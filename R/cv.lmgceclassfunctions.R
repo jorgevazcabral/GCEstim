@@ -12,15 +12,6 @@
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
-#' @examples
-#' \donttest{
-#' res.cv.lmgce <-
-#'   cv.lmgce(y ~ .,
-#'            data = dataThesis)
-#'
-#' res.cv.lmgce
-#' }
-#'
 #' @method print cv.lmgce
 #' @export
 
@@ -69,15 +60,6 @@ print.cv.lmgce <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
-#' @examples
-#' \donttest{
-#' res.cv.lmgce <-
-#'   cv.lmgce(y ~ .,
-#'            data = dataThesis)
-#'
-#' coef(res.cv.lmgce)
-#' }
-#'
 #' @method coef cv.lmgce
 #' @importFrom stats coef
 #' @export
@@ -102,14 +84,6 @@ coef.cv.lmgce <- function(object, ...)
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
 #' @rdname coefficients.cv.lmgce
-#' @examples
-#' \donttest{
-#' res.cv.lmgce <-
-#'   cv.lmgce(y ~ .,
-#'            data = dataThesis)
-#'
-#' coefficients(res.cv.lmgce)
-#' }
 #'
 #' @method coefficients cv.lmgce
 #' @importFrom stats coefficients
@@ -137,15 +111,6 @@ coefficients.cv.lmgce <- coef.cv.lmgce
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
 #' @seealso \code{\link[GCEstim]{cv.lmgce}}
-#'
-#' @examples
-#' \donttest{
-#' res.cv.lmgce <-
-#'   cv.lmgce(y ~ .,
-#'            data = dataThesis)
-#'
-#' plot(res.cv.lmgce)
-#' }
 #'
 #' @method plot cv.lmgce
 #' @importFrom rlang .data

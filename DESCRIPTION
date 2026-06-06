@@ -50,7 +50,8 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    kableExtra
+    kableExtra,
+    NlcOptim
 VignetteBuilder: knitr
 URL: https://github.com/jorgevazcabral/GCEstim
 BugReports: https://github.com/jorgevazcabral/GCEstim/issues
