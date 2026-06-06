@@ -149,7 +149,7 @@ Bootstrap CIs are available by setting `method = "percentile"` or
 `method = "basic"`, defining a number of replicates `boot.B = 1000` and bootstrap
 method (three methods available, see `help("confint.lmgce")`)
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=FALSE}
 res.lmgce.v01.confint <- 
   confint(
     res.lmgce.v01,
@@ -167,7 +167,7 @@ res.lmgce.v01.confint
 or 
 
 ```{r,echo=TRUE,eval=TRUE}
-res.lmgce.v02 <- 
+res.lmgce.v02 <-
   update(res.lmgce.v01,
          boot.B = 100,
          boot.method = "residuals")
@@ -432,7 +432,7 @@ Using the function `tsbootgce()` and setting:
 the desired model is computed. `formula` allows additional functions 
 available in R package [dynlm](https://CRAN.R-project.org/package=dynlm)). 
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=FALSE}
 res.tsbootgce <- 
   tsbootgce(
     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
@@ -491,7 +491,7 @@ associated that can be used as a weight for an aggregation procedure named neagg
 argument `boot.B` is greater or equal to `10`.  In the case of existence of these
 results we can call the function `neagging` setting only the `object` parameter.
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=FALSE}
 res.neagging.lmgce <- neagging(res.lmgce.v02)
 ```
 
@@ -535,7 +535,7 @@ coef(res.neagging.lmgce, which = ncol(res.neagging.lmgce$matrix))
 `tsbootgce` objects always keep the bootstrap result in `object$results$bootstrap` 
 so we can call the function `neagging` setting only the `object` parameter.
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=FALSE}
 res.neagging.tsbootgce <- neagging(res.tsbootgce)
 ```
 
