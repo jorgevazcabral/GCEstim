@@ -320,7 +320,7 @@ tested in a `cv.nfolds = 5` fold cross-validation (CV) scenario and the factor
 chosen corresponds to the one that produces the CV `errormeasure = "RMSE"` that 
 is not greater than the minimum CV-RMSE plus one standard error (`errormeasure.which = "1se"`).
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=FALSE}
 res.lmgce.RidGME.02 <-
   GCEstim::lmgce(
     y ~ .,
@@ -353,7 +353,7 @@ was $2$ because we chose `1se` error. In this case, the precision error is also
 not the best one.
 We should have chosen `errormeasure.which = "min"`. That can be done using
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=FALSE}
 res.lmgce.RidGME.02.min <-
   GCEstim::lmgce(
     y ~ .,
@@ -379,7 +379,7 @@ round(GCEstim::accmeasure(coef(res.lmgce.RidGME.02.min), coef.dataincRidGME, whi
 
 If we go back to our first example and use this last approach, called incRidGME,
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=FALSE}
 res.lmgce.RidGME.01.1se <-
   GCEstim::lmgce(
     y ~ .,
@@ -389,7 +389,7 @@ res.lmgce.RidGME.01.1se <-
   )
 ```
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=FALSE}
 res.lmgce.RidGME.01.min <- 
   GCEstim::lmgce(
     y ~ .,
@@ -404,9 +404,8 @@ we can see an improvement from the RidGME. In particular, when the `1se` error i
 selected, the Bias-Variance tradeoff seems more appropriate than when the 
 `min` error is defined.
 
-```{r, echo=FALSE,eval=TRUE,results = 'asis'}
-
-kableExtra::kable(
+```{r, echo=FALSE,eval=FALSE}
+res.all.1 <- 
   cbind(res.all[, -c(5,6)],
         c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME), dataThesis$y, which = "RMSE"), 3),
           round(res.lmgce.RidGME$error.measure.cv.mean, 3),
@@ -416,7 +415,13 @@ kableExtra::kable(
           round(GCEstim::accmeasure(coef(res.lmgce.RidGME.01.1se), coef.dataThesis, which = "RMSE"), 3)),
         c(round(GCEstim::accmeasure(fitted(res.lmgce.RidGME.01.min), dataThesis$y, which = "RMSE"), 3),
           round(res.lmgce.RidGME.01.min$error.measure.cv.mean, 3),
-          round(GCEstim::accmeasure(coef(res.lmgce.RidGME.01.min), coef.dataThesis, which = "RMSE"), 3))),
+          round(GCEstim::accmeasure(coef(res.lmgce.RidGME.01.min), coef.dataThesis, which = "RMSE"), 3)))
+```
+
+```{r, echo=FALSE,eval=TRUE,results = 'asis'}
+
+kableExtra::kable(
+  res.all.1,
   digits = 3,
   align = c(rep('c', times = 5)),
   col.names = c("$OLS$",
@@ -464,7 +469,7 @@ numbers) and then revert the support spaces to the original scale. By doing so,
 no pre estimation is performed. `lmgce` uses this approach by default 
 (`support.method = "standardized"`) to do the estimation.
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=FALSE}
 res.lmgce.1se <-
   GCEstim::lmgce(
     y ~ .,
@@ -477,20 +482,34 @@ res.lmgce.1se <-
 
 We can also choose the support space that produced the lowest CV-error.
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=TRUE,eval=FALSE}
 res.lmgce.min <- changesupport(res.lmgce.1se, "min")
 ```
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=FALSE,eval=FALSE}
+res.lmgce.1se.summary <- summary(res.lmgce.1se)
+res.lmgce.min.summary <- summary(res.lmgce.min)
+```
+
+```{r,echo=TRUE,eval=FALSE}
 summary(res.lmgce.1se)
 ```
 
-```{r,echo=TRUE,eval=TRUE}
+```{r,echo=FALSE,eval=TRUE}
+res.lmgce.1se.summary
+```
+
+```{r,echo=TRUE,eval=FALSE}
 summary(res.lmgce.min)
 ```
+
+```{r,echo=FALSE,eval=TRUE}
+res.lmgce.min.summary
+```
+
 And we can do a final comparison between methods.
 
-```{r, echo=FALSE,eval=TRUE}
+```{r, echo=FALSE,eval=FALSE}
 all.data.2 <- cbind(
   res.all[, -c(3, 4, 5, 6)],
   c(
