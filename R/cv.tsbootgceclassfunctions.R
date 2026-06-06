@@ -12,16 +12,6 @@
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
-#' @examples
-#' \donttest{
-#' res.cvtsbootgce <-
-#'   cv.tsbootgce(
-#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
-#'     data = moz_ts)
-#'
-#' res.cvtsbootgce
-#' }
-#'
 #' @method print cv.tsbootgce
 #' @export
 
@@ -89,16 +79,6 @@ print.cv.tsbootgce <- function(x,
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
-#' @examples
-#' \donttest{
-#' res.cv.tsbootgce <-
-#'   cv.tsbootgce(
-#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
-#'     data = moz_ts)
-#'
-#' coef(res.cv.tsbootgce)
-#' }
-#'
 #' @method coef cv.tsbootgce
 #' @importFrom stats coef
 #' @export
@@ -156,15 +136,6 @@ coef.cv.tsbootgce <- function(object,
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
 #' @rdname coefficients.cv.tsbootgce
-#' @examples
-#' \donttest{
-#' res.cv.tsbootgce <-
-#'   cv.tsbootgce(
-#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
-#'     data = moz_ts)
-#'
-#' coefficients(res.cv.tsbootgce)
-#' }
 #'
 #' @method coefficients cv.tsbootgce
 #' @importFrom stats coefficients
@@ -200,20 +171,6 @@ coefficients.cv.tsbootgce <- coef.cv.tsbootgce
 #' and 1 - (1-level)/2 in percentage (by default 2.5 percent and 97.5 percent).
 #'
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
-#'
-#' @examples
-#' \donttest{
-#' res.cv.tsbootgce <-
-#'   cv.tsbootgce(
-#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
-#'     data = moz_ts)
-#'
-#' confint(res.cv.tsbootgce, method = "percentile")
-#'
-#' confint(res.cv.tsbootgce, which = "NormEnt", level = 0.99)
-#'
-#' confint(res.cv.tsbootgce, parm = c("L(GDP, 1)"), level = 0.99)
-#' }
 #'
 #' @method confint cv.tsbootgce
 #' @importFrom stats confint
@@ -352,16 +309,6 @@ confint.cv.tsbootgce <- function(object,
 #' @author Jorge Cabral, \email{jorgecabral@@ua.pt}
 #'
 #' @seealso \code{\link[GCEstim]{cv.tsbootgce}}
-#'
-#' @examples
-#' \donttest{
-#' res.cv.tsbootgce <-
-#'   cv.tsbootgce(
-#'     formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
-#'     data = moz_ts)
-#'
-#' plot(res.cv.tsbootgce, which = 2, group = TRUE)
-#' }
 #'
 #' @method plot cv.tsbootgce
 #' @importFrom rlang .data

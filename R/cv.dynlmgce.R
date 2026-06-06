@@ -31,12 +31,6 @@
 #' See \code{\link[stats]{model.offset}}.
 #' @param contrasts An optional list. See the \code{contrasts.arg} of
 #' \code{\link[stats]{model.matrix.default}}.
-#' @param model Boolean value. if \code{TRUE}, the model frame used is returned.
-#' The default is \code{model = TRUE}.
-#' @param x Boolean value. if \code{TRUE}, the model matrix used is returned.
-#' The default is \code{x = FALSE}.
-#' @param y Boolean value. if \code{TRUE}, the response used is returned.
-#' The default is \code{y = FALSE}.
 #' @param cv Boolean value. If \code{TRUE} the error, \code{errormeasure},
 #' will be computed using cross-validation. If \code{FALSE} the error will be
 #' computed in sample. The default is \code{cv = TRUE}.
