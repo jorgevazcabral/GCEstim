@@ -333,17 +333,6 @@ generalized cross entropy in replicas of time series obtained using
 specified symbolically (see \code{\link[stats]{lm}} and
 \code{\link[dynlm]{dynlm}}).
 }
-\examples{
-\donttest{
-res.cv.tsbootgce <-
-  cv.tsbootgce(
-    formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
-    data = moz_ts)
-
-res.tsbootgce
-}
-
-}
 \references{
 Golan, A., Judge, G. G. and Miller, D. (1996)
 \emph{Maximum entropy econometrics : robust estimation with limited data.}

@@ -50,21 +50,6 @@ and 1 - (1-level)/2 in percentage (by default 2.5 percent and 97.5 percent).
 Computes confidence intervals for one or more parameters or Normalized
 Entropy in a \code{\link{cv.tsbootgce}} fitted model.
 }
-\examples{
-\donttest{
-res.cv.tsbootgce <-
-  cv.tsbootgce(
-    formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
-    data = moz_ts)
-
-confint(res.cv.tsbootgce, method = "percentile")
-
-confint(res.cv.tsbootgce, which = "NormEnt", level = 0.99)
-
-confint(res.cv.tsbootgce, parm = c("L(GDP, 1)"), level = 0.99)
-}
-
-}
 \author{
 Jorge Cabral, \email{jorgecabral@ua.pt}
 }

@@ -61,17 +61,6 @@ A \code{ggplot} object.
 Four plots (selectable by \code{which}) are currently available to
 evaluate a \code{\link{cv.tsbootgce}} object.
 }
-\examples{
-\donttest{
-res.cv.tsbootgce <-
-  cv.tsbootgce(
-    formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
-    data = moz_ts)
-
-plot(res.cv.tsbootgce, which = 2, group = TRUE)
-}
-
-}
 \seealso{
 \code{\link[GCEstim]{cv.tsbootgce}}
 }

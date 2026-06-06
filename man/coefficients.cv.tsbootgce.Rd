@@ -28,17 +28,6 @@ Returns the coefficients from a \code{cv.tsbootgce} object
 \description{
 Extract coefficients from a \code{\link{cv.tsbootgce}} object
 }
-\examples{
-\donttest{
-res.cv.tsbootgce <-
-  cv.tsbootgce(
-    formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
-    data = moz_ts)
-
-coefficients(res.cv.tsbootgce)
-}
-
-}
 \author{
 Jorge Cabral, \email{jorgecabral@ua.pt}
 }

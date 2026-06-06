@@ -19,17 +19,6 @@ A small summary of a \code{\link{tsbootgce}} object is returned.
 \description{
 Print \code{\link{cv.tsbootgce}} object
 }
-\examples{
-\donttest{
-res.cvtsbootgce <-
-  cv.tsbootgce(
-    formula = CO2 ~ 1 + L(EPC, 1) + L(EUS, 2) + L(GDP, 0),
-    data = moz_ts)
-
-res.cvtsbootgce
-}
-
-}
 \author{
 Jorge Cabral, \email{jorgecabral@ua.pt}
 }

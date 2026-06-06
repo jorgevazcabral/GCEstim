@@ -277,15 +277,6 @@ of 0 no messages or output are shown and for a value of 3 all messages
 are shown. The default is \code{verbose = 0}.}
 
 \item{coef}{A vector of the true coefficients, when available.}
-
-\item{model}{Boolean value. if \code{TRUE}, the model frame used is returned.
-The default is \code{model = TRUE}.}
-
-\item{x}{Boolean value. if \code{TRUE}, the model matrix used is returned.
-The default is \code{x = FALSE}.}
-
-\item{y}{Boolean value. if \code{TRUE}, the response used is returned.
-The default is \code{y = FALSE}.}
 }
 \value{
 \code{cv.dynlmgce} returns an object of \code{\link[base]{class}}
