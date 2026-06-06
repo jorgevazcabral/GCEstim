@@ -25,7 +25,6 @@ cv.lmgce(
  },
   support.method = c("standardized", "ridge"),
   support.method.ridge.lambda = NULL,
-  support.method.ridge.base = 10,
   support.method.ridge.lambda.min = 10^-3,
   support.method.ridge.lambda.max = 10^3,
   support.method.ridge.lambda.n = 100,
@@ -316,16 +315,6 @@ The \code{cv.lmgce} function fits several linear regression models via
  generalized cross according to the defined arguments. In particular,
  \code{support.signal.points}, \code{support.noise.points} and
  \code{weight} can be defined as vectors.
-}
-\examples{
-\donttest{
-res.cv.lmgce <-
-  cv.lmgce(y ~ .,
-           data = dataThesis)
-
-res.cv.lmgce
-}
-
 }
 \references{
 Golan, A., Judge, G. G. and Miller, D. (1996)

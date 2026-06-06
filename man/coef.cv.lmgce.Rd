@@ -20,16 +20,6 @@ performance. These coefficients are stored in
 \description{
 Extract coefficients from a \code{\link{cv.lmgce}} object
 }
-\examples{
-\donttest{
-res.cv.lmgce <-
-  cv.lmgce(y ~ .,
-           data = dataThesis)
-
-coef(res.cv.lmgce)
-}
-
-}
 \author{
 Jorge Cabral, \email{jorgecabral@ua.pt}
 }

@@ -28,16 +28,6 @@ evaluate a \code{\link{cv.lmgce}} object. The plots depicts the error change
 with the combination of different arguments of \code{\link{cv.lmgce}} and
 also the best combination.
 }
-\examples{
-\donttest{
-res.cv.lmgce <-
-  cv.lmgce(y ~ .,
-           data = dataThesis)
-
-plot(res.cv.lmgce)
-}
-
-}
 \seealso{
 \code{\link[GCEstim]{cv.lmgce}}
 }
