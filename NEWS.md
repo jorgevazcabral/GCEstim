@@ -1,25 +1,17 @@
-# GCEstim 1.1.1
-
-# GCEstim 0.1.0
-
-* Initial GitHub submission.
-
-# GCEstim 0.2.0
-
-* Implementation of flexiRidGCEw via lmgce();
-
-* Changed geom_errorbarh() to geom_errorbar(orientation= y, ...) in plot.lmgce();
-
-* Minor corrections in documentation;
-
 # GCEstim 1.1.0
 
-* Major corrections;
+* Major update of the package;
 
-* Correction of the `1se` rule;
+* Added TASW-GCE and TARW-GCE estimators for adaptive support-space estimation.
 
-* Updated vignettes and examples with new data sets;
+* Corrected the implementation of the `1se` selection rule.
+
+* Updated vignettes and examples with new data sets.
 
 * TASW-GCE and TARW-GCE parameters improved.
 
 * Objective function adapted for faster computation.
+
+# GCEstim 0.1.0
+
+* Initial GitHub release.
